@@ -1,0 +1,4 @@
+name: MapManager
+main: org.inventivetalent.mapmanager.MapManagerPlugin
+author: inventivetalent
+version: ${project.version}
