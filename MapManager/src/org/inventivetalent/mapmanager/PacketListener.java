@@ -17,10 +17,26 @@ public class PacketListener {
 			public void onSend(SentPacket sentPacket) {
 				if (sentPacket.hasPlayer()) {
 					if ("PacketPlayOutMap".equals(sentPacket.getPacketName())) {
-						int id=((Integer)sentPacket.getPacketValue("a")).intValue();
-						if(id<0) {
+						int id = ((Integer) sentPacket.getPacketValue("a")).intValue();
+
+						if (id < 0) {
+							//It's one of our maps, invert the id and let it through
 							Integer newId = Integer.valueOf(-id);
 							sentPacket.setPacketValue("a", newId);
+						} else {
+							if (!MapManager.ALLOW_VANILLA) {//Vanilla maps not allowed, so we can just cancel all maps
+								sentPacket.setCancelled(true);
+							} else {
+								boolean isPluginMap = !MapManager.ALLOW_VANILLA;
+								if (MapManager.ALLOW_VANILLA) {//Less efficient method: check if the ID is used by the player
+									isPluginMap = MapManager.isIdUsedBy(sentPacket.getPlayer(), (short) id);
+								}
+								System.out.println("Plugin Map #" + id + ": " + isPluginMap);
+
+								if (isPluginMap) {//It's the ID of one of our maps, so cancel it for this player
+									sentPacket.setCancelled(true);
+								}
+							}
 						}
 					}
 				}
