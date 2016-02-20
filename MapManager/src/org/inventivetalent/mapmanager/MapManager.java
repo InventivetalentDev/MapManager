@@ -31,9 +31,12 @@ package org.inventivetalent.mapmanager;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import java.awt.image.BufferedImage;
 import java.util.Set;
 
 public interface MapManager {
+
+	MapWrapper wrapImage(BufferedImage image);
 
 	MapWrapper wrapImage(ArrayImage image);
 

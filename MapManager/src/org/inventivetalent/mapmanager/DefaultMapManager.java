@@ -31,6 +31,7 @@ package org.inventivetalent.mapmanager;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import java.awt.image.BufferedImage;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,6 +42,11 @@ class DefaultMapManager implements MapManager {
 
 	protected final Set<Short>      OCCUPIED_IDS = new HashSet<>();
 	protected final Set<MapWrapper> MANAGED_MAPS = new HashSet<>();
+
+	@Override
+	public MapWrapper wrapImage(BufferedImage image) {
+		return wrapImage(new ArrayImage(image));
+	}
 
 	public MapWrapper wrapImage(ArrayImage image) {
 		MapWrapper wrapper = new DefaultMapWrapper(image);
