@@ -94,6 +94,11 @@
             <artifactId>packetlistenerapi</artifactId>
             <version>2.5.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.inventivetalent</groupId>
+            <artifactId>reflectionhelper</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
 
     <repositories>
