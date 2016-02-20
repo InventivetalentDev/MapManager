@@ -48,7 +48,7 @@ public class MapWrapper {
 	protected final Map<UUID, Short> viewers = new HashMap<>();
 
 	private static FieldResolver       PacketEntityMetadataFieldResolver;
-	private static FieldResolver       EntityPlayerFieldResolver;
+	private static FieldResolver       EntityHumanFieldResolver;
 	private static FieldResolver       ContainerFieldResolver;
 	private static ConstructorResolver WatchableObjectConstructorResolver;
 	private static ConstructorResolver PacketPlayOutSlotConstructorResolver;
@@ -114,15 +114,15 @@ public class MapWrapper {
 				if (PacketPlayOutSlotConstructorResolver == null) {
 					PacketPlayOutSlotConstructorResolver = new ConstructorResolver(MapManagerPlugin.nmsClassResolver.resolve("PacketPlayOutSetSlot"));
 				}
-				if (EntityPlayerFieldResolver == null) {
-					EntityPlayerFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("EntityPlayer"));
+				if (EntityHumanFieldResolver == null) {
+					EntityHumanFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("EntityHuman"));
 				}
 				if (ContainerFieldResolver == null) {
 					ContainerFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("Container"));
 				}
 
 				Object entityPlayer = Minecraft.getHandle(player);
-				Object defaultContainer = EntityPlayerFieldResolver.resolve("defaultContainer").get(entityPlayer);
+				Object defaultContainer = EntityHumanFieldResolver.resolve("defaultContainer").get(entityPlayer);
 				Object windowId = ContainerFieldResolver.resolve("windowId").get(defaultContainer);
 
 				//Create the ItemStack with the player's map ID
