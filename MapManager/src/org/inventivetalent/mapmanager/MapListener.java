@@ -49,15 +49,15 @@ public class MapListener implements Listener {
 
 	@EventHandler
 	public void onQuit(PlayerQuitEvent event) {
-		MapManager.clearAllMapsFor(event.getPlayer());
+		plugin.getMapManager().clearAllMapsFor(event.getPlayer());
 	}
 
 	@EventHandler
 	public void onMapInitialize(MapInitializeEvent event) {
 		System.out.println("Initialize Map #" + event.getMap().getId());
-		if (MapManager.ALLOW_VANILLA) {
+		if (DefaultMapManager.ALLOW_VANILLA) {
 			plugin.getLogger().info("Adding new Map #" + event.getMap().getId() + " to occupied IDs.");
-			MapManager.registerOccupiedID(event.getMap().getId());
+			plugin.getMapManager().registerOccupiedID(event.getMap().getId());
 		}
 	}
 

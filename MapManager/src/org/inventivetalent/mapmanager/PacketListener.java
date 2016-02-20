@@ -32,13 +32,12 @@ import de.inventivegames.packetlistener.handler.PacketHandler;
 import de.inventivegames.packetlistener.handler.PacketOptions;
 import de.inventivegames.packetlistener.handler.ReceivedPacket;
 import de.inventivegames.packetlistener.handler.SentPacket;
-import org.bukkit.plugin.Plugin;
 
 public class PacketListener {
 
 	private final PacketHandler packetHandler;
 
-	public PacketListener(Plugin plugin) {
+	public PacketListener(final MapManagerPlugin plugin) {
 		this.packetHandler = new PacketHandler(plugin) {
 			@Override
 			@PacketOptions(forcePlayer = true)
@@ -52,12 +51,12 @@ public class PacketListener {
 							Integer newId = Integer.valueOf(-id);
 							sentPacket.setPacketValue("a", newId);
 						} else {
-							if (!MapManager.ALLOW_VANILLA) {//Vanilla maps not allowed, so we can just cancel all maps
+							if (!DefaultMapManager.ALLOW_VANILLA) {//Vanilla maps not allowed, so we can just cancel all maps
 								sentPacket.setCancelled(true);
 							} else {
-								boolean isPluginMap = !MapManager.ALLOW_VANILLA;
-								if (MapManager.ALLOW_VANILLA) {//Less efficient method: check if the ID is used by the player
-									isPluginMap = MapManager.isIdUsedBy(sentPacket.getPlayer(), (short) id);
+								boolean isPluginMap = !DefaultMapManager.ALLOW_VANILLA;
+								if (DefaultMapManager.ALLOW_VANILLA) {//Less efficient method: check if the ID is used by the player
+									isPluginMap = plugin.getMapManager().isIdUsedBy(sentPacket.getPlayer(), (short) id);
 								}
 
 								if (isPluginMap) {//It's the ID of one of our maps, so cancel it for this player

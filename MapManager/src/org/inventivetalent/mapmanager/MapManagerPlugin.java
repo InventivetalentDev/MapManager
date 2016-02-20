@@ -47,7 +47,9 @@ import java.util.Set;
 
 public class MapManagerPlugin extends JavaPlugin {
 
-	public static MapManagerPlugin instance;
+	protected static MapManagerPlugin instance;
+
+	protected MapManager mapManagerInstance;
 
 	private   PacketListener packetListener;
 	protected MapListener    mapListener;
@@ -64,10 +66,12 @@ public class MapManagerPlugin extends JavaPlugin {
 		packetListener = new PacketListener(this);
 		Bukkit.getPluginManager().registerEvents(mapListener = new MapListener(this), this);
 
-		//TODO: Remove, change to config
-		MapManager.ALLOW_VANILLA = true;
+		mapManagerInstance = new DefaultMapManager();
 
-		if (MapManager.ALLOW_VANILLA) {
+		//TODO: Remove, change to config
+		DefaultMapManager.ALLOW_VANILLA = true;
+
+		if (DefaultMapManager.ALLOW_VANILLA) {
 			getLogger().info("Vanilla Maps are allowed. Trying to discover occupied Map IDs...");
 
 			Set<Short> occupied = new HashSet<>();
@@ -80,7 +84,7 @@ public class MapManagerPlugin extends JavaPlugin {
 			getLogger().info("Found " + occupied.size() + " occupied IDs.");
 
 			for (short s : occupied) {
-				MapManager.registerOccupiedID(s);
+				getMapManager().registerOccupiedID(s);
 			}
 			getLogger().fine("These IDs will not be used: " + occupied);
 		}
@@ -88,7 +92,7 @@ public class MapManagerPlugin extends JavaPlugin {
 		//Test code
 		MapWrapper wrapper0;
 		try {
-			wrapper0 = MapManager.wrapImage(new ArrayImage(ImageIO.read(new File("D://Desktop/map_test.png"))));
+			wrapper0 = getMapManager().wrapImage(new ArrayImage(ImageIO.read(new File("D://Desktop/map_test.png"))));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return;
@@ -119,7 +123,7 @@ public class MapManagerPlugin extends JavaPlugin {
 				try {
 					int rnd = new Random().nextInt(2);
 					System.out.println("Image #" + rnd);
-					MapWrapper wrapper1 = MapManager.wrapImage(new ArrayImage(ImageIO.read(new File("D://Desktop/map_test" + rnd + ".png"))));
+					MapWrapper wrapper1 = getMapManager().wrapImage(new ArrayImage(ImageIO.read(new File("D://Desktop/map_test" + rnd + ".png"))));
 
 					System.out.println("Add " + event.getPlayer().getName() + " to viewers");
 					wrapper1.getController().addViewer(event.getPlayer());
@@ -128,6 +132,8 @@ public class MapManagerPlugin extends JavaPlugin {
 					wrapper1.getController().sendContent(event.getPlayer());
 
 					System.out.println("Map ID for " + event.getPlayer().getName() + " is #" + wrapper1.getController().getMapId(event.getPlayer()));
+
+					wrapper1.getController().showInHand(event.getPlayer(), true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -139,5 +145,10 @@ public class MapManagerPlugin extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		this.packetListener.disable();
+	}
+
+	public MapManager getMapManager() {
+		if (mapManagerInstance == null) { throw new IllegalStateException("Manager not yet initialized"); }
+		return mapManagerInstance;
 	}
 }
