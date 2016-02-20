@@ -43,7 +43,7 @@ class DefaultMapManager implements MapManager {
 	protected final Set<MapWrapper> MANAGED_MAPS = new HashSet<>();
 
 	public MapWrapper wrapImage(ArrayImage image) {
-		MapWrapper wrapper = new MapWrapper(image);
+		MapWrapper wrapper = new DefaultMapWrapper(image);
 		MANAGED_MAPS.add(wrapper);
 		return wrapper;
 	}
