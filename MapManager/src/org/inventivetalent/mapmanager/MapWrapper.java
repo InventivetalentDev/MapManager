@@ -155,7 +155,7 @@ public class MapWrapper {
 
 		@Override
 		public void showInInventory(Player player, int slot) {
-			showInInventory(player, slot, true);
+			showInInventory(player, slot, false);
 		}
 
 		@Override
@@ -165,7 +165,7 @@ public class MapWrapper {
 
 		@Override
 		public void showInHand(Player player) {
-			showInHand(player, true);
+			showInHand(player, false);
 		}
 
 		@Override
@@ -226,7 +226,7 @@ public class MapWrapper {
 
 		@Override
 		public void showInFrame(Player player, ItemFrame frame) {
-			showInFrame(player, frame, true);
+			showInFrame(player, frame, false);
 		}
 
 	};
