@@ -30,7 +30,9 @@ package org.inventivetalent.mapmanager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.inventivetalent.mapmanager.util.Reflection;
+import org.inventivetalent.reflection.minecraft.Minecraft;
+import org.inventivetalent.reflection.resolver.FieldResolver;
+import org.inventivetalent.reflection.resolver.MethodResolver;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
@@ -42,12 +44,11 @@ import java.util.List;
 
 public class MapSender {
 
-	private static final List<QueuedMap> sendQueue;
-	private static int senderID = -1;
+	private static final List<QueuedMap> sendQueue = new ArrayList<>();
+	private static       int             senderID  = -1;
 
-	static {
-		sendQueue = new ArrayList<>();
-	}
+	private static FieldResolver  EntityPlayerFieldResolver;
+	private static MethodResolver PlayerConnectionMethodResolver;
 
 	public static void cancelIDs(short[] ids) {
 		Iterator<QueuedMap> iterator = sendQueue.iterator();
@@ -117,7 +118,7 @@ public class MapSender {
 		Bukkit.getScheduler().runTaskAsynchronously(MapManagerPlugin.instance, new Runnable() {
 			@Override
 			public void run() {
-				if (Reflection.getVersion().contains("1_7")) {
+				if (Minecraft.getVersion().contains("1_7")) {
 					for (int x = 0; x < 128; x++) {
 						byte[] bytes = new byte[131];
 
@@ -129,12 +130,12 @@ public class MapSender {
 						Object packet = consructPacket(id, bytes);
 						try {
 							sendPacket(packet, receiver);
-						} catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
+						} catch (Exception e) {
 							e.printStackTrace();
 						}
 					}
 				}
-				if (Reflection.getVersion().contains("1_8")) {
+				if (Minecraft.getVersion().contains("1_8")) {
 					byte[] data = new byte[128 * 128];
 					Arrays.fill(data, (byte) 0);
 					for (int x = 0; x < 128; x++) {
@@ -148,7 +149,7 @@ public class MapSender {
 						Object packet = constructPacket_1_8(id, data);
 						try {
 							sendPacket(packet, receiver);
-						} catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
+						} catch (Exception e) {
 							e.printStackTrace();
 						}
 					} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | NoSuchFieldException e1) {
@@ -168,13 +169,13 @@ public class MapSender {
 	private static Object consructPacket(int id, byte[] bytes) {
 		Object packet = null;
 
-		if (Reflection.getVersion().contains("1_7")) {
+		if (Minecraft.getVersion().contains("1_7")) {
 			try {
 				packet = constructPacket_1_7(id, bytes);
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 				e.printStackTrace();
 			}
-		} else if (Reflection.getVersion().contains("1_8")) {
+		} else if (Minecraft.getVersion().contains("1_8")) {
 			try {
 				packet = constructPacket_1_8(id, bytes);
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | NoSuchFieldException e) {
@@ -219,10 +220,17 @@ public class MapSender {
 		return packet;
 	}
 
-	protected static void sendPacket(Object packet, Player p) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-		Object handle = Reflection.getHandle(p);
-		final Object connection = Reflection.getField(handle.getClass(), "playerConnection").get(handle);
-		Reflection.getMethod(connection.getClass(), "sendPacket", new Class[0]).invoke(connection, new Object[] { packet });
+	protected static void sendPacket(Object packet, Player p) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchFieldException, NoSuchMethodException {
+		if (EntityPlayerFieldResolver == null) {
+			EntityPlayerFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("EntityPlayer"));
+		}
+		if (PlayerConnectionMethodResolver == null) {
+			PlayerConnectionMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("PlayerConnection"));
+		}
+
+		Object handle = Minecraft.getHandle(p);
+		final Object connection = EntityPlayerFieldResolver.resolve("playerConnection").get(handle);
+		PlayerConnectionMethodResolver.resolve("sendPacket").invoke(connection, packet);
 	}
 
 	protected static byte getColor(ArrayImage image, int x, int y) {

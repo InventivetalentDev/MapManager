@@ -28,8 +28,6 @@
 
 package org.inventivetalent.mapmanager;
 
-import org.inventivetalent.mapmanager.util.ImageUtil;
-
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 
@@ -42,7 +40,7 @@ public class ArrayImage {
 	public ArrayImage(BufferedImage image) {
 		this.width = image.getWidth();
 		this.height = image.getHeight();
-		int[][] intArray = ImageUtil.ImageToArray(image);
+		int[][] intArray = ImageToArray(image);
 		int length = width * height;
 		this.array = new int[length];
 		for (int x = 0; x < intArray.length; x++) {
@@ -92,5 +90,15 @@ public class ArrayImage {
 		result = 31 * result + width;
 		result = 31 * result + height;
 		return result;
+	}
+
+	static int[][] ImageToArray(BufferedImage image) {
+		int[][] array = new int[image.getWidth()][image.getHeight()];
+		for (int x = 0; x < image.getWidth(); x++) {
+			for (int y = 0; y < image.getHeight(); y++) {
+				array[x][y] = image.getRGB(x, y);
+			}
+		}
+		return array;
 	}
 }
