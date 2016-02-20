@@ -29,6 +29,7 @@
 package org.inventivetalent.mapmanager;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.ItemFrame;
@@ -109,6 +110,15 @@ public class MapWrapper {
 					return;
 				}
 			}
+			if (player.getGameMode() == GameMode.CREATIVE) {
+				//Clients in creative mode will send a 'PacketPlayInCreativeSlot' which tells the server there's a new item in the inventory and creates a new map
+				if (!force) {
+					return;
+				}
+			}
+
+			//Adjust the slot ID
+			if (slot < 9) { slot += 36; } else if (slot > 35) { slot = 8 - (slot - 36); }
 
 			try {
 				if (PacketPlayOutSlotConstructorResolver == null) {
