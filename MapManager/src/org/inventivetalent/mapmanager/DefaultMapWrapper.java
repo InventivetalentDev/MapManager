@@ -176,7 +176,11 @@ class DefaultMapWrapper implements MapWrapper {
 					return;
 				}
 			}
+			showInFrame(player, frame.getEntityId());
+		}
 
+		@Override
+		public void showInFrame(Player player, int entityId) {
 			try {
 				if (PacketEntityMetadataFieldResolver == null) {
 					PacketEntityMetadataFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("PacketPlaOutEntityMetadata"));
@@ -191,7 +195,7 @@ class DefaultMapWrapper implements MapWrapper {
 				Object meta = MapManagerPlugin.nmsClassResolver.resolve("PacketPlayOutEntityMetadata").newInstance();
 
 				//Set the Entity ID of the frame
-				PacketEntityMetadataFieldResolver.resolve("a").set(meta, frame.getEntityId());
+				PacketEntityMetadataFieldResolver.resolve("a").set(meta, entityId);
 
 				List list = new ArrayList();
 
