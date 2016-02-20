@@ -42,14 +42,12 @@ import java.util.List;
 
 public class MapSender {
 
-
 	private static final List<QueuedMap> sendQueue;
 	private static int senderID = -1;
 
 	static {
 		sendQueue = new ArrayList<>();
 	}
-
 
 	public static void cancelIDs(short[] ids) {
 		Iterator<QueuedMap> iterator = sendQueue.iterator();
