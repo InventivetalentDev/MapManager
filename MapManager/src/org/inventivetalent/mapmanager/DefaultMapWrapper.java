@@ -43,7 +43,7 @@ import org.inventivetalent.reflection.resolver.ResolverQuery;
 
 import java.util.*;
 
-class DefaultMapWrapper implements MapWrapper{
+class DefaultMapWrapper implements MapWrapper {
 
 	protected ArrayImage content;
 	protected final Map<UUID, Short> viewers = new HashMap<>();
@@ -92,6 +92,7 @@ class DefaultMapWrapper implements MapWrapper{
 		@Override
 		public void update(ArrayImage content) {
 			DefaultMapWrapper.this.content = content;
+			MapManagerPlugin.instance.getMapManager().updateContent(DefaultMapWrapper.this, content);
 			for (UUID id : viewers.keySet()) {
 				sendContent(Bukkit.getPlayer(id));
 			}
@@ -231,12 +232,17 @@ class DefaultMapWrapper implements MapWrapper{
 
 	};
 
-	 DefaultMapWrapper(ArrayImage content) {
+	DefaultMapWrapper(ArrayImage content) {
 		this.content = content;
 	}
 
 	public MapController getController() {
 		return controller;
+	}
+
+	@Override
+	public ArrayImage getContent() {
+		return content;
 	}
 
 	protected void sendPacket(Player player, Object packet) {

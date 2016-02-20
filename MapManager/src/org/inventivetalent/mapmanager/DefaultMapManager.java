@@ -33,35 +33,45 @@ import org.bukkit.entity.Player;
 
 import java.awt.image.BufferedImage;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 class DefaultMapManager implements MapManager {
 
 	//If vanilla maps should be allowed to be sent to the players (less efficient, since we need to check the id of every sent map)
 	public static boolean ALLOW_VANILLA = false;
 
-	protected final Set<Short>      OCCUPIED_IDS = new HashSet<>();
-	protected final Set<MapWrapper> MANAGED_MAPS = new HashSet<>();
+	protected final Set<Short>               OCCUPIED_IDS = new HashSet<>();
+	private final   Map<Integer, MapWrapper> MANAGED_MAPS = new ConcurrentHashMap<>();
 
 	@Override
 	public MapWrapper wrapImage(BufferedImage image) {
 		return wrapImage(new ArrayImage(image));
 	}
 
+	@Override
 	public MapWrapper wrapImage(ArrayImage image) {
+		if (MANAGED_MAPS.containsKey(image.hashCode())) { return MANAGED_MAPS.get(image.hashCode()); }
+		return wrapNewImage(image);
+	}
+
+	public MapWrapper wrapNewImage(ArrayImage image) {
 		MapWrapper wrapper = new DefaultMapWrapper(image);
-		MANAGED_MAPS.add(wrapper);
+		MANAGED_MAPS.put(image.hashCode(), wrapper);
 		return wrapper;
 	}
 
+	@Override
 	public void unwrapImage(MapWrapper wrapper) {
 		wrapper.getController().clearViewers();
-		MANAGED_MAPS.remove(wrapper);
+		MANAGED_MAPS.remove(wrapper.getContent().hashCode());
 	}
 
+	@Override
 	public Set<MapWrapper> getMapsVisibleTo(OfflinePlayer player) {
 		Set<MapWrapper> visible = new HashSet<>();
-		for (MapWrapper wrapper : MANAGED_MAPS) {
+		for (MapWrapper wrapper : MANAGED_MAPS.values()) {
 			if (wrapper.getController().isViewing(player)) {
 				visible.add(wrapper);
 			}
@@ -69,17 +79,20 @@ class DefaultMapManager implements MapManager {
 		return visible;
 	}
 
+	@Override
 	public void registerOccupiedID(short id) {
 		if (!OCCUPIED_IDS.contains(id)) { OCCUPIED_IDS.add(id); }
 	}
 
+	@Override
 	public void unregisterOccupiedID(short id) {
 		OCCUPIED_IDS.remove(id);
 	}
 
+	@Override
 	public Set<Short> getOccupiedIdsFor(OfflinePlayer player) {
 		Set<Short> ids = new HashSet<>();
-		for (MapWrapper wrapper : MANAGED_MAPS) {
+		for (MapWrapper wrapper : MANAGED_MAPS.values()) {
 			short s;
 			if ((s = wrapper.getController().getMapId(player)) >= 0) {
 				ids.add(s);
@@ -88,10 +101,12 @@ class DefaultMapManager implements MapManager {
 		return ids;
 	}
 
+	@Override
 	public boolean isIdUsedBy(OfflinePlayer player, short id) {
 		return getOccupiedIdsFor(player).contains(id);
 	}
 
+	@Override
 	public short getNextFreeIdFor(Player player) throws MapLimitExceededException {
 		Set<Short> occupied = getOccupiedIdsFor(player);
 		//Add the 'default' occupied IDs
@@ -116,10 +131,18 @@ class DefaultMapManager implements MapManager {
 		throw new MapLimitExceededException("'" + player + "' reached the maximum amount of available Map-IDs");
 	}
 
+	@Override
 	public void clearAllMapsFor(OfflinePlayer player) {
 		for (MapWrapper wrapper : getMapsVisibleTo(player)) {
 			wrapper.getController().removeViewer(player);
 		}
 	}
 
+	@Override
+	public void updateContent(MapWrapper wrapper, ArrayImage content) {
+		//Remove the old wrapper
+		MANAGED_MAPS.remove(wrapper.getContent().hashCode());
+		//Register the new content with the wrapper
+		MANAGED_MAPS.put(content.hashCode(), wrapper);
+	}
 }

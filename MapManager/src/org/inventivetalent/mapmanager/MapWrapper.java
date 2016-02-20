@@ -32,5 +32,7 @@ public interface MapWrapper {
 
 	MapController getController();
 
+	ArrayImage getContent();
+
 }
 

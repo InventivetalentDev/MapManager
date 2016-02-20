@@ -56,4 +56,6 @@ public interface MapManager {
 
 	void clearAllMapsFor(OfflinePlayer player);
 
+	void updateContent(MapWrapper wrapper, ArrayImage content);
+
 }
