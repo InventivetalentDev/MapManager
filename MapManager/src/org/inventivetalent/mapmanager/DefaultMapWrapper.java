@@ -106,6 +106,10 @@ class DefaultMapWrapper implements MapWrapper {
 
 		@Override
 		public void showInInventory(Player player, int slot, boolean force) {
+			if (!isViewing(player)) {
+				return;
+			}
+
 			if (player.getItemInHand() == null || player.getItemInHand().getType() != Material.MAP) {
 				if (!force) {//Player is not holding a map
 					return;
@@ -181,6 +185,9 @@ class DefaultMapWrapper implements MapWrapper {
 
 		@Override
 		public void showInFrame(Player player, int entityId) {
+			if (!isViewing(player)) {
+				return;
+			}
 			try {
 				if (PacketEntityMetadataFieldResolver == null) {
 					PacketEntityMetadataFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("PacketPlayOutEntityMetadata"));
