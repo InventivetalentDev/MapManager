@@ -120,6 +120,9 @@ public class MapWrapper {
 				if (ContainerFieldResolver == null) {
 					ContainerFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("Container"));
 				}
+				if (CraftItemStackMethodResolver == null) {
+					CraftItemStackMethodResolver = new MethodResolver(MapManagerPlugin.obcClassResolver.resolve("inventory.CraftItemStack"));
+				}
 
 				Object entityPlayer = Minecraft.getHandle(player);
 				Object defaultContainer = EntityHumanFieldResolver.resolve("defaultContainer").get(entityPlayer);
