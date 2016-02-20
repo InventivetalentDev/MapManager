@@ -31,6 +31,7 @@ package org.inventivetalent.mapmanager;
 import org.inventivetalent.mapmanager.util.ImageUtil;
 
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 
 public class ArrayImage {
 
@@ -70,5 +71,26 @@ public class ArrayImage {
 
 	public int getHeight() {
 		return height;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) { return true; }
+		if (o == null || getClass() != o.getClass()) { return false; }
+
+		ArrayImage that = (ArrayImage) o;
+
+		if (width != that.width) { return false; }
+		if (height != that.height) { return false; }
+		return Arrays.equals(array, that.array);
+
+	}
+
+	@Override
+	public int hashCode() {
+		int result = array != null ? Arrays.hashCode(array) : 0;
+		result = 31 * result + width;
+		result = 31 * result + height;
+		return result;
 	}
 }
