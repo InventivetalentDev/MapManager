@@ -4,9 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class MapWrapper {
 
@@ -24,6 +22,14 @@ public class MapWrapper {
 		@Override
 		public void removeViewer(OfflinePlayer player) {
 			viewers.remove(player.getUniqueId());
+		}
+
+		@Override
+		public void clearViewers() {
+			Set<UUID> uuids = new HashSet<>(viewers.keySet());
+			for (UUID uuid : uuids) {
+				viewers.remove(uuid);
+			}
 		}
 
 		@Override

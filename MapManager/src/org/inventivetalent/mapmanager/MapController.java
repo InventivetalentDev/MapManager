@@ -9,6 +9,8 @@ public interface MapController {
 
 	void removeViewer(OfflinePlayer player);
 
+	void clearViewers();
+
 	boolean isViewing(OfflinePlayer player);
 
 	short getMapId(OfflinePlayer player);
