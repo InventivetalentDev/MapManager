@@ -168,7 +168,7 @@ public class MapSender {
 	private static Class<?> nmsPacketPlayOutMap;
 
 	static {
-		nmsPacketPlayOutMap = Reflection.getNMSClass("PacketPlayOutMap");
+		nmsPacketPlayOutMap = MapManagerPlugin.nmsClassResolver.resolveSilent("PacketPlayOutMap");
 	}
 
 	private static Object consructPacket(int id, byte[] bytes) {
