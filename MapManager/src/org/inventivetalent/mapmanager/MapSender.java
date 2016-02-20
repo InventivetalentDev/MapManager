@@ -78,12 +78,15 @@ public class MapSender {
 		QueuedMap toSend = new QueuedMap(id, image, receiver);
 		if (sendQueue.contains(toSend)) { return; }
 		sendQueue.add(toSend);
+		System.out.println("Added #" + id + " to queue");
 
 		runSender();
 	}
 
 	protected static void runSender() {
 		if (Bukkit.getScheduler().isQueued(senderID) || Bukkit.getScheduler().isCurrentlyRunning(senderID) || sendQueue.size() == 0) { return; }
+
+		System.out.println("running sender");
 
 		senderID = Bukkit.getScheduler().scheduleSyncRepeatingTask(MapManagerPlugin.instance, new Runnable() {
 
@@ -102,7 +105,7 @@ public class MapSender {
 		}, 0, SEND_DELAY);
 	}
 
-	protected static void sendMap(@Nonnull final int id, @Nonnull final ArrayImage image, @Nonnull final Player receiver) {
+	protected static void sendMap(@Nonnull final int id0, @Nonnull final ArrayImage image, @Nonnull final Player receiver) {
 		if (receiver == null || !receiver.isOnline()) {
 
 			List<QueuedMap> toRemove = new ArrayList<>();
@@ -117,6 +120,11 @@ public class MapSender {
 
 			return;
 		}
+
+		final int id = -id0;
+
+		System.out.println("Sending #" + id + "(" + id0 + ") to " + receiver.getName());
+
 		Bukkit.getScheduler().runTaskAsynchronously(MapManagerPlugin.instance, new Runnable() {
 			@Override
 			public void run() {
