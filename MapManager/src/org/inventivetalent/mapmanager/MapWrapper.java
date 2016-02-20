@@ -104,6 +104,12 @@ public class MapWrapper {
 
 		@Override
 		public void showInInventory(Player player, int slot, boolean force) {
+			if (player.getItemInHand() == null || player.getItemInHand().getType() != Material.MAP) {
+				if (!force) {//Player is not holding a map
+					return;
+				}
+			}
+
 			try {
 				if (PacketPlayOutSlotConstructorResolver == null) {
 					PacketPlayOutSlotConstructorResolver = new ConstructorResolver(MapManagerPlugin.nmsClassResolver.resolve("PacketPlayOutSetSlot"));
