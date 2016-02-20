@@ -183,7 +183,7 @@ class DefaultMapWrapper implements MapWrapper {
 		public void showInFrame(Player player, int entityId) {
 			try {
 				if (PacketEntityMetadataFieldResolver == null) {
-					PacketEntityMetadataFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("PacketPlaOutEntityMetadata"));
+					PacketEntityMetadataFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("PacketPlayOutEntityMetadata"));
 				}
 				if (WatchableObjectConstructorResolver == null) {
 					WatchableObjectConstructorResolver = new ConstructorResolver(MapManagerPlugin.nmsClassResolver.resolve("WatchableObject", "DataWatcher$WatchableObject"));
