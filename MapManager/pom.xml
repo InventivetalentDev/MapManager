@@ -52,6 +52,7 @@
                                 <includes>
                                     <include>org.mcstats.*</include>
                                     <include>org.inventivetalent:mapmanager**</include>
+                                    <include>org.inventivetalent:reflectionhelper**</include>
                                 </includes>
                             </artifactSet>
                         </configuration>
