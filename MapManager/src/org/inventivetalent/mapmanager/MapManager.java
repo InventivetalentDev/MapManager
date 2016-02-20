@@ -62,7 +62,7 @@ public class MapManager {
 		Set<Short> occupied = getOccupiedIdsFor(player);
 		//Add the 'default' occupied IDs
 		occupied.addAll(OCCUPIED_IDS);
-		
+
 		int largest = 0;
 		for (Short s : occupied) {
 			if (s > largest) { largest = s; }

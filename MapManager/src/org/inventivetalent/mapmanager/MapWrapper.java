@@ -1,8 +1,16 @@
 package org.inventivetalent.mapmanager;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.inventivetalent.reflection.minecraft.Minecraft;
+import org.inventivetalent.reflection.resolver.ConstructorResolver;
+import org.inventivetalent.reflection.resolver.FieldResolver;
+import org.inventivetalent.reflection.resolver.MethodResolver;
+import org.inventivetalent.reflection.resolver.ResolverQuery;
 
 import java.util.*;
 
@@ -10,6 +18,13 @@ public class MapWrapper {
 
 	protected ArrayImage content;
 	protected final Map<UUID, Short> viewers = new HashMap<>();
+
+	private static FieldResolver       PacketEntityMetadataFieldResolver;
+	private static FieldResolver       EntityPlayerFieldResolver;
+	private static FieldResolver       ContainerFieldResolver;
+	private static ConstructorResolver WatchableObjectConstructorResolver;
+	private static ConstructorResolver PacketPlayOutSlotConstructorResolver;
+	private static MethodResolver      CraftItemStackMethodResolver;
 
 	protected MapController controller = new MapController() {
 		@Override
@@ -58,6 +73,115 @@ public class MapWrapper {
 			if (!isViewing(player)) { return; }
 			MapSender.addToQueue(getMapId(player), MapWrapper.this.content, player);
 		}
+
+		@Override
+		public void showInInventory(Player player, int slot, boolean force) {
+			try {
+				if (PacketPlayOutSlotConstructorResolver == null) {
+					PacketPlayOutSlotConstructorResolver = new ConstructorResolver(MapManagerPlugin.nmsClassResolver.resolve("PacketPlayOutSetSlot"));
+				}
+				if (EntityPlayerFieldResolver == null) {
+					EntityPlayerFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("EntityPlayer"));
+				}
+				if (ContainerFieldResolver == null) {
+					ContainerFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("Container"));
+				}
+
+				Object entityPlayer = Minecraft.getHandle(player);
+				Object defaultContainer = EntityPlayerFieldResolver.resolve("defaultContainer").get(entityPlayer);
+				Object windowId = ContainerFieldResolver.resolve("windowId").get(defaultContainer);
+
+				//Create the ItemStack with the player's map ID
+				Object itemStack = CraftItemStackMethodResolver.resolve(new ResolverQuery("asNMSCopy", ItemStack.class)).invoke(null, new ItemStack(Material.MAP, 1, getMapId(player)));
+
+				Object setSlot = PacketPlayOutSlotConstructorResolver.resolve(new Class[] {
+						int.class,
+						int.class,
+						MapManagerPlugin.nmsClassResolver.resolve("ItemStack") }).newInstance(windowId, slot, itemStack);
+
+				//Send the packet
+				sendPacket(player, setSlot);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		@Override
+		public void showInInventory(Player player, int slot) {
+			showInInventory(player, slot, true);
+		}
+
+		@Override
+		public void showInHand(Player player, boolean force) {
+			showInInventory(player, player.getInventory().getHeldItemSlot(), force);
+		}
+
+		@Override
+		public void showInHand(Player player) {
+			showInHand(player, true);
+		}
+
+		@Override
+		public void showInFrame(Player player, ItemFrame frame, boolean force) {
+			if (frame.getItem() == null || frame.getItem().getType() != Material.MAP) {
+				if (!force) {//There's no map in the item frame: don't do anything
+					return;
+				}
+			}
+
+			try {
+				if (PacketEntityMetadataFieldResolver == null) {
+					PacketEntityMetadataFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("PacketPlaOutEntityMetadata"));
+				}
+				if (WatchableObjectConstructorResolver == null) {
+					WatchableObjectConstructorResolver = new ConstructorResolver(MapManagerPlugin.nmsClassResolver.resolve("WatchableObject", "DataWatcher$WatchableObject"));
+				}
+				if (CraftItemStackMethodResolver == null) {
+					CraftItemStackMethodResolver = new MethodResolver(MapManagerPlugin.obcClassResolver.resolve("inventory.CraftItemStack"));
+				}
+
+				Object meta = MapManagerPlugin.nmsClassResolver.resolve("PacketPlayOutEntityMetadata").newInstance();
+
+				//Set the Entity ID of the frame
+				PacketEntityMetadataFieldResolver.resolve("a").set(meta, frame.getEntityId());
+
+				List list = new ArrayList();
+
+				// 0 = Byte
+				// 1 = Short
+				// 2 = Int
+				// 3 = Float
+				// 4 = String
+				// 5 = ItemStack
+				// 6 = BlockPosition / ChunkCoordinates
+				// 7 = Vector3f / Vector(?)
+
+				//Create the ItemStack with the player's map ID
+				Object itemStack = CraftItemStackMethodResolver.resolve(new ResolverQuery("asNMSCopy", ItemStack.class)).invoke(null, new ItemStack(Material.MAP, 1, getMapId(player)));
+
+				list.add(WatchableObjectConstructorResolver.resolve(new Class[] {
+						int.class,
+						int.class,
+						Object.class }).newInstance(5, 8, itemStack));
+				list.add(WatchableObjectConstructorResolver.resolve(new Class[] {
+						int.class,
+						int.class,
+						Object.class }).newInstance(5, 2, itemStack));
+
+				PacketEntityMetadataFieldResolver.resolve("b").set(meta, list);
+
+				//Send the completed packet
+				sendPacket(player, meta);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		@Override
+		public void showInFrame(Player player, ItemFrame frame) {
+			showInFrame(player, frame, true);
+		}
+
 	};
 
 	public MapWrapper(ArrayImage content) {
@@ -66,6 +190,14 @@ public class MapWrapper {
 
 	public MapController getController() {
 		return controller;
+	}
+
+	protected void sendPacket(Player player, Object packet) {
+		try {
+			MapSender.sendPacket(packet, player);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 }
 

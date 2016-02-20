@@ -6,9 +6,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.server.MapInitializeEvent;
 import org.bukkit.map.MapView;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.inventivetalent.reflection.resolver.minecraft.NMSClassResolver;
+import org.inventivetalent.reflection.resolver.minecraft.OBCClassResolver;
 
 import javax.imageio.ImageIO;
 import java.io.File;
@@ -22,6 +23,9 @@ public class MapManagerPlugin extends JavaPlugin {
 
 	private   PacketListener packetListener;
 	protected MapListener    mapListener;
+
+	protected static NMSClassResolver nmsClassResolver = new NMSClassResolver();
+	protected static OBCClassResolver obcClassResolver = new OBCClassResolver();
 
 	public MapManagerPlugin() {
 		instance = this;
@@ -100,8 +104,6 @@ public class MapManagerPlugin extends JavaPlugin {
 					e.printStackTrace();
 				}
 			}
-
-
 
 		}, this);
 	}

@@ -230,7 +230,7 @@ public class MapSender {
 		return packet;
 	}
 
-	private static void sendPacket(Object packet, Player p) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+	protected static void sendPacket(Object packet, Player p) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 		Object handle = Reflection.getHandle(p);
 		final Object connection = Reflection.getField(handle.getClass(), "playerConnection").get(handle);
 		Reflection.getMethod(connection.getClass(), "sendPacket", new Class[0]).invoke(connection, new Object[] { packet });
