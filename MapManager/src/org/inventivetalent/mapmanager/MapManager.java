@@ -44,7 +44,7 @@ public class MapManager {
 	}
 
 	public static Set<Short> getOccupiedIdsFor(OfflinePlayer player) {
-		Set<Short> ids = new HashSet<>(OCCUPIED_IDS);
+		Set<Short> ids = new HashSet<>();
 		for (MapWrapper wrapper : MANAGED_MAPS) {
 			short s;
 			if ((s = wrapper.getController().getMapId(player)) >= 0) {
@@ -60,6 +60,9 @@ public class MapManager {
 
 	public static short getNextFreeIdFor(Player player) throws MapLimitExceededException {
 		Set<Short> occupied = getOccupiedIdsFor(player);
+		//Add the 'default' occupied IDs
+		occupied.addAll(OCCUPIED_IDS);
+		
 		int largest = 0;
 		for (Short s : occupied) {
 			if (s > largest) { largest = s; }
