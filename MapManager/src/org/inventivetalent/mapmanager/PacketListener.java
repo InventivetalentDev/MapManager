@@ -31,7 +31,6 @@ public class PacketListener {
 								if (MapManager.ALLOW_VANILLA) {//Less efficient method: check if the ID is used by the player
 									isPluginMap = MapManager.isIdUsedBy(sentPacket.getPlayer(), (short) id);
 								}
-								System.out.println("Plugin Map #" + id + ": " + isPluginMap);
 
 								if (isPluginMap) {//It's the ID of one of our maps, so cancel it for this player
 									sentPacket.setCancelled(true);
