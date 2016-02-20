@@ -8,6 +8,10 @@ import java.util.Set;
 
 public class MapManager {
 
+	//If vanilla maps should be allowed to be sent to the players (less efficient, since we need to check the id of every sent map)
+	public static boolean ALLOW_VANILLA = false;
+
+	protected static final Set<Short>      OCCUPIED_IDS = new HashSet<>();
 	protected static final Set<MapWrapper> MANAGED_MAPS = new HashSet<>();
 
 	public static MapWrapper wrapImage(ArrayImage image) {
@@ -31,8 +35,16 @@ public class MapManager {
 		return visible;
 	}
 
+	public static void registerOccupiedID(short id) {
+		if (!OCCUPIED_IDS.contains(id)) { OCCUPIED_IDS.add(id); }
+	}
+
+	public static void unregisterOccupiedID(short id) {
+		OCCUPIED_IDS.remove(id);
+	}
+
 	public static Set<Short> getOccupiedIdsFor(OfflinePlayer player) {
-		Set<Short> ids = new HashSet<>();
+		Set<Short> ids = new HashSet<>(OCCUPIED_IDS);
 		for (MapWrapper wrapper : MANAGED_MAPS) {
 			short s;
 			if ((s = wrapper.getController().getMapId(player)) >= 0) {
@@ -40,6 +52,10 @@ public class MapManager {
 			}
 		}
 		return ids;
+	}
+
+	public static boolean isIdUsedBy(OfflinePlayer player, short id) {
+		return getOccupiedIdsFor(player).contains(id);
 	}
 
 	public static short getNextFreeIdFor(Player player) throws MapLimitExceededException {
