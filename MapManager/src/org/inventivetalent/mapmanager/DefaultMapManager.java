@@ -39,9 +39,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 class DefaultMapManager implements MapManager {
 
-	//If vanilla maps should be allowed to be sent to the players (less efficient, since we need to check the id of every sent map)
-	public static boolean ALLOW_VANILLA = false;
-
 	protected final Set<Short>               OCCUPIED_IDS = new HashSet<>();
 	private final   Map<Integer, MapWrapper> MANAGED_MAPS = new ConcurrentHashMap<>();
 

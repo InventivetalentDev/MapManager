@@ -51,11 +51,11 @@ public class PacketListener {
 							Integer newId = Integer.valueOf(-id);
 							sentPacket.setPacketValue("a", newId);
 						} else {
-							if (!DefaultMapManager.ALLOW_VANILLA) {//Vanilla maps not allowed, so we can just cancel all maps
+							if (!MapManager.Options.ALLOW_VANILLA) {//Vanilla maps not allowed, so we can just cancel all maps
 								sentPacket.setCancelled(true);
 							} else {
-								boolean isPluginMap = !DefaultMapManager.ALLOW_VANILLA;
-								if (DefaultMapManager.ALLOW_VANILLA) {//Less efficient method: check if the ID is used by the player
+								boolean isPluginMap = !MapManager.Options.ALLOW_VANILLA;
+								if (MapManager.Options.ALLOW_VANILLA) {//Less efficient method: check if the ID is used by the player
 									isPluginMap = plugin.getMapManager().isIdUsedBy(sentPacket.getPlayer(), (short) id);
 								}
 

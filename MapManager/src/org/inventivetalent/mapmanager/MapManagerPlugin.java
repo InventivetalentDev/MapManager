@@ -69,9 +69,9 @@ public class MapManagerPlugin extends JavaPlugin {
 		mapManagerInstance = new DefaultMapManager();
 
 		//TODO: Remove, change to config
-		DefaultMapManager.ALLOW_VANILLA = true;
+		MapManager.Options.ALLOW_VANILLA = true;
 
-		if (DefaultMapManager.ALLOW_VANILLA) {
+		if (MapManager.Options.ALLOW_VANILLA) {
 			getLogger().info("Vanilla Maps are allowed. Trying to discover occupied Map IDs...");
 
 			Set<Short> occupied = new HashSet<>();

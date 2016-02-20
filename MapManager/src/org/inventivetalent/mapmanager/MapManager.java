@@ -58,4 +58,21 @@ public interface MapManager {
 
 	void updateContent(MapWrapper wrapper, ArrayImage content);
 
+	class Options {
+
+		//If vanilla maps should be allowed to be sent to the players (less efficient, since we need to check the id of every sent map)
+		public static boolean ALLOW_VANILLA = false;
+
+		public static class Sender {
+
+			//Delay between map packets (ticks)
+			public static int DELAY = 1;
+
+			//Maximum amount of map packets sent at once
+			public static int AMOUNT = 10;
+
+		}
+
+	}
+
 }

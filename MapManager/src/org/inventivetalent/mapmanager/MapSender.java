@@ -42,18 +42,14 @@ import java.util.List;
 
 public class MapSender {
 
-	protected static long SEND_DELAY  = 1;
-	protected static int  SEND_AMOUNT = 10;
 
 	private static final List<QueuedMap> sendQueue;
 	private static int senderID = -1;
 
 	static {
-		sendQueue = new ArrayList<QueuedMap>();
+		sendQueue = new ArrayList<>();
 	}
 
-	protected static void resetStorage() {
-	}
 
 	public static void cancelIDs(short[] ids) {
 		Iterator<QueuedMap> iterator = sendQueue.iterator();
@@ -88,7 +84,7 @@ public class MapSender {
 			@Override
 			public void run() {
 				if (sendQueue.isEmpty()) { return; }
-				for (int i = 0; i < Math.min(sendQueue.size(), SEND_AMOUNT + 1); i++) {
+				for (int i = 0; i < Math.min(sendQueue.size(), MapManager.Options.Sender.AMOUNT + 1); i++) {
 					QueuedMap current = sendQueue.get(0);
 					if (current == null) { return; }
 					sendMap(current.id, current.image, current.player);
@@ -97,7 +93,7 @@ public class MapSender {
 					}
 				}
 			}
-		}, 0, SEND_DELAY);
+		}, 0, MapManager.Options.Sender.DELAY);
 	}
 
 	protected static void sendMap(@Nonnull final int id0, @Nonnull final ArrayImage image, @Nonnull final Player receiver) {
