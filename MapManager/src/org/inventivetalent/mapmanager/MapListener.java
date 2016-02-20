@@ -55,7 +55,7 @@ public class MapListener implements Listener {
 	@EventHandler
 	public void onMapInitialize(MapInitializeEvent event) {
 		System.out.println("Initialize Map #" + event.getMap().getId());
-		if (DefaultMapManager.ALLOW_VANILLA) {
+		if (MapManager.Options.ALLOW_VANILLA) {
 			plugin.getLogger().info("Adding new Map #" + event.getMap().getId() + " to occupied IDs.");
 			plugin.getMapManager().registerOccupiedID(event.getMap().getId());
 		}
