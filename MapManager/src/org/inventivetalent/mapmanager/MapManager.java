@@ -10,6 +10,17 @@ public class MapManager {
 
 	protected static final Set<MapWrapper> MANAGED_MAPS = new HashSet<>();
 
+	public MapWrapper wrapImage(ArrayImage image) {
+		MapWrapper wrapper = new MapWrapper(image);
+		MANAGED_MAPS.add(wrapper);
+		return wrapper;
+	}
+
+	public void unwrapImage(MapWrapper wrapper) {
+		wrapper.getController().clearViewers();
+		MANAGED_MAPS.remove(wrapper);
+	}
+
 	public static Set<MapWrapper> getMapsVisibleTo(OfflinePlayer player) {
 		Set<MapWrapper> visible = new HashSet<>();
 		for (MapWrapper wrapper : MANAGED_MAPS) {
