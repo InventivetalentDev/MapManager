@@ -92,7 +92,7 @@ public class ArrayImage {
 		return result;
 	}
 
-	static int[][] ImageToArray(BufferedImage image) {
+	protected static int[][] ImageToArray(BufferedImage image) {
 		int[][] array = new int[image.getWidth()][image.getHeight()];
 		for (int x = 0; x < image.getWidth(); x++) {
 			for (int y = 0; y < image.getHeight(); y++) {
@@ -100,5 +100,31 @@ public class ArrayImage {
 			}
 		}
 		return array;
+	}
+
+	protected static boolean ImageContentEqual(BufferedImage b1, BufferedImage b2) {
+		if (b1 == null || b2 == null) { return false; }
+		// if (b1.equals(b2)) return true;
+		if (b1.getWidth() != b2.getWidth()) { return false; }
+		if (b1.getHeight() != b2.getHeight()) { return false; }
+		for (int y = 0; y < b1.getHeight(); y++) {
+			for (int x = 0; x < b1.getWidth(); x++) {
+				if (b1.getRGB(x, y) != b2.getRGB(x, y)) { return false; }
+			}
+		}
+		return true;
+	}
+
+	protected static boolean ImageContentEqual(ArrayImage b1, ArrayImage b2) {
+		if (b1 == null || b2 == null) { return false; }
+		// if (b1.equals(b2)) return true;
+		if (b1.getWidth() != b2.getWidth()) { return false; }
+		if (b1.getHeight() != b2.getHeight()) { return false; }
+		for (int y = 0; y < b1.getHeight(); y++) {
+			for (int x = 0; x < b1.getWidth(); x++) {
+				if (b1.getRGB(x, y) != b2.getRGB(x, y)) { return false; }
+			}
+		}
+		return true;
 	}
 }

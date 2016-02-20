@@ -42,7 +42,6 @@ import org.inventivetalent.reflection.resolver.minecraft.OBCClassResolver;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
 
 public class MapManagerPlugin extends JavaPlugin {
@@ -67,9 +66,6 @@ public class MapManagerPlugin extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(mapListener = new MapListener(this), this);
 
 		mapManagerInstance = new DefaultMapManager();
-
-		//TODO: Remove, change to config
-		MapManager.Options.ALLOW_VANILLA = true;
 
 		if (MapManager.Options.ALLOW_VANILLA) {
 			getLogger().info("Vanilla Maps are allowed. Trying to discover occupied Map IDs...");
@@ -121,19 +117,19 @@ public class MapManagerPlugin extends JavaPlugin {
 			@EventHandler
 			public void onInteract(PlayerInteractEvent event) {
 				try {
-					int rnd = new Random().nextInt(2);
-					System.out.println("Image #" + rnd);
-					MapWrapper wrapper1 = getMapManager().wrapImage(new ArrayImage(ImageIO.read(new File("D://Desktop/map_test" + rnd + ".png"))));
-
-					System.out.println("Add " + event.getPlayer().getName() + " to viewers");
-					wrapper1.getController().addViewer(event.getPlayer());
-
-					System.out.println("Send content to " + event.getPlayer().getName());
-					wrapper1.getController().sendContent(event.getPlayer());
-
-					System.out.println("Map ID for " + event.getPlayer().getName() + " is #" + wrapper1.getController().getMapId(event.getPlayer()));
-
-					wrapper1.getController().showInHand(event.getPlayer(), true);
+					//					int rnd = new Random().nextInt(2);
+					//					System.out.println("Image #" + rnd);
+					//					MapWrapper wrapper1 = getMapManager().wrapImage(new ArrayImage(ImageIO.read(new File("D://Desktop/map_test" + rnd + ".png"))));
+					//
+					//					System.out.println("Add " + event.getPlayer().getName() + " to viewers");
+					//					wrapper1.getController().addViewer(event.getPlayer());
+					//
+					//					System.out.println("Send content to " + event.getPlayer().getName());
+					//					wrapper1.getController().sendContent(event.getPlayer());
+					//
+					//					System.out.println("Map ID for " + event.getPlayer().getName() + " is #" + wrapper1.getController().getMapId(event.getPlayer()));
+					//
+					//					wrapper1.getController().showInHand(event.getPlayer(), true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

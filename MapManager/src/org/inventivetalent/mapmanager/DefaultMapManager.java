@@ -33,14 +33,14 @@ import org.bukkit.entity.Player;
 
 import java.awt.image.BufferedImage;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 class DefaultMapManager implements MapManager {
 
-	protected final Set<Short>               OCCUPIED_IDS = new HashSet<>();
-	private final   Map<Integer, MapWrapper> MANAGED_MAPS = new ConcurrentHashMap<>();
+	protected final Set<Short>       OCCUPIED_IDS = new HashSet<>();
+	private final   List<MapWrapper> MANAGED_MAPS = new CopyOnWriteArrayList<>();
 
 	@Override
 	public MapWrapper wrapImage(BufferedImage image) {
@@ -49,26 +49,31 @@ class DefaultMapManager implements MapManager {
 
 	@Override
 	public MapWrapper wrapImage(ArrayImage image) {
-		if (MANAGED_MAPS.containsKey(image.hashCode())) { return MANAGED_MAPS.get(image.hashCode()); }
+		if (Options.CHECK_DUPLICATES) {
+			for (int i = 0; i < MANAGED_MAPS.size(); i++) {
+				MapWrapper wrapper = MANAGED_MAPS.get(i);
+				if (ArrayImage.ImageContentEqual(wrapper.getContent(), image)) { return wrapper; }
+			}
+		}
 		return wrapNewImage(image);
 	}
 
 	public MapWrapper wrapNewImage(ArrayImage image) {
 		MapWrapper wrapper = new DefaultMapWrapper(image);
-		MANAGED_MAPS.put(image.hashCode(), wrapper);
+		MANAGED_MAPS.add(wrapper);
 		return wrapper;
 	}
 
 	@Override
 	public void unwrapImage(MapWrapper wrapper) {
 		wrapper.getController().clearViewers();
-		MANAGED_MAPS.remove(wrapper.getContent().hashCode());
+		MANAGED_MAPS.remove(wrapper);
 	}
 
 	@Override
 	public Set<MapWrapper> getMapsVisibleTo(OfflinePlayer player) {
 		Set<MapWrapper> visible = new HashSet<>();
-		for (MapWrapper wrapper : MANAGED_MAPS.values()) {
+		for (MapWrapper wrapper : MANAGED_MAPS) {
 			if (wrapper.getController().isViewing(player)) {
 				visible.add(wrapper);
 			}
@@ -89,7 +94,7 @@ class DefaultMapManager implements MapManager {
 	@Override
 	public Set<Short> getOccupiedIdsFor(OfflinePlayer player) {
 		Set<Short> ids = new HashSet<>();
-		for (MapWrapper wrapper : MANAGED_MAPS.values()) {
+		for (MapWrapper wrapper : MANAGED_MAPS) {
 			short s;
 			if ((s = wrapper.getController().getMapId(player)) >= 0) {
 				ids.add(s);
@@ -137,9 +142,5 @@ class DefaultMapManager implements MapManager {
 
 	@Override
 	public void updateContent(MapWrapper wrapper, ArrayImage content) {
-		//Remove the old wrapper
-		MANAGED_MAPS.remove(wrapper.getContent().hashCode());
-		//Register the new content with the wrapper
-		MANAGED_MAPS.put(content.hashCode(), wrapper);
 	}
 }

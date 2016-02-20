@@ -63,6 +63,9 @@ public interface MapManager {
 		//If vanilla maps should be allowed to be sent to the players (less efficient, since we need to check the id of every sent map)
 		public static boolean ALLOW_VANILLA = false;
 
+		//If the plugin checks for duplicate images before creating a new one (Less efficient when first creating a image, but more efficient overall)
+		public static boolean CHECK_DUPLICATES = true;
+
 		public static class Sender {
 
 			//Delay between map packets (ticks)

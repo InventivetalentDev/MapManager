@@ -30,6 +30,8 @@ package org.inventivetalent.mapmanager;
 
 public interface MapWrapper {
 
+	ArrayImage EMPTY_IMAGE = new ArrayImage(new int[128][128]);
+
 	MapController getController();
 
 	ArrayImage getContent();
