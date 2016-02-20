@@ -101,10 +101,7 @@ public class MapManagerPlugin extends JavaPlugin {
 				}
 			}
 
-			@EventHandler
-			public void on(MapInitializeEvent event) {
-				System.out.println("Initialize Map #" + event.getMap().getId());
-			}
+
 
 		}, this);
 	}
