@@ -112,7 +112,6 @@ public class MapSender {
 
 		final int id = -id0;
 
-
 		Bukkit.getScheduler().runTaskAsynchronously(MapManagerPlugin.instance, new Runnable() {
 			@Override
 			public void run() {
