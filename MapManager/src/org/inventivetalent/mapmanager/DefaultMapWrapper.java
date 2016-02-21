@@ -35,6 +35,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.inventivetalent.reflection.minecraft.Minecraft;
 import org.inventivetalent.reflection.resolver.ConstructorResolver;
 import org.inventivetalent.reflection.resolver.FieldResolver;
@@ -184,7 +185,7 @@ class DefaultMapWrapper implements MapWrapper {
 		}
 
 		@Override
-		public void showInFrame(Player player, int entityId) {
+		public void showInFrame(Player player, int entityId, String debugInfo) {
 			if (!isViewing(player)) {
 				return;
 			}
@@ -216,16 +217,23 @@ class DefaultMapWrapper implements MapWrapper {
 				// 7 = Vector3f / Vector(?)
 
 				//Create the ItemStack with the player's map ID
-				Object itemStack = CraftItemStackMethodResolver.resolve(new ResolverQuery("asNMSCopy", ItemStack.class)).invoke(null, new ItemStack(Material.MAP, 1, getMapId(player)));
+				ItemStack itemStack = new ItemStack(Material.MAP, 1, getMapId(player));
+				if (debugInfo != null) {
+					//Add the debug info to the display
+					ItemMeta itemMeta = itemStack.getItemMeta();
+					itemMeta.setDisplayName(debugInfo);
+					itemStack.setItemMeta(itemMeta);
+				}
+				Object craftItemStack = CraftItemStackMethodResolver.resolve(new ResolverQuery("asNMSCopy", ItemStack.class)).invoke(null, itemStack);
 
 				list.add(WatchableObjectConstructorResolver.resolve(new Class[] {
 						int.class,
 						int.class,
-						Object.class }).newInstance(5, 8, itemStack));
+						Object.class }).newInstance(5, 8, craftItemStack));
 				list.add(WatchableObjectConstructorResolver.resolve(new Class[] {
 						int.class,
 						int.class,
-						Object.class }).newInstance(5, 2, itemStack));
+						Object.class }).newInstance(5, 2, craftItemStack));
 
 				PacketEntityMetadataFieldResolver.resolve("b").set(meta, list);
 
@@ -234,6 +242,11 @@ class DefaultMapWrapper implements MapWrapper {
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
+		}
+
+		@Override
+		public void showInFrame(Player player, int entityId) {
+			showInFrame(player, entityId, null);
 		}
 
 		@Override

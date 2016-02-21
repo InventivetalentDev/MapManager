@@ -139,7 +139,6 @@ public class MapSender {
 					byte[] data = new byte[128 * 128];
 					Arrays.fill(data, (byte) 0);
 					for (int x = 0; x < 128; x++) {
-
 						for (int y = 0; y < 128; y++) {
 							data[y * 128 + x] = getColor(image, x, y);
 						}

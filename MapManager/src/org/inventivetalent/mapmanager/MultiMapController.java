@@ -35,8 +35,14 @@ public interface MultiMapController extends MapController {
 
 	void showInFrames(Player player, int[][] entityIdMatrix);
 
+	void showInFrames(Player player, int[][] entityIdMatrix, DebugCallable callable);
+
 	void showInFrames(Player player, ItemFrame[][] itemFrameMatrix, boolean force);
 
 	void showInFrames(Player player, ItemFrame[][] itemFrameMatrix);
+
+	interface DebugCallable {
+		String call(MapController controller, int x, int y);
+	}
 
 }

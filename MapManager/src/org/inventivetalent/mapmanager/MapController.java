@@ -56,10 +56,12 @@ public interface MapController {
 
 	void showInHand(Player player);
 
+	void showInFrame(Player player, ItemFrame frame);
+
 	void showInFrame(Player player, int entityId);
 
 	void showInFrame(Player player, ItemFrame frame, boolean force);
 
-	void showInFrame(Player player, ItemFrame frame);
+	void showInFrame(Player player, int entityId, String debugInfo);
 
 }

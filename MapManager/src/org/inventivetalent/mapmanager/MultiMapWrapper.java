@@ -112,6 +112,15 @@ class MultiMapWrapper extends DefaultMapManager implements MapWrapper {
 		}
 
 		@Override
+		public void showInFrames(Player player, int[][] entityIdMatrix, DebugCallable callable) {
+			for (int x = 0; x < entityIdMatrix.length; x++) {
+				for (int y = 0; y < entityIdMatrix[x].length; y++) {
+					wrapperMatrix[y][x].getController().showInFrame(player, entityIdMatrix[x][wrapperMatrix.length - 1 - y], callable.call(wrapperMatrix[y][x].getController(), x, y));
+				}
+			}
+		}
+
+		@Override
 		public void showInFrames(Player player, ItemFrame[][] itemFrameMatrix, boolean force) {
 			for (int x = 0; x < itemFrameMatrix.length; x++) {
 				for (int y = 0; y < itemFrameMatrix[x].length; y++) {
@@ -160,6 +169,10 @@ class MultiMapWrapper extends DefaultMapManager implements MapWrapper {
 			throw new UnsupportedOperationException("cannot show multi-map in single frame");
 		}
 
+		@Override
+		public void showInFrame(Player player, int entityId, String debugInfo) {
+			throw new UnsupportedOperationException("cannot show multi-map in single frame");
+		}
 	};
 
 	public MultiMapWrapper(BufferedImage image, int columns, int rows) {
