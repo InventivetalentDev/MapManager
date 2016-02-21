@@ -189,59 +189,15 @@ class DefaultMapWrapper implements MapWrapper {
 			if (!isViewing(player)) {
 				return;
 			}
-			try {
-				if (PacketEntityMetadataFieldResolver == null) {
-					PacketEntityMetadataFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("PacketPlayOutEntityMetadata"));
-				}
-				if (WatchableObjectConstructorResolver == null) {
-					WatchableObjectConstructorResolver = new ConstructorResolver(MapManagerPlugin.nmsClassResolver.resolve("WatchableObject", "DataWatcher$WatchableObject"));
-				}
-				if (CraftItemStackMethodResolver == null) {
-					CraftItemStackMethodResolver = new MethodResolver(MapManagerPlugin.obcClassResolver.resolve("inventory.CraftItemStack"));
-				}
-
-				Object meta = MapManagerPlugin.nmsClassResolver.resolve("PacketPlayOutEntityMetadata").newInstance();
-
-				//Set the Entity ID of the frame
-				PacketEntityMetadataFieldResolver.resolve("a").set(meta, entityId);
-
-				List list = new ArrayList();
-
-				// 0 = Byte
-				// 1 = Short
-				// 2 = Int
-				// 3 = Float
-				// 4 = String
-				// 5 = ItemStack
-				// 6 = BlockPosition / ChunkCoordinates
-				// 7 = Vector3f / Vector(?)
-
-				//Create the ItemStack with the player's map ID
-				ItemStack itemStack = new ItemStack(Material.MAP, 1, getMapId(player));
-				if (debugInfo != null) {
-					//Add the debug info to the display
-					ItemMeta itemMeta = itemStack.getItemMeta();
-					itemMeta.setDisplayName(debugInfo);
-					itemStack.setItemMeta(itemMeta);
-				}
-				Object craftItemStack = CraftItemStackMethodResolver.resolve(new ResolverQuery("asNMSCopy", ItemStack.class)).invoke(null, itemStack);
-
-				list.add(WatchableObjectConstructorResolver.resolve(new Class[] {
-						int.class,
-						int.class,
-						Object.class }).newInstance(5, 8, craftItemStack));
-				list.add(WatchableObjectConstructorResolver.resolve(new Class[] {
-						int.class,
-						int.class,
-						Object.class }).newInstance(5, 2, craftItemStack));
-
-				PacketEntityMetadataFieldResolver.resolve("b").set(meta, list);
-
-				//Send the completed packet
-				sendPacket(player, meta);
-			} catch (Exception e) {
-				throw new RuntimeException(e);
+			//Create the ItemStack with the player's map ID
+			ItemStack itemStack = new ItemStack(Material.MAP, 1, getMapId(player));
+			if (debugInfo != null) {
+				//Add the debug info to the display
+				ItemMeta itemMeta = itemStack.getItemMeta();
+				itemMeta.setDisplayName(debugInfo);
+				itemStack.setItemMeta(itemMeta);
 			}
+			sendItemFramePacket(player, entityId, itemStack);
 		}
 
 		@Override
@@ -252,6 +208,16 @@ class DefaultMapWrapper implements MapWrapper {
 		@Override
 		public void showInFrame(Player player, ItemFrame frame) {
 			showInFrame(player, frame, false);
+		}
+
+		@Override
+		public void clearFrame(Player player, int entityId) {
+			sendItemFramePacket(player, entityId, null);
+		}
+
+		@Override
+		public void clearFrame(Player player, ItemFrame frame) {
+			clearFrame(player, frame.getEntityId());
 		}
 
 	};
@@ -272,6 +238,53 @@ class DefaultMapWrapper implements MapWrapper {
 	protected void sendPacket(Player player, Object packet) {
 		try {
 			MapSender.sendPacket(packet, player);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void sendItemFramePacket(Player player, int entityId, ItemStack itemStack) {
+		try {
+			if (PacketEntityMetadataFieldResolver == null) {
+				PacketEntityMetadataFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("PacketPlayOutEntityMetadata"));
+			}
+			if (WatchableObjectConstructorResolver == null) {
+				WatchableObjectConstructorResolver = new ConstructorResolver(MapManagerPlugin.nmsClassResolver.resolve("WatchableObject", "DataWatcher$WatchableObject"));
+			}
+			if (CraftItemStackMethodResolver == null) {
+				CraftItemStackMethodResolver = new MethodResolver(MapManagerPlugin.obcClassResolver.resolve("inventory.CraftItemStack"));
+			}
+
+			Object meta = MapManagerPlugin.nmsClassResolver.resolve("PacketPlayOutEntityMetadata").newInstance();
+
+			//Set the Entity ID of the frame
+			PacketEntityMetadataFieldResolver.resolve("a").set(meta, entityId);
+
+			Object craftItemStack = itemStack == null ? null : CraftItemStackMethodResolver.resolve(new ResolverQuery("asNMSCopy", ItemStack.class)).invoke(null, itemStack);
+
+			List list = new ArrayList();
+
+			// 0 = Byte
+			// 1 = Short
+			// 2 = Int
+			// 3 = Float
+			// 4 = String
+			// 5 = ItemStack
+			// 6 = BlockPosition / ChunkCoordinates
+			// 7 = Vector3f / Vector(?)
+			list.add(WatchableObjectConstructorResolver.resolve(new Class[] {
+					int.class,
+					int.class,
+					Object.class }).newInstance(5, 8, craftItemStack));
+			list.add(WatchableObjectConstructorResolver.resolve(new Class[] {
+					int.class,
+					int.class,
+					Object.class }).newInstance(5, 2, craftItemStack));
+
+			PacketEntityMetadataFieldResolver.resolve("b").set(meta, list);
+
+			//Send the completed packet
+			sendPacket(player, meta);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

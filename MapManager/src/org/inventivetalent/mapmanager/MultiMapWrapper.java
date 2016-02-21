@@ -130,6 +130,24 @@ class MultiMapWrapper extends DefaultMapManager implements MapWrapper {
 		}
 
 		@Override
+		public void clearFrames(Player player, int[][] entityIdMatrix) {
+			for (int x = 0; x < entityIdMatrix.length; x++) {
+				for (int y = 0; y < entityIdMatrix[x].length; y++) {
+					wrapperMatrix[y][x].getController().clearFrame(player, entityIdMatrix[x][y]);
+				}
+			}
+		}
+
+		@Override
+		public void clearFrames(Player player, ItemFrame[][] itemFrameMatrix) {
+			for (int x = 0; x < itemFrameMatrix.length; x++) {
+				for (int y = 0; y < itemFrameMatrix[x].length; y++) {
+					wrapperMatrix[y][x].getController().clearFrame(player, itemFrameMatrix[x][y]);
+				}
+			}
+		}
+
+		@Override
 		public void showInFrames(Player player, ItemFrame[][] itemFrameMatrix) {
 			showInFrames(player, itemFrameMatrix, false);
 		}
@@ -172,6 +190,16 @@ class MultiMapWrapper extends DefaultMapManager implements MapWrapper {
 		@Override
 		public void showInFrame(Player player, int entityId, String debugInfo) {
 			throw new UnsupportedOperationException("cannot show multi-map in single frame");
+		}
+
+		@Override
+		public void clearFrame(Player player, int entityId) {
+			throw new UnsupportedOperationException("cannot clear multi-map in single frame");
+		}
+
+		@Override
+		public void clearFrame(Player player, ItemFrame frame) {
+			throw new UnsupportedOperationException("cannot clear multi-map in single frame");
 		}
 	};
 

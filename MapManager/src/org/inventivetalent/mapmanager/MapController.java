@@ -64,4 +64,8 @@ public interface MapController {
 
 	void showInFrame(Player player, int entityId, String debugInfo);
 
+	void clearFrame(Player player, int entityId);
+
+	void clearFrame(Player player, ItemFrame frame);
+
 }
