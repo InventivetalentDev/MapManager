@@ -40,6 +40,10 @@ public interface MapManager {
 
 	MapWrapper wrapImage(ArrayImage image);
 
+	MapWrapper wrapMultiImage(BufferedImage image, int columns, int rows);
+
+	MapWrapper wrapMultiImage(ArrayImage image, int columns, int rows);
+
 	void unwrapImage(MapWrapper wrapper);
 
 	Set<MapWrapper> getMapsVisibleTo(OfflinePlayer player);
@@ -69,7 +73,7 @@ public interface MapManager {
 		public static class Sender {
 
 			//Delay between map packets (ticks)
-			public static int DELAY = 1;
+			public static int DELAY = 2;
 
 			//Maximum amount of map packets sent at once
 			public static int AMOUNT = 10;
