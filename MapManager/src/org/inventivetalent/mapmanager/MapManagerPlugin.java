@@ -29,20 +29,12 @@
 package org.inventivetalent.mapmanager;
 
 import org.bukkit.Bukkit;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.map.MapView;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.inventivetalent.mapmanager.manager.MapManager;
-import org.inventivetalent.mapmanager.wrapper.MapWrapper;
 import org.inventivetalent.reflection.resolver.minecraft.NMSClassResolver;
 import org.inventivetalent.reflection.resolver.minecraft.OBCClassResolver;
 
-import javax.imageio.ImageIO;
-import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -86,58 +78,6 @@ public class MapManagerPlugin extends JavaPlugin {
 			}
 			getLogger().fine("These IDs will not be used: " + occupied);
 		}
-
-		//Test code
-		MapWrapper wrapper0;
-		try {
-			wrapper0 = getMapManager().wrapImage(new ArrayImage(ImageIO.read(new File("D://Desktop/map_test.png"))));
-		} catch (Exception e) {
-			e.printStackTrace();
-			return;
-		}
-		final MapWrapper wrapper = wrapper0;
-		Bukkit.getPluginManager().registerEvents(new Listener() {
-
-			@EventHandler
-			public void onJoin(PlayerJoinEvent event) {
-
-				System.out.println("Add " + event.getPlayer().getName() + " to viewers");
-				wrapper.getController().addViewer(event.getPlayer());
-
-				System.out.println("Send content to " + event.getPlayer().getName());
-				wrapper.getController().sendContent(event.getPlayer());
-
-				System.out.println("Map ID for " + event.getPlayer().getName() + " is #" + wrapper.getController().getMapId(event.getPlayer()));
-			}
-
-			@EventHandler
-			public void onQuit(PlayerQuitEvent event) {
-				System.out.println("Remove " + event.getPlayer().getName() + " from viewers");
-				wrapper.getController().removeViewer(event.getPlayer());
-			}
-
-			@EventHandler
-			public void onInteract(PlayerInteractEvent event) {
-				try {
-					//					int rnd = new Random().nextInt(2);
-					//					System.out.println("Image #" + rnd);
-					//					MapWrapper wrapper1 = getMapManager().wrapImage(new ArrayImage(ImageIO.read(new File("D://Desktop/map_test" + rnd + ".png"))));
-					//
-					//					System.out.println("Add " + event.getPlayer().getName() + " to viewers");
-					//					wrapper1.getController().addViewer(event.getPlayer());
-					//
-					//					System.out.println("Send content to " + event.getPlayer().getName());
-					//					wrapper1.getController().sendContent(event.getPlayer());
-					//
-					//					System.out.println("Map ID for " + event.getPlayer().getName() + " is #" + wrapper1.getController().getMapId(event.getPlayer()));
-					//
-					//					wrapper1.getController().showInHand(event.getPlayer(), true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-
-		}, this);
 	}
 
 	@Override

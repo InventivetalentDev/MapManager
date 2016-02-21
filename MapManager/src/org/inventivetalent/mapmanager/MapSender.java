@@ -70,15 +70,12 @@ public class MapSender {
 		QueuedMap toSend = new QueuedMap(id, image, receiver);
 		if (sendQueue.contains(toSend)) { return; }
 		sendQueue.add(toSend);
-		System.out.println("Added #" + id + " to queue");
 
 		runSender();
 	}
 
 	protected static void runSender() {
 		if (Bukkit.getScheduler().isQueued(senderID) || Bukkit.getScheduler().isCurrentlyRunning(senderID) || sendQueue.size() == 0) { return; }
-
-		System.out.println("running sender");
 
 		senderID = Bukkit.getScheduler().scheduleSyncRepeatingTask(MapManagerPlugin.instance, new Runnable() {
 
@@ -115,7 +112,6 @@ public class MapSender {
 
 		final int id = -id0;
 
-		System.out.println("Sending #" + id + "(" + id0 + ") to " + receiver.getName());
 
 		Bukkit.getScheduler().runTaskAsynchronously(MapManagerPlugin.instance, new Runnable() {
 			@Override
@@ -247,7 +243,7 @@ public class MapSender {
 	}
 
 	protected static byte matchColor(Color color) {
-		//		if (color.getAlpha() < 128) { return 0; }
+		if (color.getAlpha() < 128) { return 0; }
 		int index = 0;
 		double best = -1.0D;
 		for (int i = 4; i < MAP_COLORS.length; i++) {
@@ -257,8 +253,6 @@ public class MapSender {
 				index = i;
 			}
 		}
-
-		System.out.println("Closest Map Color for " + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + "," + color.getAlpha() + ": " + MAP_COLORS[index].getRed() + "," + MAP_COLORS[index].getGreen() + "," + MAP_COLORS[index].getBlue() + "," + MAP_COLORS[index].getAlpha());
 
 		return (byte) (index < 128 ? index : -129 + index - 127);
 	}
