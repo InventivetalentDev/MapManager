@@ -30,6 +30,8 @@ package org.inventivetalent.mapmanager;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.inventivetalent.mapmanager.manager.MapManager;
+import org.inventivetalent.mapmanager.wrapper.MapWrapper;
 
 import java.awt.image.BufferedImage;
 import java.util.HashSet;

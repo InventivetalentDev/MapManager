@@ -30,6 +30,7 @@ package org.inventivetalent.mapmanager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.inventivetalent.mapmanager.manager.MapManager;
 import org.inventivetalent.reflection.minecraft.Minecraft;
 import org.inventivetalent.reflection.resolver.FieldResolver;
 import org.inventivetalent.reflection.resolver.MethodResolver;

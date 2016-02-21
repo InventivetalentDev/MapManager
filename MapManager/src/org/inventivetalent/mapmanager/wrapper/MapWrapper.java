@@ -26,60 +26,18 @@
  *  either expressed or implied, of anybody else.
  */
 
-package org.inventivetalent.mapmanager;
+package org.inventivetalent.mapmanager.wrapper;
 
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
+import org.inventivetalent.mapmanager.ArrayImage;
+import org.inventivetalent.mapmanager.controller.MapController;
 
-import java.awt.image.BufferedImage;
-import java.util.Set;
+public interface MapWrapper {
 
-public interface MapManager {
+	ArrayImage EMPTY_IMAGE = new ArrayImage(new int[128][128]);
 
-	MapWrapper wrapImage(BufferedImage image);
+	MapController getController();
 
-	MapWrapper wrapImage(ArrayImage image);
-
-	MapWrapper wrapMultiImage(BufferedImage image, int columns, int rows);
-
-	MapWrapper wrapMultiImage(ArrayImage image, int columns, int rows);
-
-	void unwrapImage(MapWrapper wrapper);
-
-	Set<MapWrapper> getMapsVisibleTo(OfflinePlayer player);
-
-	void registerOccupiedID(short id);
-
-	void unregisterOccupiedID(short id);
-
-	Set<Short> getOccupiedIdsFor(OfflinePlayer player);
-
-	boolean isIdUsedBy(OfflinePlayer player, short id);
-
-	short getNextFreeIdFor(Player player) throws MapLimitExceededException;
-
-	void clearAllMapsFor(OfflinePlayer player);
-
-	void updateContent(MapWrapper wrapper, ArrayImage content);
-
-	class Options {
-
-		//If vanilla maps should be allowed to be sent to the players (less efficient, since we need to check the id of every sent map)
-		public static boolean ALLOW_VANILLA = false;
-
-		//If the plugin checks for duplicate images before creating a new one (Less efficient when first creating a image, but more efficient overall)
-		public static boolean CHECK_DUPLICATES = true;
-
-		public static class Sender {
-
-			//Delay between map packets (ticks)
-			public static int DELAY = 2;
-
-			//Maximum amount of map packets sent at once
-			public static int AMOUNT = 10;
-
-		}
-
-	}
+	ArrayImage getContent();
 
 }
+

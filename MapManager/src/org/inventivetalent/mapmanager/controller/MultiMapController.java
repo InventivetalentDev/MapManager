@@ -26,41 +26,27 @@
  *  either expressed or implied, of anybody else.
  */
 
-package org.inventivetalent.mapmanager;
+package org.inventivetalent.mapmanager.controller;
 
-import org.bukkit.Material;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
-public class MapUtil {
+public interface MultiMapController extends MapController {
 
-	public static boolean canPlayerSeeMap(Player player, int mapId) {
-		return doesInventoryContainMap(player.getInventory(), mapId) || isPlayerNearbyMap(player, mapId);
-	}
+	void showInFrames(Player player, int[][] entityIdMatrix);
 
-	public static boolean doesInventoryContainMap(Inventory inventory, int mapId) {
-		for (ItemStack itemStack : inventory.getContents()) {
-			if (itemStack == null) { continue; }
-			if (itemStack.getType() == Material.MAP) {
-				if (itemStack.getDurability() == mapId || itemStack.getData().getData() == mapId) { return true; }
-			}
-		}
-		return false;
-	}
+	void showInFrames(Player player, int[][] entityIdMatrix, DebugCallable callable);
 
-	public static boolean isPlayerNearbyMap(Player player, int mapId) {
-		for (ItemFrame frame : player.getWorld().getEntitiesByClass(ItemFrame.class)) {
-			if (frame.getLocation().distanceSquared(player.getLocation()) < 1024/*Math.pow(32)*/) {
-				if (frame.getItem() != null) {
-					if (frame.getItem().getType() == Material.MAP) {
-						if (frame.getItem().getDurability() == mapId || frame.getItem().getData().getData() == mapId) { return true; }
-					}
-				}
-			}
-		}
-		return false;
+	void showInFrames(Player player, ItemFrame[][] itemFrameMatrix, boolean force);
+
+	void showInFrames(Player player, ItemFrame[][] itemFrameMatrix);
+
+	void clearFrames(Player player, int[][] entityIdMatrix);
+
+	void clearFrames(Player player, ItemFrame[][] itemFrameMatrix);
+
+	interface DebugCallable {
+		String call(MapController controller, int x, int y);
 	}
 
 }

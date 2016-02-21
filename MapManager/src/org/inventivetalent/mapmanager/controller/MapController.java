@@ -26,15 +26,47 @@
  *  either expressed or implied, of anybody else.
  */
 
-package org.inventivetalent.mapmanager;
+package org.inventivetalent.mapmanager.controller;
 
-public interface MapWrapper {
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.ItemFrame;
+import org.bukkit.entity.Player;
+import org.inventivetalent.mapmanager.ArrayImage;
 
-	ArrayImage EMPTY_IMAGE = new ArrayImage(new int[128][128]);
+public interface MapController {
 
-	MapController getController();
+	void addViewer(Player player);
 
-	ArrayImage getContent();
+	void removeViewer(OfflinePlayer player);
+
+	void clearViewers();
+
+	boolean isViewing(OfflinePlayer player);
+
+	short getMapId(OfflinePlayer player);
+
+	void update(ArrayImage content);
+
+	void sendContent(Player player);
+
+	void showInInventory(Player player, int slot, boolean force);
+
+	void showInInventory(Player player, int slot);
+
+	void showInHand(Player player, boolean force);
+
+	void showInHand(Player player);
+
+	void showInFrame(Player player, ItemFrame frame);
+
+	void showInFrame(Player player, int entityId);
+
+	void showInFrame(Player player, ItemFrame frame, boolean force);
+
+	void showInFrame(Player player, int entityId, String debugInfo);
+
+	void clearFrame(Player player, int entityId);
+
+	void clearFrame(Player player, ItemFrame frame);
 
 }
-

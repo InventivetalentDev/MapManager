@@ -32,6 +32,7 @@ import de.inventivegames.packetlistener.handler.PacketHandler;
 import de.inventivegames.packetlistener.handler.PacketOptions;
 import de.inventivegames.packetlistener.handler.ReceivedPacket;
 import de.inventivegames.packetlistener.handler.SentPacket;
+import org.inventivetalent.mapmanager.manager.MapManager;
 
 public class PacketListener {
 

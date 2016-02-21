@@ -31,6 +31,8 @@ package org.inventivetalent.mapmanager;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
+import org.inventivetalent.mapmanager.controller.MultiMapController;
+import org.inventivetalent.mapmanager.wrapper.MapWrapper;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

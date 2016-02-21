@@ -26,46 +26,63 @@
  *  either expressed or implied, of anybody else.
  */
 
-package org.inventivetalent.mapmanager;
+package org.inventivetalent.mapmanager.manager;
 
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
+import org.inventivetalent.mapmanager.ArrayImage;
+import org.inventivetalent.mapmanager.MapLimitExceededException;
+import org.inventivetalent.mapmanager.wrapper.MapWrapper;
 
-public interface MapController {
+import java.awt.image.BufferedImage;
+import java.util.Set;
 
-	void addViewer(Player player);
+public interface MapManager {
 
-	void removeViewer(OfflinePlayer player);
+	MapWrapper wrapImage(BufferedImage image);
 
-	void clearViewers();
+	MapWrapper wrapImage(ArrayImage image);
 
-	boolean isViewing(OfflinePlayer player);
+	MapWrapper wrapMultiImage(BufferedImage image, int columns, int rows);
 
-	short getMapId(OfflinePlayer player);
+	MapWrapper wrapMultiImage(ArrayImage image, int columns, int rows);
 
-	void update(ArrayImage content);
+	void unwrapImage(MapWrapper wrapper);
 
-	void sendContent(Player player);
+	Set<MapWrapper> getMapsVisibleTo(OfflinePlayer player);
 
-	void showInInventory(Player player, int slot, boolean force);
+	void registerOccupiedID(short id);
 
-	void showInInventory(Player player, int slot);
+	void unregisterOccupiedID(short id);
 
-	void showInHand(Player player, boolean force);
+	Set<Short> getOccupiedIdsFor(OfflinePlayer player);
 
-	void showInHand(Player player);
+	boolean isIdUsedBy(OfflinePlayer player, short id);
 
-	void showInFrame(Player player, ItemFrame frame);
+	short getNextFreeIdFor(Player player) throws MapLimitExceededException;
 
-	void showInFrame(Player player, int entityId);
+	void clearAllMapsFor(OfflinePlayer player);
 
-	void showInFrame(Player player, ItemFrame frame, boolean force);
+	void updateContent(MapWrapper wrapper, ArrayImage content);
 
-	void showInFrame(Player player, int entityId, String debugInfo);
+	class Options {
 
-	void clearFrame(Player player, int entityId);
+		//If vanilla maps should be allowed to be sent to the players (less efficient, since we need to check the id of every sent map)
+		public static boolean ALLOW_VANILLA = false;
 
-	void clearFrame(Player player, ItemFrame frame);
+		//If the plugin checks for duplicate images before creating a new one (Less efficient when first creating a image, but more efficient overall)
+		public static boolean CHECK_DUPLICATES = true;
+
+		public static class Sender {
+
+			//Delay between map packets (ticks)
+			public static int DELAY = 2;
+
+			//Maximum amount of map packets sent at once
+			public static int AMOUNT = 10;
+
+		}
+
+	}
 
 }
