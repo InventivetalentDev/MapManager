@@ -106,7 +106,7 @@ class MultiMapWrapper extends DefaultMapManager implements MapWrapper {
 		public void showInFrames(Player player, int[][] entityIdMatrix) {
 			for (int x = 0; x < entityIdMatrix.length; x++) {
 				for (int y = 0; y < entityIdMatrix[x].length; y++) {
-					wrapperMatrix[y][x].getController().showInFrame(player, entityIdMatrix[x][wrapperMatrix.length-1-y]);
+					wrapperMatrix[y][x].getController().showInFrame(player, entityIdMatrix[x][wrapperMatrix.length - 1 - y]);
 				}
 			}
 		}
@@ -115,7 +115,7 @@ class MultiMapWrapper extends DefaultMapManager implements MapWrapper {
 		public void showInFrames(Player player, ItemFrame[][] itemFrameMatrix, boolean force) {
 			for (int x = 0; x < itemFrameMatrix.length; x++) {
 				for (int y = 0; y < itemFrameMatrix[x].length; y++) {
-					wrapperMatrix[y][x].getController().showInFrame(player, itemFrameMatrix[x][wrapperMatrix.length-1-y], force);
+					wrapperMatrix[y][x].getController().showInFrame(player, itemFrameMatrix[x][wrapperMatrix.length - 1 - y], force);
 				}
 			}
 		}

@@ -60,14 +60,14 @@ class DefaultMapManager implements MapManager {
 
 	@Override
 	public MapWrapper wrapMultiImage(BufferedImage image, int columns, int rows) {
-		MapWrapper wrapper = new MultiMapWrapper(image, columns, rows);
-		return wrapper;
+		//Don't add the wrapper to the MANAGED_MAPS, since we're already registering all the single wrapped maps
+		return new MultiMapWrapper(image, columns, rows);
 	}
 
 	@Override
 	public MapWrapper wrapMultiImage(ArrayImage image, int columns, int rows) {
-		MapWrapper wrapper = new MultiMapWrapper(image, columns, rows);
-		return wrapper;
+		//Don't add the wrapper to the MANAGED_MAPS, since we're already registering all the single wrapped maps
+		return new MultiMapWrapper(image, columns, rows);
 	}
 
 	public MapWrapper wrapNewImage(ArrayImage image) {
