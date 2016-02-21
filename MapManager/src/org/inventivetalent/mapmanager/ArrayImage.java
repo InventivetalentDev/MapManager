@@ -37,7 +37,11 @@ public class ArrayImage {
 	private int   width;
 	private int   height;
 
+	private int imageType = BufferedImage.TYPE_4BYTE_ABGR;
+
 	public ArrayImage(BufferedImage image) {
+		this.imageType = image.getType();
+
 		this.width = image.getWidth();
 		this.height = image.getHeight();
 		int[][] intArray = ImageToArray(image);
@@ -74,7 +78,7 @@ public class ArrayImage {
 	}
 
 	public BufferedImage toBuffered() {
-		BufferedImage image = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+		BufferedImage image = new BufferedImage(getWidth(), getHeight(), this.imageType);
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				image.setRGB(x, y, array[y * getWidth() + x]);
