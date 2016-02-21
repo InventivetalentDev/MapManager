@@ -51,6 +51,8 @@ public interface MapManager {
 
 	Set<MapWrapper> getMapsVisibleTo(OfflinePlayer player);
 
+	MapWrapper getWrapperForId(OfflinePlayer player, short id);
+
 	void registerOccupiedID(short id);
 
 	void unregisterOccupiedID(short id);

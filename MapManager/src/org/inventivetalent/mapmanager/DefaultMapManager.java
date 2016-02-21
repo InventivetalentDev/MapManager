@@ -99,6 +99,14 @@ class DefaultMapManager implements MapManager {
 	}
 
 	@Override
+	public MapWrapper getWrapperForId(OfflinePlayer player, short id) {
+		for (MapWrapper wrapper : getMapsVisibleTo(player)) {
+			if (wrapper.getController().getMapId(player) == id) { return wrapper; }
+		}
+		return null;
+	}
+
+	@Override
 	public void registerOccupiedID(short id) {
 		if (!OCCUPIED_IDS.contains(id)) { OCCUPIED_IDS.add(id); }
 	}
