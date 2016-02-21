@@ -52,6 +52,8 @@ public class ArrayImage {
 
 	public ArrayImage(int[][] data) {
 		this.array = new int[data.length * data[0].length];
+		this.width = data.length;
+		this.height = data[0].length;
 		for (int x = 0; x < data.length; x++) {
 			for (int y = 0; y < data[x].length; y++) {
 				array[y * data.length + x] = data[x][y];
