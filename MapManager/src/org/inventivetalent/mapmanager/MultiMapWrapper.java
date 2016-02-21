@@ -207,6 +207,15 @@ class MultiMapWrapper extends DefaultMapManager implements MapWrapper {
 		return this.content;
 	}
 
+	public void unwrap() {
+		matrixIterator(new MatrixCallable() {
+			@Override
+			public void call(MapWrapper wrapper) {
+				MapManagerPlugin.instance.getMapManager().unwrapImage(wrapper);
+			}
+		});
+	}
+
 	protected void setContent(Object[][] imageMatrix) {
 		wrapperMatrix = new MapWrapper[imageMatrix.length][imageMatrix[0].length];
 		for (int x = 0; x < imageMatrix.length; x++) {

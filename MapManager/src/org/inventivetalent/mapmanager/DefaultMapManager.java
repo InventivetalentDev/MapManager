@@ -80,6 +80,9 @@ class DefaultMapManager implements MapManager {
 	public void unwrapImage(MapWrapper wrapper) {
 		wrapper.getController().clearViewers();
 		MANAGED_MAPS.remove(wrapper);
+		if (wrapper instanceof MultiMapWrapper) {
+			((MultiMapWrapper) wrapper).unwrap();
+		}
 	}
 
 	@Override
