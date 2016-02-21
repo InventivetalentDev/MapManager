@@ -71,6 +71,16 @@ public class ArrayImage {
 		return height;
 	}
 
+	public BufferedImage toBuffered() {
+		BufferedImage image = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				image.setRGB(x, y, array[y * getWidth() + x]);
+			}
+		}
+		return image;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) { return true; }
