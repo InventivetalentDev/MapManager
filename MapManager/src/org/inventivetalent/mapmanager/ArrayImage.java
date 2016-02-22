@@ -28,6 +28,10 @@
 
 package org.inventivetalent.mapmanager;
 
+import org.inventivetalent.mapmanager.manager.MapManager;
+import org.inventivetalent.reflection.minecraft.Minecraft;
+
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 
@@ -36,6 +40,9 @@ public class ArrayImage {
 	private int[] array;
 	private int   width;
 	private int   height;
+
+	//Only used if the cache is enabled
+	private Object packetData;
 
 	private int imageType = BufferedImage.TYPE_4BYTE_ABGR;
 
@@ -52,6 +59,7 @@ public class ArrayImage {
 				array[y * image.getWidth() + x] = intArray[x][y];
 			}
 		}
+
 	}
 
 	public ArrayImage(int[][] data) {
@@ -62,6 +70,45 @@ public class ArrayImage {
 			for (int y = 0; y < data[x].length; y++) {
 				array[y * data.length + x] = data[x][y];
 			}
+		}
+	}
+
+	protected Object generatePacketData() {
+		if (MapManager.Options.CACHE_DATA && this.packetData != null) { return this.packetData; }
+
+		Object dataObject = null;
+
+		if (Minecraft.getVersion().contains("1_7")) {
+			byte[][] dataArray = new byte[128][131];
+			for (int x = 0; x < 128; x++) {
+				byte[] bytes = new byte[131];
+
+				bytes[1] = (byte) x;
+				for (int y = 0; y < 128; y++) {
+					bytes[y + 3] = MapSender.matchColor(new Color(getRGB(x, y), true));
+				}
+
+				dataArray[x] = bytes;
+			}
+
+			dataObject = dataArray;
+		} else if (Minecraft.getVersion().contains("1_8")) {
+			byte[] data = new byte[128 * 128];
+			Arrays.fill(data, (byte) 0);
+			for (int x = 0; x < 128; x++) {
+				for (int y = 0; y < 128; y++) {
+					data[y * 128 + x] = MapSender.matchColor(new Color(getRGB(x, y), true));
+				}
+			}
+
+			dataObject = data;
+		}
+
+		if (MapManager.Options.CACHE_DATA) {
+			this.packetData = dataObject;
+			return this.packetData;
+		} else {
+			return dataObject;
 		}
 	}
 

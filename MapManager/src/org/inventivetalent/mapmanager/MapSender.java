@@ -40,7 +40,9 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 public class MapSender {
@@ -114,14 +116,17 @@ public class MapSender {
 		Bukkit.getScheduler().runTaskAsynchronously(MapManagerPlugin.instance, new Runnable() {
 			@Override
 			public void run() {
+				final Object packetData = image.generatePacketData();
 				if (Minecraft.getVersion().contains("1_7")) {
+					byte[][] dataArray = (byte[][]) packetData;
 					for (int x = 0; x < 128; x++) {
-						byte[] bytes = new byte[131];
+						//						byte[] bytes = new byte[131];
+						byte[] bytes = dataArray[x];
 
-						bytes[1] = (byte) x;
-						for (int y = 0; y < 128; y++) {
-							bytes[y + 3] = getColor(image, x, y);
-						}
+						//						bytes[1] = (byte) x;
+						//						for (int y = 0; y < 128; y++) {
+						//							bytes[y + 3] = getColor(image, x, y);
+						//						}
 
 						Object packet = consructPacket(id, bytes);
 						try {
@@ -132,13 +137,14 @@ public class MapSender {
 					}
 				}
 				if (Minecraft.getVersion().contains("1_8")) {
-					byte[] data = new byte[128 * 128];
-					Arrays.fill(data, (byte) 0);
-					for (int x = 0; x < 128; x++) {
-						for (int y = 0; y < 128; y++) {
-							data[y * 128 + x] = getColor(image, x, y);
-						}
-					}
+					//					byte[] data = new byte[128 * 128];
+					//					Arrays.fill(data, (byte) 0);
+					//					for (int x = 0; x < 128; x++) {
+					//						for (int y = 0; y < 128; y++) {
+					//							data[y * 128 + x] = getColor(image, x, y);
+					//						}
+					//					}
+					byte[] data = (byte[]) packetData;
 
 					try {
 						Object packet = constructPacket_1_8(id, data);

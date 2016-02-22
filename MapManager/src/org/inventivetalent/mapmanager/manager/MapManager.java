@@ -75,6 +75,9 @@ public interface MapManager {
 		//If the plugin checks for duplicate images before creating a new one (Less efficient when first creating a image, but more efficient overall)
 		public static boolean CHECK_DUPLICATES = true;
 
+		//Cached the packet data in the image object (less CPU intensive for a lot of players, but probably a bit more memory intensive depending on the image size)
+		public static boolean CACHE_DATA = true;
+
 		public static class Sender {
 
 			//Delay between map packets (ticks)
