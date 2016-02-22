@@ -38,7 +38,6 @@ import org.inventivetalent.reflection.resolver.MethodResolver;
 import javax.annotation.Nonnull;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.IndexColorModel;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -307,77 +306,154 @@ public class MapSender {
 
 	}
 
-	/*
-	 * From https://github.com/LB--/MCModify/blob/java/src/main/java/com/lb_stuff/mcmodify/minecraft/Map.java (With updated values from http://minecraft.gamepedia.com/Map_item_format)
-	 */
+	protected static final Color[] MAP_COLORS = new Color[] {
+			c(0, 0, 0),
+			c(0, 0, 0),
+			c(0, 0, 0),
+			c(0, 0, 0),
+			c(89, 125, 39),
+			c(109, 153, 48),
+			c(127, 178, 56),
+			c(67, 94, 29),
+			c(174, 164, 115),
+			c(213, 201, 140),
+			c(247, 233, 163),
+			c(130, 123, 86),
+			c(140, 140, 140),
+			c(171, 171, 171),
+			c(199, 199, 199),
+			c(105, 105, 105),
+			c(180, 0, 0),
+			c(220, 0, 0),
+			c(255, 0, 0),
+			c(135, 0, 0),
+			c(112, 112, 180),
+			c(138, 138, 220),
+			c(160, 160, 255),
+			c(84, 84, 135),
+			c(117, 117, 117),
+			c(144, 144, 144),
+			c(167, 167, 167),
+			c(88, 88, 88),
+			c(0, 87, 0),
+			c(0, 106, 0),
+			c(0, 124, 0),
+			c(0, 65, 0),
+			c(180, 180, 180),
+			c(220, 220, 220),
+			c(255, 255, 255),
+			c(135, 135, 135),
+			c(115, 118, 129),
+			c(141, 144, 158),
+			c(164, 168, 184),
+			c(86, 88, 97),
+			c(106, 76, 54),
+			c(130, 94, 66),
+			c(151, 109, 77),
+			c(79, 57, 40),
+			c(79, 79, 79),
+			c(96, 96, 96),
+			c(112, 112, 112),
+			c(59, 59, 59),
+			c(45, 45, 180),
+			c(55, 55, 220),
+			c(64, 64, 255),
+			c(33, 33, 135),
+			c(100, 84, 50),
+			c(123, 102, 62),
+			c(143, 119, 72),
+			c(75, 63, 38),
+			c(180, 177, 172),
+			c(220, 217, 211),
+			c(255, 252, 245),
+			c(135, 133, 129),
+			c(152, 89, 36),
+			c(186, 109, 44),
+			c(216, 127, 51),
+			c(114, 67, 27),
+			c(125, 53, 152),
+			c(153, 65, 186),
+			c(178, 76, 216),
+			c(94, 40, 114),
+			c(72, 108, 152),
+			c(88, 132, 186),
+			c(102, 153, 216),
+			c(54, 81, 114),
+			c(161, 161, 36),
+			c(197, 197, 44),
+			c(229, 229, 51),
+			c(121, 121, 27),
+			c(89, 144, 17),
+			c(109, 176, 21),
+			c(127, 204, 25),
+			c(67, 108, 13),
+			c(170, 89, 116),
+			c(208, 109, 142),
+			c(242, 127, 165),
+			c(128, 67, 87),
+			c(53, 53, 53),
+			c(65, 65, 65),
+			c(76, 76, 76),
+			c(40, 40, 40),
+			c(108, 108, 108),
+			c(132, 132, 132),
+			c(153, 153, 153),
+			c(81, 81, 81),
+			c(53, 89, 108),
+			c(65, 109, 132),
+			c(76, 127, 153),
+			c(40, 67, 81),
+			c(89, 44, 125),
+			c(109, 54, 153),
+			c(127, 63, 178),
+			c(67, 33, 94),
+			c(36, 53, 125),
+			c(44, 65, 153),
+			c(51, 76, 178),
+			c(27, 40, 94),
+			c(72, 53, 36),
+			c(88, 65, 44),
+			c(102, 76, 51),
+			c(54, 40, 27),
+			c(72, 89, 36),
+			c(88, 109, 44),
+			c(102, 127, 51),
+			c(54, 67, 27),
+			c(108, 36, 36),
+			c(132, 44, 44),
+			c(153, 51, 51),
+			c(81, 27, 27),
+			c(17, 17, 17),
+			c(21, 21, 21),
+			c(25, 25, 25),
+			c(13, 13, 13),
+			c(176, 168, 54),
+			c(215, 205, 66),
+			c(250, 238, 77),
+			c(132, 126, 40),
+			c(64, 154, 150),
+			c(79, 188, 183),
+			c(92, 219, 213),
+			c(48, 115, 112),
+			c(52, 90, 180),
+			c(63, 110, 220),
+			c(74, 128, 255),
+			c(39, 67, 135),
+			c(0, 153, 40),
+			c(0, 187, 50),
+			c(0, 217, 58),
+			c(0, 114, 30),
+			c(91, 60, 34),
+			c(111, 74, 42),
+			c(129, 86, 49),
+			c(68, 45, 25),
+			c(79, 1, 0),
+			c(96, 1, 0),
+			c(112, 2, 0),
+			c(59, 1, 0) };
 
-	protected static final Color[]         MAP_COLORS;
-	protected static final IndexColorModel MAP_COLOR_MODEL;
-
-	static {
-		System.out.println("Generating Map Color Palette....");
-		final Color[] BaseMapColors = new Color[] {
-				new Color(0, 0, 0, 0),
-				new Color(125, 176, 55),
-				new Color(244, 230, 161),
-				new Color(197, 197, 197),
-				new Color(252, 0, 0),
-				new Color(158, 158, 252),
-				new Color(165, 165, 165),
-				new Color(0, 123, 0),
-				new Color(252, 252, 252),
-				new Color(162, 166, 182),
-				new Color(149, 108, 76),
-				new Color(111, 111, 111),
-				new Color(63, 63, 252),
-				new Color(141, 118, 71),
-				//new 1.7 colors (13w42a/13w42b)
-				new Color(252, 249, 242),
-				new Color(213, 125, 50),
-				new Color(176, 75, 213),
-				new Color(101, 151, 213),
-				new Color(226, 226, 50),
-				new Color(125, 202, 25),
-				new Color(239, 125, 163),
-				new Color(75, 75, 75),
-				new Color(151, 151, 151),
-				new Color(75, 125, 151),
-				new Color(125, 62, 176),
-				new Color(50, 75, 176),
-				new Color(101, 75, 50),
-				new Color(101, 125, 50),
-				new Color(151, 50, 50),
-				new Color(25, 25, 25),
-				new Color(247, 235, 76),
-				new Color(91, 216, 210),
-				new Color(73, 129, 252),
-				new Color(0, 214, 57),
-				new Color(127, 85, 48),
-				new Color(111, 2, 0),
-				//new 1.8 colors
-				new Color(126, 84, 48) };
-		MAP_COLORS = new Color[BaseMapColors.length * 4];
-		for (int i = 0; i < BaseMapColors.length; ++i) {
-			Color bc = BaseMapColors[i];
-			MAP_COLORS[i * 4 + 0] = new Color((int) (bc.getRed() * 180.0 / 255.0 + 0.5), (int) (bc.getGreen() * 180.0 / 255.0 + 0.5), (int) (bc.getBlue() * 180.0 / 255.0 + 0.5), bc.getAlpha());
-			MAP_COLORS[i * 4 + 1] = new Color((int) (bc.getRed() * 220.0 / 255.0 + 0.5), (int) (bc.getGreen() * 220.0 / 255.0 + 0.5), (int) (bc.getBlue() * 220.0 / 255.0 + 0.5), bc.getAlpha());
-			MAP_COLORS[i * 4 + 2] = bc;
-			MAP_COLORS[i * 4 + 3] = new Color((int) (bc.getRed() * 135.0 / 255.0 + 0.5), (int) (bc.getGreen() * 135.0 / 255.0 + 0.5), (int) (bc.getBlue() * 135.0 / 255.0 + 0.5), bc.getAlpha());
-		}
-		byte[] r = new byte[MAP_COLORS.length],
-				g = new byte[MAP_COLORS.length],
-				b = new byte[MAP_COLORS.length],
-				a = new byte[MAP_COLORS.length];
-		for (int i = 0; i < MAP_COLORS.length; ++i) {
-			Color mc = MAP_COLORS[i];
-			r[i] = (byte) mc.getRed();
-			g[i] = (byte) mc.getGreen();
-			b[i] = (byte) mc.getBlue();
-			a[i] = (byte) mc.getAlpha();
-		}
-		MAP_COLOR_MODEL = new IndexColorModel(8, MAP_COLORS.length, r, g, b, a);
-
-		System.out.println("Generated " + MAP_COLORS.length + " Colors.");
+	private static Color c(int r, int g, int b) {
+		return new Color(r, g, b);
 	}
 
 }
