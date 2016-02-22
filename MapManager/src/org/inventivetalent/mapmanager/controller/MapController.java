@@ -49,6 +49,8 @@ public interface MapController {
 
 	void sendContent(Player player);
 
+	void sendContent(Player player, boolean withoutQueue);
+
 	void showInInventory(Player player, int slot, boolean force);
 
 	void showInInventory(Player player, int slot);

@@ -86,6 +86,9 @@ public interface MapManager {
 			//Maximum amount of map packets sent at once
 			public static int AMOUNT = 10;
 
+			//Allow immediate sending of map data
+			public static boolean ALLOW_QUEUE_BYPASS = true;
+
 		}
 
 	}

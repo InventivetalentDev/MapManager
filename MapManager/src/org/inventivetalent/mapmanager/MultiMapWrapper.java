@@ -95,11 +95,16 @@ class MultiMapWrapper extends DefaultMapManager implements MapWrapper {
 		}
 
 		@Override
-		public void sendContent(final Player player) {
+		public void sendContent(Player player) {
+			sendContent(player, false);
+		}
+
+		@Override
+		public void sendContent(final Player player, final boolean withoutQueue) {
 			matrixIterator(new MatrixCallable() {
 				@Override
 				public void call(MapWrapper wrapper) {
-					wrapper.getController().sendContent(player);
+					wrapper.getController().sendContent(player, withoutQueue);
 				}
 			});
 		}

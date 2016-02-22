@@ -37,6 +37,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.inventivetalent.mapmanager.controller.MapController;
+import org.inventivetalent.mapmanager.manager.MapManager;
 import org.inventivetalent.mapmanager.wrapper.MapWrapper;
 import org.inventivetalent.reflection.minecraft.Minecraft;
 import org.inventivetalent.reflection.resolver.ConstructorResolver;
@@ -103,8 +104,18 @@ class DefaultMapWrapper implements MapWrapper {
 
 		@Override
 		public void sendContent(Player player) {
+			sendContent(player, false);
+		}
+
+		@Override
+		public void sendContent(Player player, boolean withoutQueue) {
 			if (!isViewing(player)) { return; }
-			MapSender.addToQueue(getMapId(player), DefaultMapWrapper.this.content, player);
+			int id = getMapId(player);
+			if (withoutQueue && MapManager.Options.Sender.ALLOW_QUEUE_BYPASS) {
+				MapSender.sendMap(id, DefaultMapWrapper.this.content, player);
+			} else {
+				MapSender.addToQueue(id, DefaultMapWrapper.this.content, player);
+			}
 		}
 
 		@Override
