@@ -82,12 +82,12 @@ public class MapInteractEvent extends Event implements Cancellable {
 
 	public ItemFrame getItemFrame() {
 		if (this.itemFrame != null) { return this.itemFrame; }
-		for (ItemFrame itemFrame : getPlayer().getWorld().getEntitiesByClass(ItemFrame.class)) {
-			if (itemFrame.getEntityId() == getEntityID()) {
-				return this.itemFrame = itemFrame;
-			}
-		}
-		return null;
+		//		for (ItemFrame itemFrame : getPlayer().getWorld().getEntitiesByClass(ItemFrame.class)) {
+		//			if (itemFrame.getEntityId() == getEntityID()) {
+		//				return this.itemFrame = itemFrame;
+		//			}
+		//		}
+		return this.itemFrame = MapManagerPlugin.getItemFrameById(getPlayer().getWorld(), getEntityID());
 	}
 
 	public MapWrapper getMapWrapper() {
