@@ -29,9 +29,16 @@
 package org.inventivetalent.mapmanager;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.map.MapView;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.inventivetalent.mapmanager.manager.MapManager;
+import org.inventivetalent.reflection.resolver.FieldResolver;
+import org.inventivetalent.reflection.resolver.MethodResolver;
+import org.inventivetalent.reflection.resolver.ResolverQuery;
 import org.inventivetalent.reflection.resolver.minecraft.NMSClassResolver;
 import org.inventivetalent.reflection.resolver.minecraft.OBCClassResolver;
 
@@ -49,6 +56,11 @@ public class MapManagerPlugin extends JavaPlugin {
 
 	protected static NMSClassResolver nmsClassResolver = new NMSClassResolver();
 	protected static OBCClassResolver obcClassResolver = new OBCClassResolver();
+
+	private static FieldResolver  CraftWorldFieldResolver;
+	private static FieldResolver  WorldFieldResolver;
+	private static MethodResolver IntHashMapMethodResolver;
+	private static MethodResolver EntityMethodResolver;
 
 	public MapManagerPlugin() {
 		instance = this;
@@ -88,5 +100,40 @@ public class MapManagerPlugin extends JavaPlugin {
 	public MapManager getMapManager() {
 		if (mapManagerInstance == null) { throw new IllegalStateException("Manager not yet initialized"); }
 		return mapManagerInstance;
+	}
+
+	public static ItemFrame getItemFrameById(World world, int entityId) {
+		try {
+			if (CraftWorldFieldResolver == null) {
+				CraftWorldFieldResolver = new FieldResolver(MapManagerPlugin.obcClassResolver.resolve("CraftWorld"));
+			}
+			if (WorldFieldResolver == null) {
+				WorldFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("World"));
+			}
+			if (IntHashMapMethodResolver == null) {
+				IntHashMapMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("IntHashMap"));
+			}
+			if (EntityMethodResolver == null) {
+				EntityMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("Entity"));
+			}
+
+			Object entitiesById = WorldFieldResolver.resolve("entitiesById").get(CraftWorldFieldResolver.resolve("world").get(world));
+			Object entity = IntHashMapMethodResolver.resolve(new ResolverQuery("get", int.class)).invoke(entitiesById, entityId);
+			if (entity == null) { return null; }
+			Entity bukkitEntity = (Entity) EntityMethodResolver.resolve("getBukkitEntity").invoke(entity);
+			if (bukkitEntity != null && EntityType.ITEM_FRAME == bukkitEntity.getType()) {
+				return (ItemFrame) bukkitEntity;
+			}
+
+			//				for (ItemFrame itemFrame : world.getEntitiesByClass(ItemFrame.class)) {
+			//					if (itemFrame.getEntityId() == entityId) {
+			//						return itemFrame;
+			//					}
+			//				}
+			//				return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }
