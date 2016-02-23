@@ -46,7 +46,7 @@ public class CreativeInventoryMapUpdateEvent extends Event implements Cancellabl
 
 	private MapWrapper mapWrapper;
 
-	private boolean cancelled;
+	private boolean cancelled = true;
 
 	public CreativeInventoryMapUpdateEvent(Player player, int slot, ItemStack itemStack) {
 		this.player = player;
