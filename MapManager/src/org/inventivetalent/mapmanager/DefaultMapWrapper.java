@@ -28,14 +28,12 @@
 
 package org.inventivetalent.mapmanager;
 
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.*;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.inventivetalent.mapmanager.controller.MapController;
 import org.inventivetalent.mapmanager.manager.MapManager;
 import org.inventivetalent.mapmanager.wrapper.MapWrapper;
@@ -210,6 +208,13 @@ class DefaultMapWrapper implements MapWrapper {
 				itemMeta.setDisplayName(debugInfo);
 				itemStack.setItemMeta(itemMeta);
 			}
+
+			ItemFrame itemFrame = getItemFrameById(player.getWorld(), entityId);
+			if (itemFrame != null) {
+				//Add a reference to this MapWrapper (can be used in MapWrapper#getWrapperForId)
+				itemFrame.setMetadata("MAP_WRAPPER_ID_REF", new FixedMetadataValue(MapManagerPlugin.instance, getMapId(player)));
+			}
+
 			sendItemFramePacket(player, entityId, itemStack);
 		}
 
@@ -225,7 +230,7 @@ class DefaultMapWrapper implements MapWrapper {
 
 		@Override
 		public void clearFrame(Player player, int entityId) {
-			sendItemFramePacket(player, entityId, null);
+			showInFrame(player, entityId, null);
 		}
 
 		@Override
@@ -301,6 +306,15 @@ class DefaultMapWrapper implements MapWrapper {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public static ItemFrame getItemFrameById(World world, int entityId) {
+		for (ItemFrame itemFrame : world.getEntitiesByClass(ItemFrame.class)) {
+			if (itemFrame.getEntityId() == entityId) {
+				return itemFrame;
+			}
+		}
+		return null;
 	}
 
 }

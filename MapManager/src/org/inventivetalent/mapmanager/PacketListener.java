@@ -32,11 +32,20 @@ import de.inventivegames.packetlistener.handler.PacketHandler;
 import de.inventivegames.packetlistener.handler.PacketOptions;
 import de.inventivegames.packetlistener.handler.ReceivedPacket;
 import de.inventivegames.packetlistener.handler.SentPacket;
+import org.bukkit.Bukkit;
+import org.bukkit.util.Vector;
+import org.inventivetalent.mapmanager.event.MapInteractEvent;
 import org.inventivetalent.mapmanager.manager.MapManager;
+import org.inventivetalent.reflection.resolver.FieldResolver;
+
+import java.lang.reflect.Field;
 
 public class PacketListener {
 
 	private final PacketHandler packetHandler;
+
+	private static FieldResolver Vec3DFieldResolver           = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolveSilent("Vec3D"));
+	private static FieldResolver PacketUseEntityFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolveSilent("PacketPlayInUseEntity"));
 
 	public PacketListener(final MapManagerPlugin plugin) {
 		this.packetHandler = new PacketHandler(plugin) {
@@ -70,10 +79,46 @@ public class PacketListener {
 			}
 
 			@Override
+			@PacketOptions(forcePlayer = true)
 			public void onReceive(ReceivedPacket receivedPacket) {
+				if (receivedPacket.hasPlayer()) {
+					if ("PacketPlayInUseEntity".equals(receivedPacket.getPacketName())) {
+						int a = (int) receivedPacket.getPacketValue("a");
+						Object b = PacketUseEntityFieldResolver.resolveSilent("action", "b");
+						try {
+							b = ((Field) b).get(receivedPacket.getPacket());
+						} catch (Exception e) {
+							e.printStackTrace();
+							return;
+						}
+						Object c = receivedPacket.getPacketValue("c");
+						MapInteractEvent event = new MapInteractEvent(receivedPacket.getPlayer(), a, ((Enum) b).ordinal(), vec3DtoVector(c));
+						if (event.getItemFrame() != null) {
+							if (event.getMapWrapper() != null) {
+								Bukkit.getPluginManager().callEvent(event);
+								if (event.isCancelled()) {
+									receivedPacket.setCancelled(true);
+								}
+							}
+						}
+					}
+				}
 			}
 		};
 		PacketHandler.addHandler(this.packetHandler);
+	}
+
+	protected Vector vec3DtoVector(Object vec3D) {
+		if (vec3D == null) { return null; }
+		try {
+			double a = (double) Vec3DFieldResolver.resolve("a").get(vec3D);
+			double b = (double) Vec3DFieldResolver.resolve("b").get(vec3D);
+			double c = (double) Vec3DFieldResolver.resolve("c").get(vec3D);
+			return new Vector(a, b, c);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new Vector(0, 0, 0);
 	}
 
 	protected void disable() {
