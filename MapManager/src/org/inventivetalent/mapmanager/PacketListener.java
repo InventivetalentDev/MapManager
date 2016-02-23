@@ -33,19 +33,24 @@ import de.inventivegames.packetlistener.handler.PacketOptions;
 import de.inventivegames.packetlistener.handler.ReceivedPacket;
 import de.inventivegames.packetlistener.handler.SentPacket;
 import org.bukkit.Bukkit;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
+import org.inventivetalent.mapmanager.event.CreativeInventoryMapUpdateEvent;
 import org.inventivetalent.mapmanager.event.MapInteractEvent;
 import org.inventivetalent.mapmanager.manager.MapManager;
 import org.inventivetalent.reflection.resolver.FieldResolver;
-
-import java.lang.reflect.Field;
+import org.inventivetalent.reflection.resolver.MethodResolver;
+import org.inventivetalent.reflection.resolver.ResolverQuery;
 
 public class PacketListener {
 
 	private final PacketHandler packetHandler;
 
-	private static FieldResolver Vec3DFieldResolver           = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolveSilent("Vec3D"));
-	private static FieldResolver PacketUseEntityFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolveSilent("PacketPlayInUseEntity"));
+	private static FieldResolver Vec3DFieldResolver              = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolveSilent("Vec3D"));
+	private static FieldResolver PacketUseEntityFieldResolver    = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolveSilent("PacketPlayInUseEntity"));
+	private static FieldResolver PacketCreativeSlotFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolveSilent("PacketPlayInSetCreativeSlot"));
+
+	private static MethodResolver CraftItemStackMethodResolver = new MethodResolver(MapManagerPlugin.obcClassResolver.resolveSilent("inventory.CraftItemStack"));
 
 	public PacketListener(final MapManagerPlugin plugin) {
 		this.packetHandler = new PacketHandler(plugin) {
@@ -83,29 +88,44 @@ public class PacketListener {
 			public void onReceive(ReceivedPacket receivedPacket) {
 				if (receivedPacket.hasPlayer()) {
 					if ("PacketPlayInUseEntity".equals(receivedPacket.getPacketName())) {
-						int a = (int) receivedPacket.getPacketValue("a");
-						Object b = PacketUseEntityFieldResolver.resolveSilent("action", "b");
 						try {
-							b = ((Field) b).get(receivedPacket.getPacket());
+							int a = (int) receivedPacket.getPacketValue("a");
+							Object b = PacketUseEntityFieldResolver.resolveSilent("action", "b").get(receivedPacket.getPacket());
+							Object c = receivedPacket.getPacketValue("c");
+
+							MapInteractEvent event = new MapInteractEvent(receivedPacket.getPlayer(), a, ((Enum) b).ordinal(), vec3DtoVector(c));
+							if (event.getItemFrame() != null) {
+								if (event.getMapWrapper() != null) {
+									Bukkit.getPluginManager().callEvent(event);
+									if (event.isCancelled()) {
+										receivedPacket.setCancelled(true);
+									}
+								}
+							}
 						} catch (Exception e) {
 							e.printStackTrace();
-							return;
 						}
-						Object c = receivedPacket.getPacketValue("c");
-						MapInteractEvent event = new MapInteractEvent(receivedPacket.getPlayer(), a, ((Enum) b).ordinal(), vec3DtoVector(c));
-						if (event.getItemFrame() != null) {
+					}
+					if ("PacketPlayInSetCreativeSlot".equals(receivedPacket.getPacketName())) {
+						try {
+							int a = (int) PacketCreativeSlotFieldResolver.resolveSilent("slot", "a").get(receivedPacket.getPacket());
+							Object b = receivedPacket.getPacketValue("b");
+							ItemStack itemStack =b==null?null: (ItemStack) CraftItemStackMethodResolver.resolve(new ResolverQuery("asBukkitCopy", MapManagerPlugin.nmsClassResolver.resolve("ItemStack"))).invoke(null, b);
+
+							CreativeInventoryMapUpdateEvent event = new CreativeInventoryMapUpdateEvent(receivedPacket.getPlayer(), a, itemStack);
 							if (event.getMapWrapper() != null) {
 								Bukkit.getPluginManager().callEvent(event);
 								if (event.isCancelled()) {
 									receivedPacket.setCancelled(true);
 								}
 							}
+						} catch (Exception e) {
+							e.printStackTrace();
 						}
 					}
 				}
 			}
-		};
-		PacketHandler.addHandler(this.packetHandler);
+		}; PacketHandler.addHandler(this.packetHandler);
 	}
 
 	protected Vector vec3DtoVector(Object vec3D) {
