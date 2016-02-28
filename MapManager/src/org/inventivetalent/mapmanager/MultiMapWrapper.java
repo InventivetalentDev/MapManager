@@ -210,13 +210,13 @@ class MultiMapWrapper extends DefaultMapManager implements MapWrapper {
 		}
 	};
 
-	public MultiMapWrapper(BufferedImage image, int columns, int rows) {
-		this(splitImage(image, rows, columns));
+	public MultiMapWrapper(BufferedImage image, int rows, int columns) {
+		this(splitImage(image, columns, rows));
 		this.content = new ArrayImage(image);
 	}
 
-	public MultiMapWrapper(ArrayImage image, int columns, int rows) {
-		this(splitImage(image.toBuffered(), rows, columns));
+	public MultiMapWrapper(ArrayImage image, int rows, int columns) {
+		this(splitImage(image.toBuffered(), columns, rows));
 		this.content = image;
 	}
 
@@ -276,13 +276,16 @@ class MultiMapWrapper extends DefaultMapManager implements MapWrapper {
 		}
 	}
 
-	static ArrayImage[][] splitImage(final BufferedImage image, final int rows, final int columns) {
-		int chunkWidth = image.getWidth() / rows; // determines the chunk width and height
-		int chunkHeight = image.getHeight() / columns;
+	/**
+	 * Modified Method from http://kalanir.blogspot.de/2010/02/how-to-split-image-into-chunks-java.html
+	 */
+	static ArrayImage[][] splitImage(final BufferedImage image, final int columns, final int rows) {
+		int chunkWidth = image.getWidth() / columns; // determines the chunk width and height
+		int chunkHeight = image.getHeight() / rows;
 
-		ArrayImage[][] images = new ArrayImage[columns][rows];
-		for (int x = 0; x < columns; x++) {
-			for (int y = 0; y < rows; y++) {
+		ArrayImage[][] images = new ArrayImage[rows][columns];
+		for (int x = 0; x < rows; x++) {
+			for (int y = 0; y < columns; y++) {
 				// Initialize the image array with image chunks
 				BufferedImage raw = new BufferedImage(chunkWidth, chunkHeight, image.getType());
 
