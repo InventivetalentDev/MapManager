@@ -43,6 +43,7 @@ import org.inventivetalent.reflection.resolver.MethodResolver;
 import org.inventivetalent.reflection.resolver.ResolverQuery;
 import org.inventivetalent.reflection.resolver.minecraft.NMSClassResolver;
 import org.inventivetalent.reflection.resolver.minecraft.OBCClassResolver;
+import org.mcstats.MetricsLite;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -107,6 +108,14 @@ public class MapManagerPlugin extends JavaPlugin {
 				getMapManager().registerOccupiedID(s);
 			}
 			getLogger().fine("These IDs will not be used: " + occupied);
+		}
+
+		try {
+			MetricsLite metrics = new MetricsLite(this);
+			if (metrics.start()) {
+				getLogger().info("Metrics started");
+			}
+		} catch (Exception e) {
 		}
 	}
 
