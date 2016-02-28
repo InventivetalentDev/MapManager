@@ -85,6 +85,7 @@ public class MapInteractEvent extends Event implements Cancellable {
 
 	/**
 	 * Only returns if {@link #getActionID()} == INTERACT_AT
+	 *
 	 * @return the {@link Vector}-Position where the player clicked, or <code>null</code> if the action is not INTERACT_AT
 	 */
 	public Vector getVector() {
@@ -104,14 +105,12 @@ public class MapInteractEvent extends Event implements Cancellable {
 	 */
 	public MapWrapper getMapWrapper() {
 		if (this.mapWrapper != null) { return this.mapWrapper; }
-		System.out.println("getMapWrapper");
 		ItemFrame itemFrame = getItemFrame();
 		if (itemFrame != null) {
 			if (itemFrame.hasMetadata("MAP_WRAPPER_REF")) {
 				List<MetadataValue> metadataValues = itemFrame.getMetadata("MAP_WRAPPER_REF");
 				for (MetadataValue value : metadataValues) {
 					MapWrapper wrapper = (MapWrapper) value.value();
-					System.out.println(wrapper);
 					if (wrapper != null) {
 						return this.mapWrapper = wrapper;
 					}
