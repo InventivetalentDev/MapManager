@@ -163,7 +163,7 @@ public interface MapManager {
 		public static boolean CHECK_DUPLICATES = true;
 
 		/**
-		 * Cached the packet data in the image object (less CPU intensive for a lot of players, but probably a bit more memory intensive depending on the image size)
+		 * Cache the packet data in the image object (less CPU intensive for a lot of players, but probably a bit more memory intensive depending on the image size)
 		 */
 		public static boolean CACHE_DATA = true;
 
