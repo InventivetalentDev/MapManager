@@ -215,7 +215,7 @@ class DefaultMapWrapper implements MapWrapper {
 			ItemFrame itemFrame = MapManagerPlugin.getItemFrameById(player.getWorld(), entityId);
 			if (itemFrame != null) {
 				//Add a reference to this MapWrapper (can be used in MapWrapper#getWrapperForId)
-				itemFrame.removeMetadata("MAP_WRAPPER_REF",MapManagerPlugin.instance);
+				itemFrame.removeMetadata("MAP_WRAPPER_REF", MapManagerPlugin.instance);
 				itemFrame.setMetadata("MAP_WRAPPER_REF", new FixedMetadataValue(MapManagerPlugin.instance, DefaultMapWrapper.this));
 			}
 
@@ -235,6 +235,11 @@ class DefaultMapWrapper implements MapWrapper {
 		@Override
 		public void clearFrame(Player player, int entityId) {
 			sendItemFramePacket(player, entityId, null);
+			ItemFrame itemFrame = MapManagerPlugin.getItemFrameById(player.getWorld(), entityId);
+			if (itemFrame != null) {
+				//Remove the reference
+				itemFrame.removeMetadata("MAP_WRAPPER_REF", MapManagerPlugin.instance);
+			}
 		}
 
 		@Override
