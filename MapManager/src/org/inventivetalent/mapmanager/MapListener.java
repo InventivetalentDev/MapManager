@@ -35,7 +35,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.MapInitializeEvent;
 import org.inventivetalent.mapmanager.manager.MapManager;
 
-public class MapListener implements Listener {
+class MapListener implements Listener {
 
 	private MapManagerPlugin plugin;
 
@@ -45,7 +45,6 @@ public class MapListener implements Listener {
 
 	@EventHandler
 	public void onJoin(PlayerJoinEvent event) {
-
 	}
 
 	@EventHandler

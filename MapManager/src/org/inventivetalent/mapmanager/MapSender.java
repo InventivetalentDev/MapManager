@@ -45,7 +45,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-public class MapSender {
+class MapSender {
 
 	private static final List<QueuedMap> sendQueue = new ArrayList<>();
 	private static       int             senderID  = -1;

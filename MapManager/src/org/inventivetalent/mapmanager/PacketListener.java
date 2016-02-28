@@ -42,7 +42,7 @@ import org.inventivetalent.reflection.resolver.FieldResolver;
 import org.inventivetalent.reflection.resolver.MethodResolver;
 import org.inventivetalent.reflection.resolver.ResolverQuery;
 
-public class PacketListener {
+class PacketListener {
 
 	private final PacketHandler packetHandler;
 
@@ -110,7 +110,7 @@ public class PacketListener {
 						try {
 							int a = (int) PacketCreativeSlotFieldResolver.resolveSilent("slot", "a").get(receivedPacket.getPacket());
 							Object b = receivedPacket.getPacketValue("b");
-							ItemStack itemStack =b==null?null: (ItemStack) CraftItemStackMethodResolver.resolve(new ResolverQuery("asBukkitCopy", MapManagerPlugin.nmsClassResolver.resolve("ItemStack"))).invoke(null, b);
+							ItemStack itemStack = b == null ? null : (ItemStack) CraftItemStackMethodResolver.resolve(new ResolverQuery("asBukkitCopy", MapManagerPlugin.nmsClassResolver.resolve("ItemStack"))).invoke(null, b);
 
 							CreativeInventoryMapUpdateEvent event = new CreativeInventoryMapUpdateEvent(receivedPacket.getPlayer(), a, itemStack);
 							if (event.getMapWrapper() != null) {
@@ -125,7 +125,8 @@ public class PacketListener {
 					}
 				}
 			}
-		}; PacketHandler.addHandler(this.packetHandler);
+		};
+		PacketHandler.addHandler(this.packetHandler);
 	}
 
 	protected Vector vec3DtoVector(Object vec3D) {
