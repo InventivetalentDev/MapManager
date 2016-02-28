@@ -40,6 +40,9 @@ import org.inventivetalent.mapmanager.wrapper.MapWrapper;
 
 import java.util.List;
 
+/**
+ * Event called when a player interacts with a {@link org.inventivetalent.mapmanager.manager.MapManager} map in an {@link ItemFrame}
+ */
 public class MapInteractEvent extends Event implements Cancellable {
 
 	private Player player;
@@ -59,10 +62,16 @@ public class MapInteractEvent extends Event implements Cancellable {
 		this.vector = vector;
 	}
 
+	/**
+	 * @return the {@link Player} that interacted
+	 */
 	public Player getPlayer() {
 		return player;
 	}
 
+	/**
+	 * @return the Entity-ID of the clicked ItemFrame
+	 */
 	public int getEntityID() {
 		return entityID;
 	}
@@ -74,20 +83,25 @@ public class MapInteractEvent extends Event implements Cancellable {
 		return action;
 	}
 
+	/**
+	 * Only returns if {@link #getActionID()} == INTERACT_AT
+	 * @return the {@link Vector}-Position where the player clicked, or <code>null</code> if the action is not INTERACT_AT
+	 */
 	public Vector getVector() {
 		return vector;
 	}
 
+	/**
+	 * @return the clicked {@link ItemFrame}
+	 */
 	public ItemFrame getItemFrame() {
 		if (this.itemFrame != null) { return this.itemFrame; }
-		//		for (ItemFrame itemFrame : getPlayer().getWorld().getEntitiesByClass(ItemFrame.class)) {
-		//			if (itemFrame.getEntityId() == getEntityID()) {
-		//				return this.itemFrame = itemFrame;
-		//			}
-		//		}
 		return this.itemFrame = MapManagerPlugin.getItemFrameById(getPlayer().getWorld(), getEntityID());
 	}
 
+	/**
+	 * @return the {@link MapWrapper} of the clicked frame
+	 */
 	public MapWrapper getMapWrapper() {
 		if (this.mapWrapper != null) { return this.mapWrapper; }
 		System.out.println("getMapWrapper");
