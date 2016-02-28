@@ -49,6 +49,12 @@ import java.util.Set;
 
 import static org.inventivetalent.mapmanager.manager.MapManager.Options.*;
 
+/**
+ * MapManager-Plugin
+ * <p>
+ * use <code>Bukkit.getPluginManager().getPlugin("MapManager")</code> to access the plugin instance
+ * or <code>Bukkit.getPluginManager().getPlugin("MapManager").getMapManager()</code> to access the {@link MapManager} instance
+ */
 public class MapManagerPlugin extends JavaPlugin {
 
 	protected static MapManagerPlugin instance;

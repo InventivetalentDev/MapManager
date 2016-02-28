@@ -28,6 +28,9 @@
 
 package org.inventivetalent.mapmanager;
 
+/**
+ * Exception thrown if no more map IDs are available
+ */
 public class MapLimitExceededException extends RuntimeException {
 
 	public MapLimitExceededException() {
