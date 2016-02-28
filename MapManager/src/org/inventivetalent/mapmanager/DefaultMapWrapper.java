@@ -125,11 +125,6 @@ class DefaultMapWrapper implements MapWrapper {
 				return;
 			}
 
-			if (player.getItemInHand() == null || player.getItemInHand().getType() != Material.MAP) {
-				if (!force) {//Player is not holding a map
-					return;
-				}
-			}
 			if (player.getGameMode() == GameMode.CREATIVE) {
 				//Clients in creative mode will send a 'PacketPlayInCreativeSlot' which tells the server there's a new item in the inventory and creates a new map
 				if (!force) {
@@ -180,6 +175,11 @@ class DefaultMapWrapper implements MapWrapper {
 
 		@Override
 		public void showInHand(Player player, boolean force) {
+			if (player.getItemInHand() == null || player.getItemInHand().getType() != Material.MAP) {
+				if (!force) {//Player is not holding a map
+					return;
+				}
+			}
 			showInInventory(player, player.getInventory().getHeldItemSlot(), force);
 		}
 
