@@ -97,11 +97,21 @@ public class MapManagerPlugin extends JavaPlugin {
 		this.packetListener.disable();
 	}
 
+	/**
+	 * @return The {@link MapManager} instance
+	 */
 	public MapManager getMapManager() {
 		if (mapManagerInstance == null) { throw new IllegalStateException("Manager not yet initialized"); }
 		return mapManagerInstance;
 	}
 
+	/**
+	 * Helper method to find an {@link ItemFrame} by its entity ID
+	 *
+	 * @param world    {@link World} the frame is located in
+	 * @param entityId the frame's entity ID
+	 * @return the {@link ItemFrame} or <code>null</code>
+	 */
 	public static ItemFrame getItemFrameById(World world, int entityId) {
 		try {
 			if (CraftWorldFieldResolver == null) {

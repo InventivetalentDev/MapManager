@@ -33,10 +33,18 @@ import org.inventivetalent.mapmanager.controller.MapController;
 
 public interface MapWrapper {
 
-	ArrayImage EMPTY_IMAGE = new ArrayImage(new int[128][128]);
-
+	/**
+	 * Get this {@link MapWrapper}'s {@link MapController}
+	 *
+	 * @return the {@link MapController}
+	 */
 	MapController getController();
 
+	/**
+	 * Get the content of this wrapper
+	 *
+	 * @return the {@link ArrayImage} content
+	 */
 	ArrayImage getContent();
 
 }
