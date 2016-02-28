@@ -100,7 +100,7 @@ class DefaultMapWrapper implements MapWrapper {
 			MapContentUpdateEvent event = new MapContentUpdateEvent(DefaultMapWrapper.this, content);
 			Bukkit.getPluginManager().callEvent(event);
 
-			DefaultMapWrapper.this.content = content;
+			if (event.getContent() != null) { DefaultMapWrapper.this.content = event.getContent(); }
 
 			if (event.isSendContent()) {
 				for (UUID id : viewers.keySet()) {
