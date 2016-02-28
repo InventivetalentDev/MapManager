@@ -28,7 +28,6 @@
 
 package org.inventivetalent.mapmanager.event;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -37,7 +36,6 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.util.Vector;
 import org.inventivetalent.mapmanager.MapManagerPlugin;
-import org.inventivetalent.mapmanager.manager.MapManager;
 import org.inventivetalent.mapmanager.wrapper.MapWrapper;
 
 import java.util.List;
@@ -92,13 +90,14 @@ public class MapInteractEvent extends Event implements Cancellable {
 
 	public MapWrapper getMapWrapper() {
 		if (this.mapWrapper != null) { return this.mapWrapper; }
+		System.out.println("getMapWrapper");
 		ItemFrame itemFrame = getItemFrame();
 		if (itemFrame != null) {
-			if (itemFrame.hasMetadata("MAP_WRAPPER_ID_REF")) {
-				MapManager mapManager = ((MapManagerPlugin) Bukkit.getPluginManager().getPlugin("MapManager")).getMapManager();
-				List<MetadataValue> metadataValues = itemFrame.getMetadata("MAP_WRAPPER_ID_REF");
+			if (itemFrame.hasMetadata("MAP_WRAPPER_REF")) {
+				List<MetadataValue> metadataValues = itemFrame.getMetadata("MAP_WRAPPER_REF");
 				for (MetadataValue value : metadataValues) {
-					MapWrapper wrapper = mapManager.getWrapperForId(getPlayer(), value.asShort());
+					MapWrapper wrapper = (MapWrapper) value.value();
+					System.out.println(wrapper);
 					if (wrapper != null) {
 						return this.mapWrapper = wrapper;
 					}
