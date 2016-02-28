@@ -79,6 +79,15 @@ public class MapManagerPlugin extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		if (!Bukkit.getPluginManager().isPluginEnabled("PacketListenerApi")) {
+			getLogger().severe("****************************************");
+			getLogger().severe("This plugin depends on PacketListenerApi");
+			getLogger().severe("Download it here: https://r.spiget.org/2930");
+			getLogger().severe("****************************************");
+			Bukkit.getPluginManager().disablePlugin(this);
+			return;
+		}
+
 		packetListener = new PacketListener(this);
 		Bukkit.getPluginManager().registerEvents(mapListener = new MapListener(this), this);
 
