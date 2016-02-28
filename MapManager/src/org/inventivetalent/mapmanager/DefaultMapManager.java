@@ -170,7 +170,4 @@ class DefaultMapManager implements MapManager {
 		}
 	}
 
-	@Override
-	public void updateContent(MapWrapper wrapper, ArrayImage content) {
-	}
 }

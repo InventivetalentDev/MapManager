@@ -38,6 +38,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.inventivetalent.mapmanager.controller.MapController;
+import org.inventivetalent.mapmanager.event.MapContentUpdateEvent;
 import org.inventivetalent.mapmanager.manager.MapManager;
 import org.inventivetalent.mapmanager.wrapper.MapWrapper;
 import org.inventivetalent.reflection.minecraft.Minecraft;
@@ -96,10 +97,15 @@ class DefaultMapWrapper implements MapWrapper {
 
 		@Override
 		public void update(ArrayImage content) {
+			MapContentUpdateEvent event = new MapContentUpdateEvent(DefaultMapWrapper.this, content);
+			Bukkit.getPluginManager().callEvent(event);
+
 			DefaultMapWrapper.this.content = content;
-			MapManagerPlugin.instance.getMapManager().updateContent(DefaultMapWrapper.this, content);
-			for (UUID id : viewers.keySet()) {
-				sendContent(Bukkit.getPlayer(id));
+
+			if (event.isSendContent()) {
+				for (UUID id : viewers.keySet()) {
+					sendContent(Bukkit.getPlayer(id));
+				}
 			}
 		}
 

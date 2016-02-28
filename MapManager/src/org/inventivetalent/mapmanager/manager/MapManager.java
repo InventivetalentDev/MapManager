@@ -147,9 +147,6 @@ public interface MapManager {
 	 */
 	void clearAllMapsFor(OfflinePlayer player);
 
-	//TODO: remove unused method
-	void updateContent(MapWrapper wrapper, ArrayImage content);
-
 	/**
 	 * MapManger Options
 	 */
