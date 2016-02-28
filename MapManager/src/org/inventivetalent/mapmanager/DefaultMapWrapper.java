@@ -234,7 +234,7 @@ class DefaultMapWrapper implements MapWrapper {
 
 		@Override
 		public void clearFrame(Player player, int entityId) {
-			showInFrame(player, entityId, null);
+			sendItemFramePacket(player, entityId, null);
 		}
 
 		@Override
