@@ -4,3 +4,7 @@ author: inventivetalent
 version: ${project.version}
 
 softdepend: [PacketListenerApi]
+
+commands:
+  mapmanager:
+    aliases: [mm, mmanager, mapman, mapm]

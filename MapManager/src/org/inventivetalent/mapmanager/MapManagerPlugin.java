@@ -30,6 +30,8 @@ package org.inventivetalent.mapmanager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ItemFrame;
@@ -44,6 +46,8 @@ import org.inventivetalent.reflection.resolver.minecraft.OBCClassResolver;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import static org.inventivetalent.mapmanager.manager.MapManager.Options.*;
 
 public class MapManagerPlugin extends JavaPlugin {
 
@@ -73,6 +77,14 @@ public class MapManagerPlugin extends JavaPlugin {
 
 		mapManagerInstance = new DefaultMapManager();
 
+		saveDefaultConfig();
+		reload();
+
+		PluginCommand command = getCommand("mapmanager");
+		CommandHandler commandHandler = new CommandHandler();
+		command.setExecutor(commandHandler);
+		command.setTabCompleter(commandHandler);
+
 		if (MapManager.Options.ALLOW_VANILLA) {
 			getLogger().info("Vanilla Maps are allowed. Trying to discover occupied Map IDs...");
 
@@ -95,6 +107,17 @@ public class MapManagerPlugin extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		this.packetListener.disable();
+	}
+
+	void reload() {
+		FileConfiguration config = getConfig();
+
+		ALLOW_VANILLA = config.getBoolean("allowVanilla", ALLOW_VANILLA);
+		CHECK_DUPLICATES = config.getBoolean("checkDuplicates", CHECK_DUPLICATES);
+		CACHE_DATA = getConfig().getBoolean("cacheData", CACHE_DATA);
+		Sender.DELAY = getConfig().getInt("sender.delay", Sender.DELAY);
+		Sender.AMOUNT = getConfig().getInt("sender.amount", Sender.AMOUNT);
+		Sender.ALLOW_QUEUE_BYPASS = getConfig().getBoolean("sender.allowQueueBypass", Sender.ALLOW_QUEUE_BYPASS);
 	}
 
 	/**
