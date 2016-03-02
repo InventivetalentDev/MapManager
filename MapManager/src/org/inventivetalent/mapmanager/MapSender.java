@@ -117,7 +117,7 @@ class MapSender {
 			@Override
 			public void run() {
 				final Object packetData = image.generatePacketData();
-				if (Minecraft.getVersion().contains("1_7")) {
+				if (Minecraft.VERSION.olderThan(Minecraft.Version.v1_8_R1)) {
 					byte[][] dataArray = (byte[][]) packetData;
 					for (int x = 0; x < 128; x++) {
 						//						byte[] bytes = new byte[131];
@@ -128,7 +128,7 @@ class MapSender {
 						//							bytes[y + 3] = getColor(image, x, y);
 						//						}
 
-						Object packet = consructPacket(id, bytes);
+						Object packet = constructPacket(id, bytes);
 						try {
 							sendPacket(packet, receiver);
 						} catch (Exception e) {
@@ -136,7 +136,7 @@ class MapSender {
 						}
 					}
 				}
-				if (Minecraft.getVersion().contains("1_8")) {
+				if (Minecraft.VERSION.newerThan(Minecraft.Version.v1_8_R1)) {//1.8 & 1.9
 					//					byte[] data = new byte[128 * 128];
 					//					Arrays.fill(data, (byte) 0);
 					//					for (int x = 0; x < 128; x++) {
@@ -145,16 +145,11 @@ class MapSender {
 					//						}
 					//					}
 					byte[] data = (byte[]) packetData;
-
+					Object packet = constructPacket(id, data);
 					try {
-						Object packet = constructPacket_1_8(id, data);
-						try {
-							sendPacket(packet, receiver);
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | NoSuchFieldException e1) {
-						e1.printStackTrace();
+						sendPacket(packet, receiver);
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
 				}
 			}
@@ -167,19 +162,25 @@ class MapSender {
 		nmsPacketPlayOutMap = MapManagerPlugin.nmsClassResolver.resolveSilent("PacketPlayOutMap");
 	}
 
-	private static Object consructPacket(int id, byte[] bytes) {
+	private static Object constructPacket(int id, byte[] bytes) {
 		Object packet = null;
 
 		if (Minecraft.getVersion().contains("1_7")) {
 			try {
 				packet = constructPacket_1_7(id, bytes);
-			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+			} catch (ReflectiveOperationException e) {
 				e.printStackTrace();
 			}
 		} else if (Minecraft.getVersion().contains("1_8")) {
 			try {
 				packet = constructPacket_1_8(id, bytes);
-			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | NoSuchFieldException e) {
+			} catch (ReflectiveOperationException e) {
+				e.printStackTrace();
+			}
+		} else if (Minecraft.getVersion().contains("1_9")) {
+			try {
+				packet = constructPacket_1_9(id, bytes);
+			} catch (ReflectiveOperationException e) {
 				e.printStackTrace();
 			}
 		}
@@ -213,6 +214,22 @@ class MapSender {
 						(byte) 0,// Scale
 						new ArrayList<>(),// Icons
 						bytes,// Data
+						0,// X-position
+						0,// Y-position
+						128,// X-Size (or 2nd X-position)
+						128// Y-Size (or 2nd Y-position)
+				);
+		return packet;
+	}
+
+	private static Object constructPacket_1_9(int id, byte[] bytes) throws ReflectiveOperationException {
+		Object packet = nmsPacketPlayOutMap//
+				.getConstructor(int.class, byte.class, boolean.class, Collection.class, byte[].class, int.class, int.class, int.class, int.class)//
+				.newInstance(id,//ID
+						(byte) 0,//Scale
+						false,//????
+						new ArrayList<>(),//Icons
+						bytes,//Data
 						0,// X-position
 						0,// Y-position
 						128,// X-Size (or 2nd X-position)

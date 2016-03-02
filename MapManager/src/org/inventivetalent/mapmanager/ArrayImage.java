@@ -110,7 +110,7 @@ public class ArrayImage {
 			}
 
 			dataObject = dataArray;
-		} else if (Minecraft.getVersion().contains("1_8")) {
+		} else if (Minecraft.getVersion().contains("1_8") || Minecraft.getVersion().contains("1_9")) {
 			byte[] data = new byte[128 * 128];
 			Arrays.fill(data, (byte) 0);
 			for (int x = 0; x < 128; x++) {

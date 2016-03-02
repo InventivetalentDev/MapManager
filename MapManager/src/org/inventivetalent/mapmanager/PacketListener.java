@@ -132,9 +132,9 @@ class PacketListener {
 	protected Vector vec3DtoVector(Object vec3D) {
 		if (vec3D == null) { return null; }
 		try {
-			double a = (double) Vec3DFieldResolver.resolve("a").get(vec3D);
-			double b = (double) Vec3DFieldResolver.resolve("b").get(vec3D);
-			double c = (double) Vec3DFieldResolver.resolve("c").get(vec3D);
+			double a = (double) Vec3DFieldResolver.resolve("x"/*1.9*/, "a").get(vec3D);
+			double b = (double) Vec3DFieldResolver.resolve("y"/*1.9*/, "b").get(vec3D);
+			double c = (double) Vec3DFieldResolver.resolve("z"/*1.9*/, "c").get(vec3D);
 			return new Vector(a, b, c);
 		} catch (Exception e) {
 			e.printStackTrace();

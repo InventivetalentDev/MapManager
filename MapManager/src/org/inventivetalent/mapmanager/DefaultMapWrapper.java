@@ -61,6 +61,12 @@ class DefaultMapWrapper implements MapWrapper {
 	private static ConstructorResolver PacketPlayOutSlotConstructorResolver;
 	private static MethodResolver      CraftItemStackMethodResolver;
 
+	//1.9
+	private static FieldResolver       DataWatcherRegistryFieldResolver;
+	private static ConstructorResolver DataWatcherItemConstructorResolver;
+	private static ConstructorResolver DataWatcherObjectConstructorResolver;
+	private static FieldResolver       EntityItemFrameFieldResolver;
+
 	protected MapController controller = new MapController() {
 		@Override
 		public void addViewer(Player player) {
@@ -282,10 +288,26 @@ class DefaultMapWrapper implements MapWrapper {
 				PacketEntityMetadataFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("PacketPlayOutEntityMetadata"));
 			}
 			if (WatchableObjectConstructorResolver == null) {
-				WatchableObjectConstructorResolver = new ConstructorResolver(MapManagerPlugin.nmsClassResolver.resolve("WatchableObject", "DataWatcher$WatchableObject"));
+				WatchableObjectConstructorResolver = new ConstructorResolver(MapManagerPlugin.nmsClassResolver.resolve("WatchableObject", "DataWatcher$WatchableObject", "DataWatcher$Item"/*1.9*/));
 			}
 			if (CraftItemStackMethodResolver == null) {
 				CraftItemStackMethodResolver = new MethodResolver(MapManagerPlugin.obcClassResolver.resolve("inventory.CraftItemStack"));
+			}
+
+			//1.9
+			if (Minecraft.VERSION.newerThan(Minecraft.Version.v1_9_R1)) {
+				if (DataWatcherRegistryFieldResolver == null) {
+					DataWatcherRegistryFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("DataWatcherRegistry"));
+				}
+				if (DataWatcherItemConstructorResolver == null) {
+					DataWatcherItemConstructorResolver = new ConstructorResolver(MapManagerPlugin.nmsClassResolver.resolve("DataWatcher$Item"));
+				}
+				if (DataWatcherObjectConstructorResolver == null) {
+					DataWatcherObjectConstructorResolver = new ConstructorResolver(MapManagerPlugin.nmsClassResolver.resolve("DataWatcherObject"));
+				}
+				if (EntityItemFrameFieldResolver == null) {
+					EntityItemFrameFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("EntityItemFrame"));
+				}
 			}
 
 			Object meta = MapManagerPlugin.nmsClassResolver.resolve("PacketPlayOutEntityMetadata").newInstance();
@@ -297,22 +319,30 @@ class DefaultMapWrapper implements MapWrapper {
 
 			List list = new ArrayList();
 
-			// 0 = Byte
-			// 1 = Short
-			// 2 = Int
-			// 3 = Float
-			// 4 = String
-			// 5 = ItemStack
-			// 6 = BlockPosition / ChunkCoordinates
-			// 7 = Vector3f / Vector(?)
-			list.add(WatchableObjectConstructorResolver.resolve(new Class[] {
-					int.class,
-					int.class,
-					Object.class }).newInstance(5, 8, craftItemStack));
-			list.add(WatchableObjectConstructorResolver.resolve(new Class[] {
-					int.class,
-					int.class,
-					Object.class }).newInstance(5, 2, craftItemStack));
+			//<= 1.8
+			if (Minecraft.VERSION.olderThan(Minecraft.Version.v1_9_R1)) {
+				// 0 = Byte
+				// 1 = Short
+				// 2 = Int
+				// 3 = Float
+				// 4 = String
+				// 5 = ItemStack
+				// 6 = BlockPosition / ChunkCoordinates
+				// 7 = Vector3f / Vector(?)
+				list.add(WatchableObjectConstructorResolver.resolve(new Class[] {
+						int.class,
+						int.class,
+						Object.class }).newInstance(5, 8, craftItemStack));
+				list.add(WatchableObjectConstructorResolver.resolve(new Class[] {
+						int.class,
+						int.class,
+						Object.class }).newInstance(5, 2, craftItemStack));
+			} else {
+				Object dataWatcherObject = EntityItemFrameFieldResolver.resolve("c").get(null);
+				Object dataWatcherItem = DataWatcherItemConstructorResolver.resolveFirstConstructor().newInstance(dataWatcherObject, com.google.common.base.Optional.fromNullable(craftItemStack));
+
+				list.add(dataWatcherItem);
+			}
 
 			PacketEntityMetadataFieldResolver.resolve("b").set(meta, list);
 
