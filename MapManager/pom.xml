@@ -116,7 +116,7 @@
         <dependency>
             <groupId>org.mcstats.bukkit</groupId>
             <artifactId>metrics-lite</artifactId>
-            <version>R7</version>
+            <version>R8-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.inventivetalent.packetlistener</groupId>
