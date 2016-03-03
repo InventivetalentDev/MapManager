@@ -4,7 +4,7 @@
   <groupId>org.inventivetalent</groupId>
   <artifactId>mapmanager</artifactId>
   <name>MapManager</name>
-  <version>1.1.0</version>
+  <version>1.1.1</version>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <resources>
@@ -80,6 +80,10 @@
     <repository>
       <id>techcable-repo</id>
       <url>http://repo.techcable.net/content/groups/public/</url>
+    </repository>
+    <repository>
+      <id>mcstats-repo</id>
+      <url>http://repo.mcstats.org/content/groups/public/</url>
     </repository>
   </repositories>
   <dependencies>
