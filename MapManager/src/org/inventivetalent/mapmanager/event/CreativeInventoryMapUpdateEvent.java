@@ -29,6 +29,7 @@
 package org.inventivetalent.mapmanager.event;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -87,6 +88,7 @@ public class CreativeInventoryMapUpdateEvent extends Event implements Cancellabl
 	public MapWrapper getMapWrapper() {
 		if (this.mapWrapper != null) { return this.mapWrapper; }
 		if (getItemStack() == null) { return null; }
+		if (getItemStack().getType() != Material.MAP) { return null; }
 		MapManager mapManager = ((MapManagerPlugin) Bukkit.getPluginManager().getPlugin("MapManager")).getMapManager();
 		return this.mapWrapper = mapManager.getWrapperForId(getPlayer(), getItemStack().getDurability());
 	}
