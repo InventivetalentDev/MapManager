@@ -38,6 +38,7 @@ import org.bukkit.util.Vector;
 import org.inventivetalent.mapmanager.event.CreativeInventoryMapUpdateEvent;
 import org.inventivetalent.mapmanager.event.MapInteractEvent;
 import org.inventivetalent.mapmanager.manager.MapManager;
+import org.inventivetalent.reflection.minecraft.Minecraft;
 import org.inventivetalent.reflection.resolver.FieldResolver;
 import org.inventivetalent.reflection.resolver.MethodResolver;
 import org.inventivetalent.reflection.resolver.ResolverQuery;
@@ -91,7 +92,7 @@ class PacketListener {
 						try {
 							int a = (int) receivedPacket.getPacketValue("a");
 							Object b = PacketUseEntityFieldResolver.resolveSilent("action", "b").get(receivedPacket.getPacket());
-							Object c = receivedPacket.getPacketValue("c");
+							Object c = Minecraft.VERSION.newerThan(Minecraft.Version.v1_8_R1) ? receivedPacket.getPacketValue("c") : null;
 
 							MapInteractEvent event = new MapInteractEvent(receivedPacket.getPlayer(), a, ((Enum) b).ordinal(), vec3DtoVector(c));
 							if (event.getItemFrame() != null) {
