@@ -38,6 +38,7 @@ import org.bukkit.entity.ItemFrame;
 import org.bukkit.map.MapView;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.inventivetalent.mapmanager.manager.MapManager;
+import org.inventivetalent.reflection.minecraft.Minecraft;
 import org.inventivetalent.reflection.resolver.FieldResolver;
 import org.inventivetalent.reflection.resolver.MethodResolver;
 import org.inventivetalent.reflection.resolver.ResolverQuery;
@@ -70,6 +71,7 @@ public class MapManagerPlugin extends JavaPlugin {
 
 	private static FieldResolver  CraftWorldFieldResolver;
 	private static FieldResolver  WorldFieldResolver;
+	private static FieldResolver  WorldServerFieldResolver;
 	private static MethodResolver IntHashMapMethodResolver;
 	private static MethodResolver EntityMethodResolver;
 
@@ -167,6 +169,9 @@ public class MapManagerPlugin extends JavaPlugin {
 			if (WorldFieldResolver == null) {
 				WorldFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("World"));
 			}
+			if (WorldServerFieldResolver == null) {
+				WorldServerFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("WorldServer"));
+			}
 			if (IntHashMapMethodResolver == null) {
 				IntHashMapMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("IntHashMap"));
 			}
@@ -174,7 +179,8 @@ public class MapManagerPlugin extends JavaPlugin {
 				EntityMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("Entity"));
 			}
 
-			Object entitiesById = WorldFieldResolver.resolve("entitiesById").get(CraftWorldFieldResolver.resolve("world").get(world));
+			Object nmsWorld = CraftWorldFieldResolver.resolve("world").get(world);
+			Object entitiesById = Minecraft.VERSION.newerThan(Minecraft.Version.v1_8_R1) ? WorldFieldResolver.resolve("entitiesById").get(nmsWorld) : WorldServerFieldResolver.resolve("entitiesById").get(nmsWorld);
 			Object entity = IntHashMapMethodResolver.resolve(new ResolverQuery("get", int.class)).invoke(entitiesById, entityId);
 			if (entity == null) { return null; }
 			Entity bukkitEntity = (Entity) EntityMethodResolver.resolve("getBukkitEntity").invoke(entity);
