@@ -28,16 +28,16 @@
 
 package org.inventivetalent.mapmanager;
 
-import de.inventivegames.packetlistener.handler.PacketHandler;
-import de.inventivegames.packetlistener.handler.PacketOptions;
-import de.inventivegames.packetlistener.handler.ReceivedPacket;
-import de.inventivegames.packetlistener.handler.SentPacket;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 import org.inventivetalent.mapmanager.event.CreativeInventoryMapUpdateEvent;
 import org.inventivetalent.mapmanager.event.MapInteractEvent;
 import org.inventivetalent.mapmanager.manager.MapManager;
+import org.inventivetalent.packetlistener.handler.PacketHandler;
+import org.inventivetalent.packetlistener.handler.PacketOptions;
+import org.inventivetalent.packetlistener.handler.ReceivedPacket;
+import org.inventivetalent.packetlistener.handler.SentPacket;
 import org.inventivetalent.reflection.minecraft.Minecraft;
 import org.inventivetalent.reflection.resolver.FieldResolver;
 import org.inventivetalent.reflection.resolver.MethodResolver;
@@ -60,11 +60,11 @@ class PacketListener {
 			public void onSend(SentPacket sentPacket) {
 				if (sentPacket.hasPlayer()) {
 					if ("PacketPlayOutMap".equals(sentPacket.getPacketName())) {
-						int id = ((Integer) sentPacket.getPacketValue("a")).intValue();
+						int id = (int) sentPacket.getPacketValue("a");
 
 						if (id < 0) {
 							//It's one of our maps, invert the id and let it through
-							Integer newId = Integer.valueOf(-id);
+							int newId = -id;
 							sentPacket.setPacketValue("a", newId);
 						} else {
 							if (!MapManager.Options.ALLOW_VANILLA) {//Vanilla maps not allowed, so we can just cancel all maps
