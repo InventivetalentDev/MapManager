@@ -46,10 +46,19 @@ public class ArrayImage {
 	private int   width;
 	private int   height;
 
+	protected int minX = 0;
+	protected int minY = 0;
+	protected int maxX = 128;
+	protected int maxY = 128;
+
 	//Only used if the cache is enabled
 	private Object packetData;
 
 	private int imageType = BufferedImage.TYPE_4BYTE_ABGR;
+
+	protected ArrayImage(int[] array) {
+		this.array = array;
+	}
 
 	/**
 	 * Convert a {@link BufferedImage} to an ArrayImage
@@ -86,6 +95,33 @@ public class ArrayImage {
 				array[y * data.length + x] = data[x][y];
 			}
 		}
+	}
+
+	public ArrayImage updateSection(int xOffset, int yOffset, BufferedImage image) {
+		return updateSection(xOffset, yOffset, ImageToArray(image));
+	}
+
+	public ArrayImage updateSection(int xOffset, int yOffset, int[][] intArray) {
+		int[] arrayClone = new int[this.array.length];
+		System.arraycopy(this.array, 0, arrayClone, 0, this.array.length);
+
+		for (int x = 0; x < intArray.length; x++) {
+			for (int y = 0; y < intArray[x].length; y++) {
+				arrayClone[(y + yOffset) * intArray.length + (x + xOffset)] = intArray[x][y];
+			}
+		}
+
+		ArrayImage newImage = new ArrayImage(arrayClone);
+		newImage.width = this.width;
+		newImage.height = this.height;
+
+		// Section
+		newImage.minX = xOffset;
+		newImage.minY = yOffset;
+		newImage.maxX = intArray.length;
+		newImage.maxY = intArray[0].length;
+
+		return newImage;
 	}
 
 	/**

@@ -116,9 +116,8 @@ class MapSender {
 		Bukkit.getScheduler().runTaskAsynchronously(MapManagerPlugin.instance, new Runnable() {
 			@Override
 			public void run() {
-				final Object packetData = image.generatePacketData();
 				if (Minecraft.VERSION.olderThan(Minecraft.Version.v1_8_R1)) {
-					byte[][] dataArray = (byte[][]) packetData;
+					byte[][] dataArray = (byte[][]) image.generatePacketData();
 					for (int x = 0; x < 128; x++) {
 						//						byte[] bytes = new byte[131];
 						byte[] bytes = dataArray[x];
@@ -128,8 +127,8 @@ class MapSender {
 						//							bytes[y + 3] = getColor(image, x, y);
 						//						}
 
-						Object packet = constructPacket(id, bytes);
 						try {
+							Object packet = constructPacket_1_7(id, bytes);
 							sendPacket(packet, receiver);
 						} catch (Exception e) {
 							e.printStackTrace();
@@ -144,9 +143,8 @@ class MapSender {
 					//							data[y * 128 + x] = getColor(image, x, y);
 					//						}
 					//					}
-					byte[] data = (byte[]) packetData;
-					Object packet = constructPacket(id, data);
 					try {
+						Object packet = constructPacket(id, image);
 						sendPacket(packet, receiver);
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -162,24 +160,25 @@ class MapSender {
 		nmsPacketPlayOutMap = MapManagerPlugin.nmsClassResolver.resolveSilent("PacketPlayOutMap");
 	}
 
-	private static Object constructPacket(int id, byte[] bytes) {
+	private static Object constructPacket(int id, ArrayImage data) {
 		Object packet = null;
 
-		if (Minecraft.getVersion().contains("1_7")) {
+		/*if (Minecraft.getVersion().contains("1_7")) {
 			try {
-				packet = constructPacket_1_7(id, bytes);
+				packet = constructPacket_1_7(id, data);
 			} catch (ReflectiveOperationException e) {
 				e.printStackTrace();
 			}
-		} else if (Minecraft.getVersion().contains("1_8")) {
+		} else*/
+		if (Minecraft.getVersion().contains("1_8")) {
 			try {
-				packet = constructPacket_1_8(id, bytes);
+				packet = constructPacket_1_8(id, data);
 			} catch (ReflectiveOperationException e) {
 				e.printStackTrace();
 			}
 		} else if (Minecraft.getVersion().contains("1_9")) {
 			try {
-				packet = constructPacket_1_9(id, bytes);
+				packet = constructPacket_1_9(id, data);
 			} catch (ReflectiveOperationException e) {
 				e.printStackTrace();
 			}
@@ -207,33 +206,33 @@ class MapSender {
 		}
 	}
 
-	private static Object constructPacket_1_8(int id, byte[] bytes) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, NoSuchFieldException {
+	private static Object constructPacket_1_8(int id, ArrayImage data) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, NoSuchFieldException {
 		Object packet = nmsPacketPlayOutMap//
 				.getConstructor(int.class, byte.class, Collection.class, byte[].class, int.class, int.class, int.class, int.class)//
 				.newInstance(id,// ID
 						(byte) 0,// Scale
 						new ArrayList<>(),// Icons
-						bytes,// Data
-						0,// X-position
-						0,// Y-position
-						128,// X-Size (or 2nd X-position)
-						128// Y-Size (or 2nd Y-position)
+						data.generatePacketData(),// Data
+						data.minX,// X-position
+						data.minY,// Y-position
+						data.maxX,// X-Size (or 2nd X-position)
+						data.maxY// Y-Size (or 2nd Y-position)
 				);
 		return packet;
 	}
 
-	private static Object constructPacket_1_9(int id, byte[] bytes) throws ReflectiveOperationException {
+	private static Object constructPacket_1_9(int id, ArrayImage data) throws ReflectiveOperationException {
 		Object packet = nmsPacketPlayOutMap//
 				.getConstructor(int.class, byte.class, boolean.class, Collection.class, byte[].class, int.class, int.class, int.class, int.class)//
 				.newInstance(id,//ID
 						(byte) 0,//Scale
 						false,//????
 						new ArrayList<>(),//Icons
-						bytes,//Data
-						0,// X-position
-						0,// Y-position
-						128,// X-Size (or 2nd X-position)
-						128// Y-Size (or 2nd Y-position)
+						data.generatePacketData(),//Data
+						data.minX,// X-position
+						data.minY,// Y-position
+						data.maxX,// X-Size (or 2nd X-position)
+						data.maxY// Y-Size (or 2nd Y-position)
 				);
 		return packet;
 	}
