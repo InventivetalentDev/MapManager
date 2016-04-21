@@ -51,6 +51,9 @@ import java.util.*;
 
 class DefaultMapWrapper implements MapWrapper {
 
+	static          int ID_COUNTER = 1;
+	protected final int id         = ID_COUNTER++;
+
 	protected ArrayImage content;
 	protected final Map<UUID, Short> viewers = new HashMap<>();
 
@@ -114,6 +117,7 @@ class DefaultMapWrapper implements MapWrapper {
 				}
 			}
 		}
+
 
 		@Override
 		public void sendContent(Player player) {
@@ -357,4 +361,19 @@ class DefaultMapWrapper implements MapWrapper {
 		}
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) { return true; }
+		if (o == null || getClass() != o.getClass()) { return false; }
+
+		DefaultMapWrapper that = (DefaultMapWrapper) o;
+
+		return id == that.id;
+
+	}
+
+	@Override
+	public int hashCode() {
+		return id;
+	}
 }
