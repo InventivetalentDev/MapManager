@@ -96,6 +96,8 @@ public interface MultiMapController extends MapController {
 	 */
 	void clearFrames(Player player, ItemFrame[][] itemFrameMatrix);
 
+	void update(BufferedImage content);
+
 	interface DebugCallable {
 		/**
 		 * Called to get debug information for a frame
