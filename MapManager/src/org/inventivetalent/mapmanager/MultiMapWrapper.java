@@ -36,21 +36,28 @@ import org.inventivetalent.mapmanager.wrapper.MapWrapper;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
-class MultiMapWrapper extends DefaultMapManager implements MapWrapper {
+class MultiMapWrapper extends DefaultMapWrapper implements MapWrapper {
 
 	private ArrayImage     content;
 	private MapWrapper[][] wrapperMatrix;
+	private Set<UUID> viewerIds = new HashSet<>();
 
 	private MultiMapController controller = new MultiMapController() {
 		@Override
 		public void addViewer(final Player player) {
-			matrixIterator(new MatrixCallable() {
-				@Override
-				public void call(MapWrapper wrapper) {
-					wrapper.getController().addViewer(player);
-				}
-			});
+			if (!viewerIds.contains(player.getUniqueId())) {
+				matrixIterator(new MatrixCallable() {
+					@Override
+					public void call(MapWrapper wrapper) {
+						wrapper.getController().addViewer(player);
+					}
+				});
+				viewerIds.add(player.getUniqueId());
+			}
 		}
 
 		@Override
@@ -61,6 +68,7 @@ class MultiMapWrapper extends DefaultMapManager implements MapWrapper {
 					wrapper.getController().removeViewer(player);
 				}
 			});
+			viewerIds.remove(player.getUniqueId());
 		}
 
 		@Override
@@ -71,16 +79,18 @@ class MultiMapWrapper extends DefaultMapManager implements MapWrapper {
 					wrapper.getController().clearViewers();
 				}
 			});
+			viewerIds.clear();
 		}
 
 		@Override
 		public boolean isViewing(OfflinePlayer player) {
-			for (int x = 0; x < wrapperMatrix.length; x++) {
-				for (int y = 0; y < wrapperMatrix[x].length; y++) {
-					if (wrapperMatrix[x][y].getController().isViewing(player)) { return true; }
-				}
-			}
-			return false;
+			return viewerIds.contains(player.getUniqueId());
+			//			for (int x = 0; x < wrapperMatrix.length; x++) {
+			//				for (int y = 0; y < wrapperMatrix[x].length; y++) {
+			//					if (wrapperMatrix[x][y].getController().isViewing(player)) { return true; }
+			//				}
+			//			}
+			//			return false;
 		}
 
 		@Override
@@ -91,7 +101,23 @@ class MultiMapWrapper extends DefaultMapManager implements MapWrapper {
 
 		@Override
 		public void update(ArrayImage content) {
-			setContent(splitImage(content.toBuffered(), wrapperMatrix[0].length, wrapperMatrix.length));
+			ArrayImage[][] split = splitImage(content.toBuffered(), wrapperMatrix[0].length, wrapperMatrix.length);
+			for (int x = 0; x < wrapperMatrix.length; x++) {
+				for (int y = 0; y < wrapperMatrix[x].length; y++) {
+					wrapperMatrix[x][y].getController().update(split[x][y]);
+				}
+			}
+		}
+
+		@Override
+		public void update(BufferedImage content) {
+			ArrayImage[][] split = splitImage(content, wrapperMatrix[0].length, wrapperMatrix.length);
+
+			for (int x = 0; x < wrapperMatrix.length; x++) {
+				for (int y = 0; y < wrapperMatrix[x].length; y++) {
+					wrapperMatrix[x][y].getController().update(split[x][y]);
+				}
+			}
 		}
 
 		@Override
@@ -229,6 +255,7 @@ class MultiMapWrapper extends DefaultMapManager implements MapWrapper {
 	}
 
 	private MultiMapWrapper(Object[][] imageMatrix) {
+		super(null);
 		setContent(imageMatrix);
 	}
 
@@ -298,6 +325,16 @@ class MultiMapWrapper extends DefaultMapManager implements MapWrapper {
 			}
 		}
 		return images;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj);
+	}
+
+	@Override
+	public int hashCode() {
+		return super.hashCode();
 	}
 
 	interface MatrixCallable {
