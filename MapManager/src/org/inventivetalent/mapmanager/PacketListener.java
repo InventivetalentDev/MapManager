@@ -93,8 +93,9 @@ class PacketListener {
 							int a = (int) receivedPacket.getPacketValue("a");
 							Object b = PacketUseEntityFieldResolver.resolveSilent("action", "b").get(receivedPacket.getPacket());
 							Object c = Minecraft.VERSION.newerThan(Minecraft.Version.v1_8_R1) ? receivedPacket.getPacketValue("c") : null;
+							Object d = Minecraft.VERSION.newerThan(Minecraft.Version.v1_9_R1) ? receivedPacket.getPacketValue("d") : null;
 
-							MapInteractEvent event = new MapInteractEvent(receivedPacket.getPlayer(), a, ((Enum) b).ordinal(), vec3DtoVector(c));
+							MapInteractEvent event = new MapInteractEvent(receivedPacket.getPlayer(), a, ((Enum) b).ordinal(), vec3DtoVector(c), d == null ? 0 : ((Enum) d).ordinal());
 							if (event.getItemFrame() != null) {
 								if (event.getMapWrapper() != null) {
 									Bukkit.getPluginManager().callEvent(event);

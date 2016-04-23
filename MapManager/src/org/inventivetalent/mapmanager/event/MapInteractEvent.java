@@ -49,17 +49,19 @@ public class MapInteractEvent extends Event implements Cancellable {
 	private int    entityID;
 	private int    action;
 	private Vector vector;
+	private int    hand;
 
 	private ItemFrame  itemFrame;
 	private MapWrapper mapWrapper;
 
 	private boolean cancelled;
 
-	public MapInteractEvent(Player who, int entityID, int action, Vector vector) {
+	public MapInteractEvent(Player who, int entityID, int action, Vector vector, int hand) {
 		this.player = who;
 		this.entityID = entityID;
 		this.action = action;
 		this.vector = vector;
+		this.hand = hand;
 	}
 
 	/**
@@ -90,6 +92,10 @@ public class MapInteractEvent extends Event implements Cancellable {
 	 */
 	public Vector getVector() {
 		return vector;
+	}
+
+	public int getHandID() {
+		return hand;
 	}
 
 	/**
