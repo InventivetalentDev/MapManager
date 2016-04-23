@@ -93,6 +93,7 @@ class DefaultMapWrapper implements MapWrapper {
 
 		@Override
 		public boolean isViewing(OfflinePlayer player) {
+			if (player == null) { return false; }
 			return viewers.containsKey(player.getUniqueId());
 		}
 
@@ -117,7 +118,6 @@ class DefaultMapWrapper implements MapWrapper {
 				}
 			}
 		}
-
 
 		@Override
 		public void sendContent(Player player) {
