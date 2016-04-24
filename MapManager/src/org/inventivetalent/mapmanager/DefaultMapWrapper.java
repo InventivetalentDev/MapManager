@@ -120,6 +120,11 @@ class DefaultMapWrapper implements MapWrapper {
 		}
 
 		@Override
+		public ArrayImage getContent() {
+			return content;
+		}
+
+		@Override
 		public void sendContent(Player player) {
 			sendContent(player, false);
 		}

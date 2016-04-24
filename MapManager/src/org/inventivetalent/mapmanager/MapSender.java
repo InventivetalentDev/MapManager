@@ -96,6 +96,7 @@ class MapSender {
 	}
 
 	protected static void sendMap(@Nonnull final int id0, @Nonnull final ArrayImage image, @Nonnull final Player receiver) {
+		TimingsHelper.startTiming("MapManager:sender:sendMap");
 		if (receiver == null || !receiver.isOnline()) {
 
 			List<QueuedMap> toRemove = new ArrayList<>();
@@ -108,6 +109,7 @@ class MapSender {
 			Bukkit.getScheduler().cancelTask(senderID);
 			sendQueue.removeAll(toRemove);
 
+			TimingsHelper.stopTiming("MapManager:sender:sendMap");
 			return;
 		}
 
@@ -134,8 +136,7 @@ class MapSender {
 							e.printStackTrace();
 						}
 					}
-				}
-				if (Minecraft.VERSION.newerThan(Minecraft.Version.v1_8_R1)) {//1.8 & 1.9
+				} else {//1.8 & 1.9
 					//					byte[] data = new byte[128 * 128];
 					//					Arrays.fill(data, (byte) 0);
 					//					for (int x = 0; x < 128; x++) {
@@ -152,6 +153,7 @@ class MapSender {
 				}
 			}
 		});
+		TimingsHelper.stopTiming("MapManager:sender:sendMap");
 	}
 
 	private static Class<?> nmsPacketPlayOutMap;
@@ -170,15 +172,15 @@ class MapSender {
 				e.printStackTrace();
 			}
 		} else*/
-		if (Minecraft.getVersion().contains("1_8")) {
+		if (Minecraft.VERSION.newerThan(Minecraft.Version.v1_9_R1)) {
 			try {
-				packet = constructPacket_1_8(id, data);
+				packet = constructPacket_1_9(id, data);
 			} catch (ReflectiveOperationException e) {
 				e.printStackTrace();
 			}
-		} else if (Minecraft.getVersion().contains("1_9")) {
+		} else if (Minecraft.VERSION.newerThan(Minecraft.Version.v1_8_R1)) {
 			try {
-				packet = constructPacket_1_9(id, data);
+				packet = constructPacket_1_8(id, data);
 			} catch (ReflectiveOperationException e) {
 				e.printStackTrace();
 			}
@@ -262,6 +264,19 @@ class MapSender {
 		return matchColor(c);
 	}
 
+	protected static byte matchColor(int rgb) {
+		int index = 0;
+		double best = -1.0D;
+		for (int i = 4; i < MAP_COLORS.length; i++) {
+			double distance = getDistance(rgb, MAP_COLORS[i].getRGB());
+			if (distance < best || best == -1.0D) {
+				best = distance;
+				index = i;
+			}
+		}
+		return (byte) (index < 128 ? index : -129 + index - 127);
+	}
+
 	protected static byte matchColor(Color color) {
 		if (color.getAlpha() < 128) { return 0; }
 		int index = 0;
@@ -273,19 +288,36 @@ class MapSender {
 				index = i;
 			}
 		}
-
 		return (byte) (index < 128 ? index : -129 + index - 127);
 	}
 
-	protected static double getDistance(Color c1, Color c2) {
-		double rmean = (c1.getRed() + c2.getRed()) / 2.0D;
-		double r = c1.getRed() - c2.getRed();
-		double g = c1.getGreen() - c2.getGreen();
-		int b = c1.getBlue() - c2.getBlue();
+
+
+	protected static double getDistance(int r1, int g1, int b1, int r2, int g2, int b2) {
+		double rmean = (r1 + r2) / 2.0D;
+		double r = r1 - r2;
+		double g = g1 - g2;
+		int b = b1 - b2;
 		double weightR = 2.0D + rmean / 256.0D;
 		double weightG = 4.0D;
 		double weightB = 2.0D + (255.0D - rmean) / 256.0D;
 		return weightR * r * r + weightG * g * g + weightB * b * b;
+	}
+
+	protected static double getDistance(int rgb1, int rgb2) {
+		int r1 = (rgb1 >> 16) & 0x000000FF;
+		int g1 = (rgb1 >> 8) & 0x000000FF;
+		int b1 = (rgb1) & 0x000000FF;
+
+		int r2 = (rgb2 >> 16) & 0x000000FF;
+		int g2 = (rgb2 >> 8) & 0x000000FF;
+		int b2 = (rgb2) & 0x000000FF;
+
+		return getDistance(r1, g1, b1, r2, g2, b2);
+	}
+
+	protected static double getDistance(Color c1, Color c2) {
+		return getDistance(c1.getRed(), c1.getGreen(), c1.getBlue(), c2.getRed(), c2.getGreen(), c2.getBlue());
 	}
 
 	static class QueuedMap {

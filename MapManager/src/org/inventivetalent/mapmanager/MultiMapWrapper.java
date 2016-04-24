@@ -101,6 +101,8 @@ class MultiMapWrapper extends DefaultMapWrapper implements MapWrapper {
 
 		@Override
 		public void update(ArrayImage content) {
+			MultiMapWrapper.this.content = content;
+
 			ArrayImage[][] split = splitImage(content.toBuffered(), wrapperMatrix[0].length, wrapperMatrix.length);
 			for (int x = 0; x < wrapperMatrix.length; x++) {
 				for (int y = 0; y < wrapperMatrix[x].length; y++) {
@@ -111,13 +113,19 @@ class MultiMapWrapper extends DefaultMapWrapper implements MapWrapper {
 
 		@Override
 		public void update(BufferedImage content) {
-			ArrayImage[][] split = splitImage(content, wrapperMatrix[0].length, wrapperMatrix.length);
+			MultiMapWrapper.this.content = new ArrayImage(content);
 
+			ArrayImage[][] split = splitImage(content, wrapperMatrix[0].length, wrapperMatrix.length);
 			for (int x = 0; x < wrapperMatrix.length; x++) {
 				for (int y = 0; y < wrapperMatrix[x].length; y++) {
 					wrapperMatrix[x][y].getController().update(split[x][y]);
 				}
 			}
+		}
+
+		@Override
+		public ArrayImage getContent() {
+			return content;
 		}
 
 		@Override
@@ -322,6 +330,7 @@ class MultiMapWrapper extends DefaultMapWrapper implements MapWrapper {
 				gr.dispose();
 
 				images[x][y] = new ArrayImage(raw);
+				raw.flush();
 			}
 		}
 		return images;

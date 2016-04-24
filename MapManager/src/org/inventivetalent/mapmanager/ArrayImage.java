@@ -70,15 +70,15 @@ public class ArrayImage {
 
 		this.width = image.getWidth();
 		this.height = image.getHeight();
-		int[][] intArray = ImageToArray(image);
-		int length = width * height;
-		this.array = new int[length];
-		for (int x = 0; x < intArray.length; x++) {
-			for (int y = 0; y < intArray[x].length; y++) {
-				array[y * image.getWidth() + x] = intArray[x][y];
-			}
-		}
-
+		//		int[][] intArray = ImageToMultiArray(image);
+		//		int length = width * height;
+		//		this.array = new int[length];
+		//		for (int x = 0; x < intArray.length; x++) {
+		//			for (int y = 0; y < intArray[x].length; y++) {
+		//				array[y * image.getWidth() + x] = intArray[x][y];
+		//			}
+		//		}
+		this.array = ImageToArray(image);
 	}
 
 	/**
@@ -97,8 +97,12 @@ public class ArrayImage {
 		}
 	}
 
+	public int[] getData() {
+		return array;
+	}
+
 	public ArrayImage updateSection(int xOffset, int yOffset, BufferedImage image) {
-		return updateSection(xOffset, yOffset, ImageToArray(image));
+		return updateSection(xOffset, yOffset, ImageToMultiArray(image));
 	}
 
 	public ArrayImage updateSection(int xOffset, int yOffset, int[][] intArray) {
@@ -130,25 +134,12 @@ public class ArrayImage {
 	protected Object generatePacketData() {
 		if (MapManager.Options.CACHE_DATA && this.packetData != null) { return this.packetData; }
 
+		TimingsHelper.startTiming("MapManager:ArrayImage:generatePacket");
+
 		Object dataObject = null;
-
-		if (Minecraft.getVersion().contains("1_7")) {
-			byte[][] dataArray = new byte[128][131];
-			for (int x = 0; x < 128; x++) {
-				byte[] bytes = new byte[131];
-
-				bytes[1] = (byte) x;
-				for (int y = 0; y < 128; y++) {
-					bytes[y + 3] = MapSender.matchColor(new Color(getRGB(x, y), true));
-				}
-
-				dataArray[x] = bytes;
-			}
-
-			dataObject = dataArray;
-		} else if (Minecraft.getVersion().contains("1_8") || Minecraft.getVersion().contains("1_9")) {
+		if (Minecraft.VERSION.newerThan(Minecraft.Version.v1_8_R1)) {
 			byte[] data = new byte[128 * 128];
-			Arrays.fill(data, (byte) 0);
+			//			Arrays.fill(data, (byte) 0);
 			for (int x = 0; x < 128; x++) {
 				for (int y = 0; y < 128; y++) {
 					data[y * 128 + x] = MapSender.matchColor(new Color(getRGB(x, y), true));
@@ -156,8 +147,23 @@ public class ArrayImage {
 			}
 
 			dataObject = data;
+		} else {// 1.7
+			byte[][] dataArray = new byte[128][131];
+			for (int x = 0; x < 128; x++) {
+				byte[] bytes = new byte[131];
+
+				bytes[1] = (byte) x;
+				for (int y = 0; y < 128; y++) {
+					bytes[y + 3] = MapSender.matchColor(getRGB(x, y));
+				}
+
+				dataArray[x] = bytes;
+			}
+
+			dataObject = dataArray;
 		}
 
+		TimingsHelper.stopTiming("MapManager:ArrayImage:generatePacket");
 		if (MapManager.Options.CACHE_DATA) {
 			this.packetData = dataObject;
 			return this.packetData;
@@ -225,13 +231,27 @@ public class ArrayImage {
 		return result;
 	}
 
-	protected static int[][] ImageToArray(BufferedImage image) {
+	protected static int[][] ImageToMultiArray(BufferedImage image) {
 		int[][] array = new int[image.getWidth()][image.getHeight()];
 		for (int x = 0; x < image.getWidth(); x++) {
 			for (int y = 0; y < image.getHeight(); y++) {
 				array[x][y] = image.getRGB(x, y);
 			}
 		}
+		return array;
+	}
+
+	protected static int[] ImageToArray(BufferedImage image) {
+		TimingsHelper.startTiming("MapManager:ArrayImage:ImageToArray");
+
+		int[] array = new int[image.getWidth() * image.getHeight()];
+		for (int x = 0; x < image.getWidth(); x++) {
+			for (int y = 0; y < image.getHeight(); y++) {
+				array[y * image.getWidth() + x] = image.getRGB(x, y);
+			}
+		}
+
+		TimingsHelper.stopTiming("MapManager:ArrayImage:ImageToArray");
 		return array;
 	}
 

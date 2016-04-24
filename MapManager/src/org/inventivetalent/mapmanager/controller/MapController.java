@@ -80,6 +80,8 @@ public interface MapController {
 	 */
 	void update(ArrayImage content);
 
+	ArrayImage getContent();
+
 	/**
 	 * Send the content of this {@link org.inventivetalent.mapmanager.wrapper.MapWrapper} to a player
 	 *
