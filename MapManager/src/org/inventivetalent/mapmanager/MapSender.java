@@ -96,7 +96,7 @@ class MapSender {
 	}
 
 	protected static void sendMap(@Nonnull final int id0, @Nonnull final ArrayImage image, @Nonnull final Player receiver) {
-		TimingsHelper.startTiming("MapManager:sender:sendMap");
+		if (MapManager.Options.Sender.TIMINGS) { TimingsHelper.startTiming("MapManager:sender:sendMap"); }
 		if (receiver == null || !receiver.isOnline()) {
 
 			List<QueuedMap> toRemove = new ArrayList<>();
@@ -109,7 +109,7 @@ class MapSender {
 			Bukkit.getScheduler().cancelTask(senderID);
 			sendQueue.removeAll(toRemove);
 
-			TimingsHelper.stopTiming("MapManager:sender:sendMap");
+			if (MapManager.Options.Sender.TIMINGS) { TimingsHelper.stopTiming("MapManager:sender:sendMap"); }
 			return;
 		}
 
@@ -290,8 +290,6 @@ class MapSender {
 		}
 		return (byte) (index < 128 ? index : -129 + index - 127);
 	}
-
-
 
 	protected static double getDistance(int r1, int g1, int b1, int r2, int g2, int b2) {
 		double rmean = (r1 + r2) / 2.0D;

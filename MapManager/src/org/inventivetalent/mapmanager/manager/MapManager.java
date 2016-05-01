@@ -167,6 +167,8 @@ public interface MapManager {
 		 */
 		public static boolean CACHE_DATA = true;
 
+		public static boolean TIMINGS = false;
+
 		/**
 		 * Options for Map-sending
 		 */
@@ -186,6 +188,8 @@ public interface MapManager {
 			 * Allow immediate sending of map data
 			 */
 			public static boolean ALLOW_QUEUE_BYPASS = true;
+
+			public static boolean TIMINGS = false;
 
 		}
 
