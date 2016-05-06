@@ -37,7 +37,7 @@ import java.util.Map;
 
 public class TimingsHelper {
 
-	public static final boolean             PAPER_SPIGOT = Bukkit.getVersion().contains("PaperSpigot");
+	public static final boolean             PAPER_SPIGOT = Bukkit.getVersion().contains("PaperSpigot") || (MapManagerPlugin.instance != null && MapManagerPlugin.instance.getConfig().getBoolean("paperSpigot", false));
 	static final        Map<String, Object> HANDLER_MAP  = new HashMap<>();
 
 	public static void startTiming(String name) {

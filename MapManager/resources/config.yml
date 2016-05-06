@@ -16,3 +16,6 @@ sender:
 
   # Allow immediate sending of map data
   allowQueueBypass: true
+
+# Enable this if you are using PaperSpigot (and/or you get this error: http://paste.inventivetalent.org/damuhonebu)
+paperSpigot: false
