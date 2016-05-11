@@ -65,7 +65,7 @@ public class MapContentUpdateEvent extends Event {
 	/**
 	 * Change the updated content
 	 *
-	 * @param content
+	 * @param content new image content
 	 */
 	public void setContent(ArrayImage content) {
 		this.content = content;
