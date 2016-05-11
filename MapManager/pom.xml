@@ -34,7 +34,7 @@
 
     <groupId>org.inventivetalent</groupId>
     <artifactId>mapmanager</artifactId>
-    <version>1.1.7</version>
+    <version>1.1.8</version>
     <name>MapManager</name>
 
     <build>
@@ -111,13 +111,13 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.9-R0.1-SNAPSHOT</version>
+            <version>1.9.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>craftbukkit</artifactId>
-            <version>1.9-R0.1-SNAPSHOT</version>
+            <version>1.9.4-R0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.mcstats.bukkit</groupId>
@@ -132,7 +132,7 @@
         <dependency>
             <groupId>org.inventivetalent</groupId>
             <artifactId>reflectionhelper</artifactId>
-            <version>[1.4.0,)</version>
+            <version>[1.5.0,)</version>
         </dependency>
     </dependencies>
 

@@ -247,9 +247,13 @@ class MapSender {
 			PlayerConnectionMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("PlayerConnection"));
 		}
 
-		Object handle = Minecraft.getHandle(p);
-		final Object connection = EntityPlayerFieldResolver.resolve("playerConnection").get(handle);
-		PlayerConnectionMethodResolver.resolve("sendPacket").invoke(connection, packet);
+		try {
+			Object handle = Minecraft.getHandle(p);
+			final Object connection = EntityPlayerFieldResolver.resolve("playerConnection").get(handle);
+			PlayerConnectionMethodResolver.resolve("sendPacket").invoke(connection, packet);
+		} catch (ReflectiveOperationException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	protected static byte getColor(ArrayImage image, int x, int y) {
