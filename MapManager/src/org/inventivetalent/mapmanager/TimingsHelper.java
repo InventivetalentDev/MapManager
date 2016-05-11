@@ -30,12 +30,16 @@ package org.inventivetalent.mapmanager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+import org.inventivetalent.reflection.resolver.ClassResolver;
 import org.spigotmc.CustomTimingsHandler;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class TimingsHelper {
+
+	static ClassResolver classResolver = new ClassResolver();
+
 
 	public static final boolean             PAPER_SPIGOT = Bukkit.getVersion().contains("PaperSpigot") || (MapManagerPlugin.instance != null && MapManagerPlugin.instance.getConfig().getBoolean("paperSpigot", false));
 	static final        Map<String, Object> HANDLER_MAP  = new HashMap<>();
@@ -46,7 +50,7 @@ public class TimingsHelper {
 		}
 		Object handler = HANDLER_MAP.get(name);
 		try {
-			handler.getClass().getDeclaredMethod("startTiming").invoke(handler);
+			classResolver.resolveSilent("co.aikar.timings.Timing","org.spigotmc.CustomTimingsHandler").getDeclaredMethod("startTiming").invoke(handler);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -56,7 +60,7 @@ public class TimingsHelper {
 		if (HANDLER_MAP.containsKey(name)) {
 			Object handler = HANDLER_MAP.get(name);
 			try {
-				handler.getClass().getDeclaredMethod("stopTiming").invoke(handler);
+				classResolver.resolveSilent("co.aikar.timings.Timing","org.spigotmc.CustomTimingsHandler").getDeclaredMethod("stopTiming").invoke(handler);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
