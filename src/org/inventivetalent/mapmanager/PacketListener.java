@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 import org.inventivetalent.mapmanager.event.CreativeInventoryMapUpdateEvent;
+import org.inventivetalent.mapmanager.event.MapCancelEvent;
 import org.inventivetalent.mapmanager.event.MapInteractEvent;
 import org.inventivetalent.mapmanager.manager.MapManager;
 import org.inventivetalent.packetlistener.handler.PacketHandler;
@@ -39,8 +40,9 @@ class PacketListener {
 							int newId = -id;
 							sentPacket.setPacketValue("a", newId);
 						} else {
+							MapCancelEvent mapCancelEvent = new MapCancelEvent(sentPacket.getPlayer(), id);
 							if (!MapManager.Options.ALLOW_VANILLA) {//Vanilla maps not allowed, so we can just cancel all maps
-								sentPacket.setCancelled(true);
+								mapCancelEvent.setCancelled(true);
 							} else {
 								boolean isPluginMap = !MapManager.Options.ALLOW_VANILLA;
 								if (MapManager.Options.ALLOW_VANILLA) {//Less efficient method: check if the ID is used by the player
@@ -48,9 +50,13 @@ class PacketListener {
 								}
 
 								if (isPluginMap) {//It's the ID of one of our maps, so cancel it for this player
-									sentPacket.setCancelled(true);
+									mapCancelEvent.setCancelled(true);
 								}
 							}
+							if (mapCancelEvent.getHandlers().getRegisteredListeners().length > 0) {
+								Bukkit.getPluginManager().callEvent(mapCancelEvent);
+							}
+							sentPacket.setCancelled(mapCancelEvent.isCancelled());
 						}
 					}
 				}
