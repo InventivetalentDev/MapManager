@@ -53,6 +53,7 @@ class PacketListener {
 									mapCancelEvent.setCancelled(true);
 								}
 							}
+							Bukkit.getPluginManager().callEvent(mapCancelEvent);
 							sentPacket.setCancelled(mapCancelEvent.isCancelled());
 						}
 					}
