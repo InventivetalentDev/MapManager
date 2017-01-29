@@ -7,7 +7,6 @@ import org.inventivetalent.reflection.minecraft.Minecraft;
 import org.inventivetalent.reflection.resolver.FieldResolver;
 import org.inventivetalent.reflection.resolver.MethodResolver;
 
-import javax.annotation.Nonnull;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Constructor;
@@ -67,7 +66,7 @@ class MapSender {
 		}, 0, MapManager.Options.Sender.DELAY);
 	}
 
-	protected static void sendMap(@Nonnull final int id0, @Nonnull final ArrayImage image, @Nonnull final Player receiver) {
+	protected static void sendMap(final int id0, final ArrayImage image, final Player receiver) {
 		if (MapManager.Options.Sender.TIMINGS) { TimingsHelper.startTiming("MapManager:sender:sendMap"); }
 		if (receiver == null || !receiver.isOnline()) {
 
