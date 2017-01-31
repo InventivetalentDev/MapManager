@@ -53,6 +53,7 @@
                                     <include>org.mcstats.*</include>
                                     <include>org.inventivetalent:mapmanager**</include>
                                     <include>org.inventivetalent:reflectionhelper**</include>
+                                    <include>org.inventivetalent.spiget-update:bukkit**</include>
                                 </includes>
                             </artifactSet>
                             <relocations>
