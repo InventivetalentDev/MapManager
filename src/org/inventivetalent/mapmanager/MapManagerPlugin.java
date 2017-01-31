@@ -95,6 +95,7 @@ public class MapManagerPlugin extends JavaPlugin {
 		}
 
 		SpigetUpdate updater = new SpigetUpdate(this, 19198);
+		updater.setUserAgent("MapManager/" + getDescription().getVersion());
 		updater.checkForUpdate(new UpdateCallback() {
 			@Override
 			public void updateAvailable(String s, String s1, boolean b) {
