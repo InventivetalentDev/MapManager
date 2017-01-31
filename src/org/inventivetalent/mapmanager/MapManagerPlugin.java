@@ -16,6 +16,8 @@ import org.inventivetalent.reflection.resolver.MethodResolver;
 import org.inventivetalent.reflection.resolver.ResolverQuery;
 import org.inventivetalent.reflection.resolver.minecraft.NMSClassResolver;
 import org.inventivetalent.reflection.resolver.minecraft.OBCClassResolver;
+import org.inventivetalent.update.spiget.SpigetUpdate;
+import org.inventivetalent.update.spiget.UpdateCallback;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -91,6 +93,19 @@ public class MapManagerPlugin extends JavaPlugin {
 			}
 			getLogger().fine("These IDs will not be used: " + occupied);
 		}
+
+		SpigetUpdate updater = new SpigetUpdate(this, 19198);
+		updater.checkForUpdate(new UpdateCallback() {
+			@Override
+			public void updateAvailable(String s, String s1, boolean b) {
+				getLogger().info("A new version is available: https://r.spiget.org/19198");
+			}
+
+			@Override
+			public void upToDate() {
+				getLogger().info("Plugin is up-to-date");
+			}
+		});
 	}
 
 	@Override
