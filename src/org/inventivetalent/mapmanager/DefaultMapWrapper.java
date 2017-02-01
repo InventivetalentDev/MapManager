@@ -19,6 +19,7 @@ import org.inventivetalent.reflection.resolver.FieldResolver;
 import org.inventivetalent.reflection.resolver.MethodResolver;
 import org.inventivetalent.reflection.resolver.ResolverQuery;
 
+import java.lang.reflect.Constructor;
 import java.util.*;
 
 class DefaultMapWrapper implements MapWrapper {
@@ -324,7 +325,15 @@ class DefaultMapWrapper implements MapWrapper {
 				}
 			} else {
 				Object dataWatcherObject = EntityItemFrameFieldResolver.resolve("c").get(null);
-				Object dataWatcherItem = DataWatcherItemConstructorResolver.resolveFirstConstructor().newInstance(dataWatcherObject, com.google.common.base.Optional.fromNullable(craftItemStack));
+
+				Constructor constructor = DataWatcherItemConstructorResolver.resolveFirstConstructor();
+				Object dataWatcherItem;
+				if (Minecraft.VERSION.newerThan(Minecraft.Version.v1_11_R1)) {
+					// For some reason, it doesn't like Optinals anymore in 1.11...
+					dataWatcherItem = constructor.newInstance(dataWatcherObject, craftItemStack);
+				} else {
+					dataWatcherItem = constructor.newInstance(dataWatcherObject, com.google.common.base.Optional.fromNullable(craftItemStack));
+				}
 
 				list.add(dataWatcherItem);
 			}
