@@ -13,7 +13,7 @@ public class TimingsHelper {
 	static ClassResolver classResolver = new ClassResolver();
 
 
-	public static final boolean             PAPER_SPIGOT = Bukkit.getVersion().contains("PaperSpigot") || (MapManagerPlugin.instance != null && MapManagerPlugin.instance.getConfig().getBoolean("paperSpigot", false));
+	public static final boolean             PAPER_SPIGOT = Bukkit.getVersion().contains("Paper") || (MapManagerPlugin.instance != null && MapManagerPlugin.instance.getConfig().getBoolean("paperSpigot", false));
 	static final        Map<String, Object> HANDLER_MAP  = new HashMap<>();
 
 	public static void startTiming(String name) {
