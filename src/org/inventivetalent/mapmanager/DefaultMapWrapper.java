@@ -297,7 +297,7 @@ class DefaultMapWrapper implements MapWrapper {
 			//Set the Entity ID of the frame
 			PacketEntityMetadataFieldResolver.resolve("a").set(meta, entityId);
 
-			Object craftItemStack = itemStack == null ? null : CraftItemStackMethodResolver.resolve(new ResolverQuery("asNMSCopy", ItemStack.class)).invoke(null, itemStack);
+			Object craftItemStack = CraftItemStackMethodResolver.resolve(new ResolverQuery("asNMSCopy", ItemStack.class)).invoke(null, itemStack);
 
 			List list = new ArrayList();
 
