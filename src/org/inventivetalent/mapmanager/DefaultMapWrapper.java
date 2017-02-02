@@ -329,7 +329,7 @@ class DefaultMapWrapper implements MapWrapper {
 				Constructor constructor = DataWatcherItemConstructorResolver.resolveFirstConstructor();
 				Object dataWatcherItem;
 				if (Minecraft.VERSION.newerThan(Minecraft.Version.v1_11_R1)) {
-					// For some reason, it doesn't like Optinals anymore in 1.11...
+					// For some reason, it doesn't like Optionals anymore in 1.11...
 					dataWatcherItem = constructor.newInstance(dataWatcherObject, craftItemStack);
 				} else {
 					dataWatcherItem = constructor.newInstance(dataWatcherObject, com.google.common.base.Optional.fromNullable(craftItemStack));
