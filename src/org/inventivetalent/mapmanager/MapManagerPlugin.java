@@ -10,6 +10,7 @@ import org.bukkit.entity.ItemFrame;
 import org.bukkit.map.MapView;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.inventivetalent.mapmanager.manager.MapManager;
+import org.inventivetalent.mapmanager.metrics.Metrics;
 import org.inventivetalent.reflection.minecraft.Minecraft;
 import org.inventivetalent.reflection.resolver.FieldResolver;
 import org.inventivetalent.reflection.resolver.MethodResolver;
@@ -93,6 +94,8 @@ public class MapManagerPlugin extends JavaPlugin {
 			}
 			getLogger().fine("These IDs will not be used: " + occupied);
 		}
+
+		new Metrics(this);
 
 		SpigetUpdate updater = new SpigetUpdate(this, 19198);
 		updater.setUserAgent("MapManager/" + getDescription().getVersion());
