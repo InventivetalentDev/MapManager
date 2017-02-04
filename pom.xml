@@ -6,7 +6,7 @@
 
     <groupId>org.inventivetalent</groupId>
     <artifactId>mapmanager</artifactId>
-    <version>1.3.3-SNAPSHOT</version>
+    <version>1.3.4-SNAPSHOT</version>
     <name>MapManager</name>
 
     <build>
