@@ -7,4 +7,4 @@ softdepend: [PacketListenerApi]
 
 commands:
   mapmanager:
-    aliases: [mm, mmanager, mapman, mapm]
+    aliases: [mmanager]
