@@ -36,6 +36,8 @@ class DefaultMapWrapper implements MapWrapper {
 	private static ConstructorResolver WatchableObjectConstructorResolver;
 	private static ConstructorResolver PacketPlayOutSlotConstructorResolver;
 	private static MethodResolver      CraftItemStackMethodResolver;
+	private static MethodResolver ItemStackMethodResolver;
+	private static MethodResolver NBTTagMethodResolver;
 
 	//1.9
 	private static FieldResolver       DataWatcherRegistryFieldResolver;
@@ -206,6 +208,8 @@ class DefaultMapWrapper implements MapWrapper {
 				itemStack.setItemMeta(itemMeta);
 			}
 
+
+
 			ItemFrame itemFrame = MapManagerPlugin.getItemFrameById(player.getWorld(), entityId);
 			if (itemFrame != null) {
 				//Add a reference to this MapWrapper (can be used in MapWrapper#getWrapperForId)
@@ -292,6 +296,15 @@ class DefaultMapWrapper implements MapWrapper {
 				}
 			}
 
+			if (Minecraft.VERSION.newerThan(Minecraft.Version.v1_13_R1)) {
+				if (ItemStackMethodResolver == null) {
+					ItemStackMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("ItemStack"));
+				}
+				if (NBTTagMethodResolver == null) {
+					NBTTagMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("NBTTagCompound"));
+				}
+			}
+
 			Object meta = MapManagerPlugin.nmsClassResolver.resolve("PacketPlayOutEntityMetadata").newInstance();
 
 			//Set the Entity ID of the frame
@@ -327,6 +340,10 @@ class DefaultMapWrapper implements MapWrapper {
 				Object dataWatcherObject;
 				if (Minecraft.VERSION.newerThan(Minecraft.Version.v1_13_R1)) {
 					dataWatcherObject= EntityItemFrameFieldResolver.resolve("e").get(null);
+
+					// TODO: might be possible now to have IDs larger than short now
+					Object nbtTag = ItemStackMethodResolver.resolve("getTag").invoke(craftItemStack);
+					NBTTagMethodResolver.resolve("setShort").invoke(nbtTag, "map", itemStack.getDurability());
 				}else{
 					dataWatcherObject= EntityItemFrameFieldResolver.resolve("c").get(null);
 				}
