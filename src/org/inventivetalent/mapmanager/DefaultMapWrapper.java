@@ -324,7 +324,12 @@ class DefaultMapWrapper implements MapWrapper {
 							Object.class }).newInstance(5, 2, craftItemStack));
 				}
 			} else {
-				Object dataWatcherObject = EntityItemFrameFieldResolver.resolve("c").get(null);
+				Object dataWatcherObject;
+				if (Minecraft.VERSION.newerThan(Minecraft.Version.v1_13_R1)) {
+					dataWatcherObject= EntityItemFrameFieldResolver.resolve("e").get(null);
+				}else{
+					dataWatcherObject= EntityItemFrameFieldResolver.resolve("c").get(null);
+				}
 
 				Constructor constructor = DataWatcherItemConstructorResolver.resolveFirstConstructor();
 				Object dataWatcherItem;
