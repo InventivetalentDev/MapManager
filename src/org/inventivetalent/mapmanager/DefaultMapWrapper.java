@@ -19,7 +19,6 @@ import org.inventivetalent.reflection.resolver.FieldResolver;
 import org.inventivetalent.reflection.resolver.MethodResolver;
 import org.inventivetalent.reflection.resolver.ResolverQuery;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.util.*;
 
@@ -268,7 +267,7 @@ class DefaultMapWrapper implements MapWrapper {
 		}
 	}
 
-	public void sendItemFramePacket(Player player, int entityId, @Nullable ItemStack itemStack) {
+	public void sendItemFramePacket(Player player, int entityId, ItemStack itemStack) {
 		try {
 			if (PacketEntityMetadataFieldResolver == null) {
 				PacketEntityMetadataFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("PacketPlayOutEntityMetadata"));
