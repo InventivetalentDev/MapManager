@@ -28,7 +28,7 @@ class DefaultMapWrapper implements MapWrapper {
 	static          int ID_COUNTER = 1;
 	protected final int id         = ID_COUNTER++;
 
-	protected ArrayImage content;
+	protected       ArrayImage       content;
 	protected final Map<UUID, Short> viewers = new HashMap<>();
 
 	private static FieldResolver       PacketEntityMetadataFieldResolver;
@@ -37,8 +37,8 @@ class DefaultMapWrapper implements MapWrapper {
 	private static ConstructorResolver WatchableObjectConstructorResolver;
 	private static ConstructorResolver PacketPlayOutSlotConstructorResolver;
 	private static MethodResolver      CraftItemStackMethodResolver;
-	private static MethodResolver ItemStackMethodResolver;
-	private static MethodResolver NBTTagMethodResolver;
+	private static MethodResolver      ItemStackMethodResolver;
+	private static MethodResolver      NBTTagMethodResolver;
 
 	//1.9
 	private static FieldResolver       DataWatcherRegistryFieldResolver;
@@ -156,7 +156,8 @@ class DefaultMapWrapper implements MapWrapper {
 				Object setSlot = PacketPlayOutSlotConstructorResolver.resolve(new Class[] {
 						int.class,
 						int.class,
-						MapManagerPlugin.nmsClassResolver.resolve("ItemStack") }).newInstance(windowId, slot, itemStack);
+						MapManagerPlugin.nmsClassResolver.resolve("ItemStack")
+				}).newInstance(windowId, slot, itemStack);
 
 				//Send the packet
 				sendPacket(player, setSlot);
@@ -208,8 +209,6 @@ class DefaultMapWrapper implements MapWrapper {
 				itemMeta.setDisplayName(debugInfo);
 				itemStack.setItemMeta(itemMeta);
 			}
-
-
 
 			ItemFrame itemFrame = MapManagerPlugin.getItemFrameById(player.getWorld(), entityId);
 			if (itemFrame != null) {
@@ -328,25 +327,27 @@ class DefaultMapWrapper implements MapWrapper {
 				list.add(WatchableObjectConstructorResolver.resolve(new Class[] {
 						int.class,
 						int.class,
-						Object.class }).newInstance(5, 8, craftItemStack));
+						Object.class
+				}).newInstance(5, 8, craftItemStack));
 
 				//<= 1.7
 				if (Minecraft.VERSION.olderThan(Minecraft.Version.v1_8_R1)) {
 					list.add(WatchableObjectConstructorResolver.resolve(new Class[] {
 							int.class,
 							int.class,
-							Object.class }).newInstance(5, 2, craftItemStack));
+							Object.class
+					}).newInstance(5, 2, craftItemStack));
 				}
 			} else {
 				Object dataWatcherObject;
 				if (Minecraft.VERSION.newerThan(Minecraft.Version.v1_13_R1)) {
-					dataWatcherObject= EntityItemFrameFieldResolver.resolve("e").get(null);
+					dataWatcherObject = EntityItemFrameFieldResolver.resolve("e").get(null);
 
 					// TODO: might be possible now to have IDs larger than short now
 					Object nbtTag = ItemStackMethodResolver.resolve("getTag").invoke(craftItemStack);
-					NBTTagMethodResolver.resolve("setShort").invoke(nbtTag, "map", itemStack!=null?itemStack.getDurability():0);
-				}else{
-					dataWatcherObject= EntityItemFrameFieldResolver.resolve("c").get(null);
+					NBTTagMethodResolver.resolve("setShort").invoke(nbtTag, "map", itemStack != null ? itemStack.getDurability() : 0);
+				} else {
+					dataWatcherObject = EntityItemFrameFieldResolver.resolve("c").get(null);
 				}
 
 				Constructor constructor = DataWatcherItemConstructorResolver.resolveFirstConstructor();
