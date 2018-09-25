@@ -19,6 +19,7 @@ import org.inventivetalent.reflection.resolver.FieldResolver;
 import org.inventivetalent.reflection.resolver.MethodResolver;
 import org.inventivetalent.reflection.resolver.ResolverQuery;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.util.*;
 
@@ -268,7 +269,7 @@ class DefaultMapWrapper implements MapWrapper {
 		}
 	}
 
-	public void sendItemFramePacket(Player player, int entityId, ItemStack itemStack) {
+	public void sendItemFramePacket(Player player, int entityId, @Nullable ItemStack itemStack) {
 		try {
 			if (PacketEntityMetadataFieldResolver == null) {
 				PacketEntityMetadataFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("PacketPlayOutEntityMetadata"));
@@ -343,7 +344,7 @@ class DefaultMapWrapper implements MapWrapper {
 
 					// TODO: might be possible now to have IDs larger than short now
 					Object nbtTag = ItemStackMethodResolver.resolve("getTag").invoke(craftItemStack);
-					NBTTagMethodResolver.resolve("setShort").invoke(nbtTag, "map", itemStack.getDurability());
+					NBTTagMethodResolver.resolve("setShort").invoke(nbtTag, "map", itemStack!=null?itemStack.getDurability():0);
 				}else{
 					dataWatcherObject= EntityItemFrameFieldResolver.resolve("c").get(null);
 				}
