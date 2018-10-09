@@ -342,9 +342,11 @@ class DefaultMapWrapper implements MapWrapper {
 				if (Minecraft.VERSION.newerThan(Minecraft.Version.v1_13_R1)) {
 					dataWatcherObject = EntityItemFrameFieldResolver.resolve("e").get(null);
 
-					// TODO: might be possible now to have IDs larger than short now
-					Object nbtTag = ItemStackMethodResolver.resolve("getTag").invoke(craftItemStack);
-					NBTTagMethodResolver.resolve("setShort").invoke(nbtTag, "map", itemStack != null ? itemStack.getDurability() : 0);
+					if(itemStack!=null) {
+						// TODO: might be possible now to have IDs larger than short now
+						Object nbtTag = ItemStackMethodResolver.resolve("getTag").invoke(craftItemStack);
+						NBTTagMethodResolver.resolve("setShort").invoke(nbtTag, "map", itemStack.getDurability() );
+					}
 				} else {
 					dataWatcherObject = EntityItemFrameFieldResolver.resolve("c").get(null);
 				}
