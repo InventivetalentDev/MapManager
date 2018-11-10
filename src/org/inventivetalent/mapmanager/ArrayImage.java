@@ -1,10 +1,14 @@
 package org.inventivetalent.mapmanager;
 
+import com.google.common.primitives.Ints;
 import org.inventivetalent.mapmanager.manager.MapManager;
 import org.inventivetalent.reflection.minecraft.Minecraft;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 
 /**
@@ -254,4 +258,41 @@ public class ArrayImage {
 		}
 		return true;
 	}
+
+	static final byte[] FILE_HEADER="MMAI".getBytes();
+
+	public static void writeToStream(ArrayImage image,OutputStream outputStream) throws IOException {
+		outputStream.write(Ints.toByteArray(image.width));
+		outputStream.write(Ints.toByteArray(image.height));
+
+		for (int i = 0; i < image.array.length; i++) {
+			outputStream.write(Ints.toByteArray(image.array[i]));
+		}
+	}
+
+	public static ArrayImage readFromStream(InputStream inputStream) throws IOException {
+
+		byte[] widthBytes = new byte[4];
+		byte[] heightBytes = new byte[4];
+		inputStream.read(widthBytes, 0, 4);
+		inputStream.read(heightBytes, 0, 4);
+
+		int width = Ints.fromByteArray(widthBytes);
+		int height = Ints.fromByteArray(heightBytes);
+
+		int[] data = new int[width * height];
+
+		for (int i = 0; i < data.length; i++) {
+			byte[] b = new byte[4];
+			inputStream.read(b, 0, 4);
+			data[i] = Ints.fromByteArray(b);
+		}
+
+		ArrayImage image = new ArrayImage(data);
+		image.width=width;
+		image.height=height;
+
+		return image;
+	}
+
 }
