@@ -259,8 +259,6 @@ public class ArrayImage {
 		return true;
 	}
 
-	static final byte[] FILE_HEADER="MMAI".getBytes();
-
 	public static void writeToStream(ArrayImage image,OutputStream outputStream) throws IOException {
 		outputStream.write(Ints.toByteArray(image.width));
 		outputStream.write(Ints.toByteArray(image.height));
