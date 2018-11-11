@@ -156,7 +156,12 @@ public class ArrayImage {
 	 * @return the RGB-value at the specified position
 	 */
 	public int getRGB(int x, int y) {
-		return array[y * width + x];
+		int i = y * width + x;
+		if (i > array.length) {
+			System.err.println("[MapManager] Tried to access out-of-bound RGB value @[" + x + "," + y + "]");
+			return 0;
+		}
+		return array[i];
 	}
 
 	/**
@@ -259,7 +264,7 @@ public class ArrayImage {
 		return true;
 	}
 
-	public static void writeToStream(ArrayImage image,OutputStream outputStream) throws IOException {
+	public static void writeToStream(ArrayImage image, OutputStream outputStream) throws IOException {
 		outputStream.write(Ints.toByteArray(image.width));
 		outputStream.write(Ints.toByteArray(image.height));
 
@@ -287,8 +292,8 @@ public class ArrayImage {
 		}
 
 		ArrayImage image = new ArrayImage(data);
-		image.width=width;
-		image.height=height;
+		image.width = width;
+		image.height = height;
 
 		return image;
 	}
