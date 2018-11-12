@@ -2,7 +2,6 @@ package org.inventivetalent.mapmanager.controller;
 
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
-import org.inventivetalent.mapmanager.ArrayImage;
 
 import java.awt.image.BufferedImage;
 
@@ -10,7 +9,6 @@ import java.awt.image.BufferedImage;
  * Controller for multiple/split maps
  *
  * @see org.inventivetalent.mapmanager.manager.MapManager#wrapMultiImage(BufferedImage, int, int)
- * @see org.inventivetalent.mapmanager.manager.MapManager#wrapMultiImage(ArrayImage, int, int)
  */
 public interface MultiMapController extends MapController {
 

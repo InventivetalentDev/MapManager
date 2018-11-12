@@ -26,7 +26,7 @@ class DefaultMapManager implements MapManager {
 		if (Options.CHECK_DUPLICATES) {
 			for (int i = 0; i < MANAGED_MAPS.size(); i++) {
 				MapWrapper wrapper = MANAGED_MAPS.get(i);
-				if (ArrayImage.ImageContentEqual(wrapper.getContent(), image)) { return wrapper; }
+				if (image.equals(wrapper.getContent())) { return wrapper; }
 			}
 		}
 		return wrapNewImage(image);
@@ -42,6 +42,11 @@ class DefaultMapManager implements MapManager {
 	public MapWrapper wrapMultiImage(ArrayImage image, int rows, int columns) {
 		//Don't add the wrapper to the MANAGED_MAPS, since we're already registering all the single wrapped maps
 		return new MultiMapWrapper(image, rows, columns);
+	}
+
+	@Override
+	public MapWrapper wrapMultiImage(ArrayImage[][] images) {
+		return new MultiMapWrapper(images);
 	}
 
 	public MapWrapper wrapNewImage(ArrayImage image) {

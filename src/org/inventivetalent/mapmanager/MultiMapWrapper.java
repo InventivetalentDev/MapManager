@@ -5,6 +5,7 @@ import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.inventivetalent.mapmanager.controller.MultiMapController;
 import org.inventivetalent.mapmanager.wrapper.MapWrapper;
+import org.inventivetalent.mapmanager.wrapper.MultiWrapper;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -12,11 +13,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-class MultiMapWrapper extends DefaultMapWrapper implements MapWrapper {
+class MultiMapWrapper extends DefaultMapWrapper implements MapWrapper, MultiWrapper {
 
 	private ArrayImage     content;
 	private MapWrapper[][] wrapperMatrix;
-	private Set<UUID> viewerIds = new HashSet<>();
+	private Set<UUID>      viewerIds = new HashSet<>();
 
 	private MultiMapController controller = new MultiMapController() {
 		@Override
@@ -72,9 +73,8 @@ class MultiMapWrapper extends DefaultMapWrapper implements MapWrapper {
 		}
 
 		@Override
+		@Deprecated
 		public void update(ArrayImage content) {
-			MultiMapWrapper.this.content = content;
-
 			ArrayImage[][] split = splitImage(content.toBuffered(), wrapperMatrix[0].length, wrapperMatrix.length);
 			for (int x = 0; x < wrapperMatrix.length; x++) {
 				for (int y = 0; y < wrapperMatrix[x].length; y++) {
@@ -218,12 +218,13 @@ class MultiMapWrapper extends DefaultMapWrapper implements MapWrapper {
 
 	public MultiMapWrapper(BufferedImage image, int rows, int columns) {
 		this(splitImage(image, columns, rows));
-		this.content = new ArrayImage(image);
+		//		this.content = new ArrayImage(image);
 	}
 
+	@Deprecated
 	public MultiMapWrapper(ArrayImage image, int rows, int columns) {
 		this(splitImage(image.toBuffered(), columns, rows));
-		this.content = image;
+		//		this.content = image;
 	}
 
 	public MultiMapWrapper(ArrayImage[][] imageMatrix) {
@@ -245,8 +246,23 @@ class MultiMapWrapper extends DefaultMapWrapper implements MapWrapper {
 	}
 
 	@Override
+	@Deprecated
 	public ArrayImage getContent() {
 		return this.content;
+	}
+
+	@Override
+	public ArrayImage[][] getMultiContent() {
+		ArrayImage[][] images = new ArrayImage[wrapperMatrix.length][wrapperMatrix[0].length];
+
+		for (int x = 0; x < wrapperMatrix.length; x++) {
+			if (wrapperMatrix[x].length != wrapperMatrix[0].length) { throw new IllegalArgumentException("image is not rectangular"); }
+			for (int y = 0; y < wrapperMatrix[x].length; y++) {
+				images[x][y] = wrapperMatrix[x][y].getContent();
+			}
+		}
+
+		return images;
 	}
 
 	public void unwrap() {

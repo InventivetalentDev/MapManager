@@ -45,7 +45,16 @@ public interface MapManager {
 	 * @param columns columns of the split (i.e. width)
 	 * @return the wrapper of the image
 	 */
+	@Deprecated
 	MapWrapper wrapMultiImage(ArrayImage image, int rows, int columns);
+
+	/**
+	 * Wrap multiple images
+	 *
+	 * @param images   the images to wrap
+	 * @return the wrapper of the image
+	 */
+	MapWrapper wrapMultiImage(ArrayImage[][] images);
 
 	/**
 	 * Remove a wrapper
