@@ -37,7 +37,6 @@ public class MapColorPalette extends MapColorSpaceData {
 					System.err.println("Missing data file " + bub_path);
                 } else {
                     bubbleData.readFrom(input);
-					System.out.println(bubbleData);
                     success = true;
                 }
             } catch (Throwable t) {
