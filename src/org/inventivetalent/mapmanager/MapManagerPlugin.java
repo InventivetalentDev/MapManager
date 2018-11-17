@@ -19,6 +19,7 @@ import org.inventivetalent.reflection.resolver.minecraft.NMSClassResolver;
 import org.inventivetalent.reflection.resolver.minecraft.OBCClassResolver;
 import org.inventivetalent.update.spiget.SpigetUpdate;
 import org.inventivetalent.update.spiget.UpdateCallback;
+import org.inventivetalent.update.spiget.comparator.VersionComparator;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -98,7 +99,7 @@ public class MapManagerPlugin extends JavaPlugin {
 		new Metrics(this);
 
 		SpigetUpdate updater = new SpigetUpdate(this, 19198);
-		updater.setUserAgent("MapManager/" + getDescription().getVersion());
+		updater.setUserAgent("MapManager/" + getDescription().getVersion()).setVersionComparator(VersionComparator.SEM_VER_SNAPSHOT);
 		updater.checkForUpdate(new UpdateCallback() {
 			@Override
 			public void updateAvailable(String s, String s1, boolean b) {
