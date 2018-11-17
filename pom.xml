@@ -91,7 +91,7 @@
         <dependency>
             <groupId>org.inventivetalent.spiget-update</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.3.0</version>
+            <version>1.4.1</version>
         </dependency>
     </dependencies>
 
