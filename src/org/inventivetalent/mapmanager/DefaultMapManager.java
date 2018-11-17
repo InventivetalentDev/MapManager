@@ -147,4 +147,12 @@ class DefaultMapManager implements MapManager {
 		}
 	}
 
+	public MapWrapper getDuplicate(ArrayImage image) {
+			for (int i = 0; i < MANAGED_MAPS.size(); i++) {
+				MapWrapper wrapper = MANAGED_MAPS.get(i);
+				if (image.equals(wrapper.getContent())) { return wrapper; }
+			}
+			return null;
+	}
+
 }

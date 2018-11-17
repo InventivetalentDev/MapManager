@@ -85,7 +85,16 @@ class DefaultMapWrapper implements MapWrapper {
 			MapContentUpdateEvent event = new MapContentUpdateEvent(DefaultMapWrapper.this, content);
 			Bukkit.getPluginManager().callEvent(event);
 
-			if (event.getContent() != null) { DefaultMapWrapper.this.content = event.getContent(); }
+			if (event.getContent() != null) {
+				if (MapManager.Options.CHECK_DUPLICATES) {
+					MapWrapper duplicate = ((DefaultMapManager) ((MapManagerPlugin) Bukkit.getPluginManager().getPlugin("MapManager")).getMapManager()).getDuplicate(event.getContent());
+					if (duplicate != null) {
+						DefaultMapWrapper.this.content = duplicate.getContent();
+						return;
+					}
+				}
+				DefaultMapWrapper.this.content = event.getContent();
+			}
 
 			if (event.isSendContent()) {
 				for (UUID id : viewers.keySet()) {
@@ -342,10 +351,10 @@ class DefaultMapWrapper implements MapWrapper {
 				if (Minecraft.VERSION.newerThan(Minecraft.Version.v1_13_R1)) {
 					dataWatcherObject = EntityItemFrameFieldResolver.resolve("e").get(null);
 
-					if(itemStack!=null) {
+					if (itemStack != null) {
 						// TODO: might be possible now to have IDs larger than short now
 						Object nbtTag = ItemStackMethodResolver.resolve("getTag").invoke(craftItemStack);
-						NBTTagMethodResolver.resolve("setShort").invoke(nbtTag, "map", itemStack.getDurability() );
+						NBTTagMethodResolver.resolve("setShort").invoke(nbtTag, "map", itemStack.getDurability());
 					}
 				} else {
 					dataWatcherObject = EntityItemFrameFieldResolver.resolve("c").get(null);

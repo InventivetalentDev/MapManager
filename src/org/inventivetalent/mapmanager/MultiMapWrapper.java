@@ -85,11 +85,11 @@ class MultiMapWrapper extends DefaultMapWrapper implements MapWrapper, MultiWrap
 
 		@Override
 		public void update(BufferedImage content) {
-			MultiMapWrapper.this.content = new ArrayImage(content);
-
 			ArrayImage[][] split = splitImage(content, wrapperMatrix[0].length, wrapperMatrix.length);
-			for (int x = 0; x < wrapperMatrix.length; x++) {
-				for (int y = 0; y < wrapperMatrix[x].length; y++) {
+//			setContent(split);
+
+			for (int x = 0; x < split.length; x++) {
+				for (int y = 0; y < split[x].length; y++) {
 					wrapperMatrix[x][y].getController().update(split[x][y]);
 				}
 			}
