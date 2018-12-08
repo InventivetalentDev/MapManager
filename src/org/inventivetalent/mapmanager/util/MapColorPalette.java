@@ -26,7 +26,7 @@ public class MapColorPalette extends MapColorSpaceData {
             try {
                 String bub_path = "/org/inventivetalent/mapmanager/util/map/";
 
-                if (Bukkit.getVersion().contains("1.12") || Bukkit.getVersion().contains("1.13")) {
+                if (Bukkit.getVersion().contains("1.12") || Bukkit.getVersion().contains("1.13") || Bukkit.getVersion().contains("1.14")) {
                     bub_path += "map_1_12.ab";
                 } else {
                     bub_path += "map_1_8_8.ab";
