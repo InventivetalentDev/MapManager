@@ -112,7 +112,7 @@ class DefaultMapManager implements MapManager {
 
 	@Override
 	public boolean isIdUsedBy(OfflinePlayer player, short id) {
-		return getOccupiedIdsFor(player).contains(id);
+		return id > Options.FORCED_OFFSET && getOccupiedIdsFor(player).contains(id);
 	}
 
 	@Override
@@ -148,11 +148,11 @@ class DefaultMapManager implements MapManager {
 	}
 
 	public MapWrapper getDuplicate(ArrayImage image) {
-			for (int i = 0; i < MANAGED_MAPS.size(); i++) {
-				MapWrapper wrapper = MANAGED_MAPS.get(i);
-				if (image.equals(wrapper.getContent())) { return wrapper; }
-			}
-			return null;
+		for (int i = 0; i < MANAGED_MAPS.size(); i++) {
+			MapWrapper wrapper = MANAGED_MAPS.get(i);
+			if (image.equals(wrapper.getContent())) { return wrapper; }
+		}
+		return null;
 	}
 
 }
