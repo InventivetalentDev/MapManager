@@ -121,7 +121,7 @@ class DefaultMapManager implements MapManager {
 		//Add the 'default' occupied IDs
 		occupied.addAll(OCCUPIED_IDS);
 
-		int largest = 0;
+		int largest = Options.FORCED_OFFSET;
 		for (Short s : occupied) {
 			if (s > largest) { largest = s; }
 		}

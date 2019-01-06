@@ -51,7 +51,7 @@ public interface MapManager {
 	/**
 	 * Wrap multiple images
 	 *
-	 * @param images   the images to wrap
+	 * @param images the images to wrap
 	 * @return the wrapper of the image
 	 */
 	MapWrapper wrapMultiImage(ArrayImage[][] images);
@@ -137,6 +137,11 @@ public interface MapManager {
 		 * If vanilla maps should be allowed to be sent to the players (less efficient, since we need to check the id of every sent map)
 		 */
 		public static boolean ALLOW_VANILLA = false;
+
+		/**
+		 * Offset for new map IDs
+		 */
+		public static int FORCED_OFFSET = 0;
 
 		/**
 		 * If the plugin checks for duplicate images before creating a new one (Less efficient when first creating a image, but more efficient overall)
