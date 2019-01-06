@@ -27,8 +27,14 @@ class MapListener implements Listener {
 	@EventHandler
 	public void onMapInitialize(MapInitializeEvent event) {
 		if (MapManager.Options.ALLOW_VANILLA) {
-			plugin.getLogger().info("Adding new Map #" + event.getMap().getId() + " to occupied IDs.");
-			plugin.getMapManager().registerOccupiedID(event.getMap().getId());
+			short id = event.getMap().getId();
+			if (id > MapManager.Options.FORCED_OFFSET) {
+				if (MapManager.Options.FORCED_OFFSET != 0) {
+					plugin.getLogger().warning("The configured forcedOffset has been exceeded. Increase the number in the config to keep future IDs from being overwritten.");
+				}
+				plugin.getLogger().info("Adding new Map #" + id + " to occupied IDs.");
+				plugin.getMapManager().registerOccupiedID(id);
+			}
 		}
 	}
 
