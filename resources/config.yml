@@ -2,6 +2,7 @@
 allowVanilla: true
 
 # Change this to a higher number to "preserve" a number of map IDs that won't be used by MapManager plugins
+# Please note that increasing this too much limits the amount of maps that plugins can create
 forcedOffset: 0
 
 # If the plugin checks for duplicate images before creating a new one (Less efficient when first creating a image, but more efficient overall)
