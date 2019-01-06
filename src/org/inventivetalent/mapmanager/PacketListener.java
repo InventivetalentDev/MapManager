@@ -44,8 +44,8 @@ class PacketListener {
 							if (!MapManager.Options.ALLOW_VANILLA) {//Vanilla maps not allowed, so we can just cancel all maps
 								mapCancelEvent.setCancelled(true);
 							} else {
-								boolean isPluginMap = !MapManager.Options.ALLOW_VANILLA;
-								if (MapManager.Options.ALLOW_VANILLA) {//Less efficient method: check if the ID is used by the player
+								boolean isPluginMap = id > MapManager.Options.FORCED_OFFSET;
+								if (MapManager.Options.FORCED_OFFSET <= 0) {//Less efficient method: check if the ID is used by the player
 									isPluginMap = plugin.getMapManager().isIdUsedBy(sentPacket.getPlayer(), (short) id);
 								}
 
