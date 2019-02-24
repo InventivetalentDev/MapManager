@@ -138,7 +138,7 @@ class DefaultMapWrapper implements MapWrapper {
 			}
 
 			//Adjust the slot ID
-			if (slot < 9) { slot += 36; } else if (slot > 35) { slot = 8 - (slot - 36); }
+			if (slot < 9) { slot += 36; } else if (slot > 35 && slot != 45) { slot = 8 - (slot - 36); }
 
 			try {
 				if (PacketPlayOutSlotConstructorResolver == null) {
