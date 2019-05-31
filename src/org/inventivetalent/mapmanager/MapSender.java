@@ -106,7 +106,13 @@ class MapSender {
 	private static Object constructPacket(int id, ArrayImage data) {
 		Object packet = null;
 
-		if (Minecraft.VERSION.newerThan(Minecraft.Version.v1_9_R1)) {
+		if (Minecraft.VERSION.newerThan(Minecraft.Version.v1_14_R1)) {
+			try {
+				packet = constructPacket_1_14(id, data);
+			} catch (ReflectiveOperationException e) {
+				e.printStackTrace();
+			}
+		} else if (Minecraft.VERSION.newerThan(Minecraft.Version.v1_9_R1)) {
 			try {
 				packet = constructPacket_1_9(id, data);
 			} catch (ReflectiveOperationException e) {
@@ -154,7 +160,7 @@ class MapSender {
 		return packet;
 	}
 
-	private static Object constructPacket_1_14(int id, ArrayImage data) throws ReflectiveOperationException{
+	private static Object constructPacket_1_14(int id, ArrayImage data) throws ReflectiveOperationException {
 		Object packet = nmsPacketPlayOutMap//
 				.getConstructor(int.class, byte.class, boolean.class, boolean.class, Collection.class, byte[].class, int.class, int.class, int.class, int.class)//
 				.newInstance(id,//ID
