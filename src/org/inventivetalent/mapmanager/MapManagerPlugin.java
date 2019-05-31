@@ -22,6 +22,7 @@ import org.inventivetalent.update.spiget.UpdateCallback;
 import org.inventivetalent.update.spiget.comparator.VersionComparator;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import static org.inventivetalent.mapmanager.manager.MapManager.Options.*;
@@ -155,16 +156,26 @@ public class MapManagerPlugin extends JavaPlugin {
 			if (WorldServerFieldResolver == null) {
 				WorldServerFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("WorldServer"));
 			}
-			if (IntHashMapMethodResolver == null) {
-				IntHashMapMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("IntHashMap"));
-			}
 			if (EntityMethodResolver == null) {
 				EntityMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("Entity"));
 			}
 
 			Object nmsWorld = CraftWorldFieldResolver.resolve("world").get(world);
-			Object entitiesById = Minecraft.VERSION.newerThan(Minecraft.Version.v1_8_R1) ? WorldFieldResolver.resolve("entitiesById").get(nmsWorld) : WorldServerFieldResolver.resolve("entitiesById").get(nmsWorld);
-			Object entity = IntHashMapMethodResolver.resolve(new ResolverQuery("get", int.class)).invoke(entitiesById, entityId);
+			Object entitiesById = Minecraft.VERSION.newerThan(Minecraft.Version.v1_8_R1) && Minecraft.VERSION.olderThan(Minecraft.Version.v1_14_R1) /* seriously?! between 1.8 and 1.14 entitiesyId was moved to World */
+					? WorldFieldResolver.resolve("entitiesById").get(nmsWorld)
+					: WorldServerFieldResolver.resolve("entitiesById").get(nmsWorld);
+
+			Object entity;
+			if (Minecraft.VERSION.olderThan(Minecraft.Version.v1_14_R1)) {// < 1.14 uses IntHashMap
+				if (IntHashMapMethodResolver == null) {
+					IntHashMapMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("IntHashMap"));
+				}
+
+				entity = IntHashMapMethodResolver.resolve(new ResolverQuery("get", int.class)).invoke(entitiesById, entityId);
+			} else {// > 1.14 uses Int2ObjectMap which implements Map
+				entity = ((Map) entitiesById).get(entityId);
+			}
+
 			if (entity == null) { return null; }
 			Entity bukkitEntity = (Entity) EntityMethodResolver.resolve("getBukkitEntity").invoke(entity);
 			if (bukkitEntity != null && EntityType.ITEM_FRAME == bukkitEntity.getType()) {
