@@ -349,7 +349,7 @@ class DefaultMapWrapper implements MapWrapper {
 			} else {
 				Object dataWatcherObject;
 				if (Minecraft.VERSION.newerThan(Minecraft.Version.v1_13_R1)) {
-					dataWatcherObject = EntityItemFrameFieldResolver.resolve("e").get(null);
+					dataWatcherObject = EntityItemFrameFieldResolver.resolve("ITEM", "e").get(null);
 
 					if (itemStack != null) {
 						// TODO: might be possible now to have IDs larger than short now
