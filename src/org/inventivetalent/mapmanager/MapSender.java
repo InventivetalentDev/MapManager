@@ -154,6 +154,23 @@ class MapSender {
 		return packet;
 	}
 
+	private static Object constructPacket_1_14(int id, ArrayImage data) throws ReflectiveOperationException{
+		Object packet = nmsPacketPlayOutMap//
+				.getConstructor(int.class, byte.class, boolean.class, boolean.class, Collection.class, byte[].class, int.class, int.class, int.class, int.class)//
+				.newInstance(id,//ID
+						(byte) 0,//Scale
+						false,//????
+						false,//????
+						new ArrayList<>(),//Icons
+						data.array,//Data
+						data.minX,// X-position
+						data.minY,// Y-position
+						data.maxX,// X-Size (or 2nd X-position)
+						data.maxY// Y-Size (or 2nd Y-position)
+				);
+		return packet;
+	}
+
 	protected static void sendPacket(Object packet, Player p) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchFieldException, NoSuchMethodException {
 		if (EntityPlayerFieldResolver == null) {
 			EntityPlayerFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("EntityPlayer"));
