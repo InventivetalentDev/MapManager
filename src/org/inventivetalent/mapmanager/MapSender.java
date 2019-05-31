@@ -159,8 +159,8 @@ class MapSender {
 				.getConstructor(int.class, byte.class, boolean.class, boolean.class, Collection.class, byte[].class, int.class, int.class, int.class, int.class)//
 				.newInstance(id,//ID
 						(byte) 0,//Scale
-						false,//????
-						false,//????
+						false,// tracking position
+						false,// locked
 						new ArrayList<>(),//Icons
 						data.array,//Data
 						data.minX,// X-position
