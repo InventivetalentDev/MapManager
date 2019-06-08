@@ -161,9 +161,14 @@ public class MapManagerPlugin extends JavaPlugin {
 			}
 
 			Object nmsWorld = CraftWorldFieldResolver.resolve("world").get(world);
-			Object entitiesById = Minecraft.VERSION.newerThan(Minecraft.Version.v1_8_R1) && Minecraft.VERSION.olderThan(Minecraft.Version.v1_14_R1) /* seriously?! between 1.8 and 1.14 entitiesyId was moved to World */
-					? WorldFieldResolver.resolve("entitiesById").get(nmsWorld)
-					: WorldServerFieldResolver.resolve("entitiesById").get(nmsWorld);
+			Object entitiesById;
+			// NOTE: this check can be false, if the v1_14_R1 doesn't exist (stupid java), i.e. in old ReflectionHelper versions
+			if (Minecraft.VERSION.newerThan(Minecraft.Version.v1_8_R1)
+					&& Minecraft.VERSION.olderThan(Minecraft.Version.v1_14_R1)) { /* seriously?! between 1.8 and 1.14 entitiesyId was moved to World */
+				entitiesById = WorldFieldResolver.resolve("entitiesById").get(nmsWorld);
+			} else {
+				entitiesById = WorldServerFieldResolver.resolve("entitiesById").get(nmsWorld);
+			}
 
 			Object entity;
 			if (Minecraft.VERSION.olderThan(Minecraft.Version.v1_14_R1)) {// < 1.14 uses IntHashMap
