@@ -40,7 +40,8 @@ class PacketListener {
 							int newId = -id;
 							sentPacket.setPacketValue("a", newId);
 						} else {
-							MapCancelEvent mapCancelEvent = new MapCancelEvent(sentPacket.getPlayer(), id);
+							boolean async = !plugin.getServer().isPrimaryThread();
+							MapCancelEvent mapCancelEvent = new MapCancelEvent(sentPacket.getPlayer(), id, async);
 							if (!MapManager.Options.ALLOW_VANILLA) {//Vanilla maps not allowed, so we can just cancel all maps
 								mapCancelEvent.setCancelled(true);
 							} else {
@@ -73,7 +74,8 @@ class PacketListener {
 							Object c = Minecraft.VERSION.newerThan(Minecraft.Version.v1_8_R1) ? receivedPacket.getPacketValue("c") : null;
 							Object d = Minecraft.VERSION.newerThan(Minecraft.Version.v1_9_R1) ? receivedPacket.getPacketValue("d") : null;
 
-							MapInteractEvent event = new MapInteractEvent(receivedPacket.getPlayer(), a, ((Enum) b).ordinal(), vec3DtoVector(c), d == null ? 0 : ((Enum) d).ordinal());
+							boolean async = !plugin.getServer().isPrimaryThread();
+							MapInteractEvent event = new MapInteractEvent(receivedPacket.getPlayer(), a, ((Enum) b).ordinal(), vec3DtoVector(c), d == null ? 0 : ((Enum) d).ordinal(), async);
 							if (event.getItemFrame() != null) {
 								if (event.getMapWrapper() != null) {
 									Bukkit.getPluginManager().callEvent(event);
@@ -92,7 +94,8 @@ class PacketListener {
 							Object b = receivedPacket.getPacketValue("b");
 							ItemStack itemStack = b == null ? null : (ItemStack) CraftItemStackMethodResolver.resolve(new ResolverQuery("asBukkitCopy", MapManagerPlugin.nmsClassResolver.resolve("ItemStack"))).invoke(null, b);
 
-							CreativeInventoryMapUpdateEvent event = new CreativeInventoryMapUpdateEvent(receivedPacket.getPlayer(), a, itemStack);
+							boolean async = !plugin.getServer().isPrimaryThread();
+							CreativeInventoryMapUpdateEvent event = new CreativeInventoryMapUpdateEvent(receivedPacket.getPlayer(), a, itemStack, async);
 							if (event.getMapWrapper() != null) {
 								Bukkit.getPluginManager().callEvent(event);
 								if (event.isCancelled()) {

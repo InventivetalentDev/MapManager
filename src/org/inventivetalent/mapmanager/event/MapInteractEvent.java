@@ -36,6 +36,15 @@ public class MapInteractEvent extends Event implements Cancellable {
 		this.hand = hand;
 	}
 
+	public MapInteractEvent(Player who, int entityID, int action, Vector vector, int hand, boolean async) {
+		super(async);
+		this.player = who;
+		this.entityID = entityID;
+		this.action = action;
+		this.vector = vector;
+		this.hand = hand;
+	}
+
 	/**
 	 * @return the {@link Player} that interacted
 	 */

@@ -45,6 +45,13 @@ public class MapCancelEvent extends Event implements Cancellable {
 		this.id = id;
 	}
 
+	public MapCancelEvent(Player player, int id, boolean async) {
+		super(async);
+		this.player = player;
+		this.id = id;
+	}
+
+
 	public Player getPlayer() {
 		return player;
 	}

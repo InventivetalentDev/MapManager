@@ -20,6 +20,14 @@ public class MapContentUpdateEvent extends Event {
 		this.sendContent = true;
 	}
 
+	public MapContentUpdateEvent(MapWrapper mapWrapper, ArrayImage content, boolean async) {
+		super(async);
+		this.mapWrapper = mapWrapper;
+		this.content = content;
+		this.sendContent = true;
+	}
+
+
 	/**
 	 * @return the updated {@link MapWrapper}
 	 */

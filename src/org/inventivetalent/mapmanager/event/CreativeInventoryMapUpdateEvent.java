@@ -33,6 +33,13 @@ public class CreativeInventoryMapUpdateEvent extends Event implements Cancellabl
 		this.itemStack = itemStack;
 	}
 
+	public CreativeInventoryMapUpdateEvent(Player player, int slot, ItemStack itemStack, boolean async) {
+		super(async);
+		this.player = player;
+		this.slot = slot;
+		this.itemStack = itemStack;
+	}
+
 	/**
 	 * @return the {@link Player} that sent the update
 	 */
