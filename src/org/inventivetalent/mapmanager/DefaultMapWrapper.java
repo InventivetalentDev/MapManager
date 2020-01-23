@@ -45,6 +45,16 @@ class DefaultMapWrapper implements MapWrapper {
 	private static ConstructorResolver DataWatcherObjectConstructorResolver;
 	private static FieldResolver       EntityItemFrameFieldResolver;
 
+	static Material MAP_MATERIAL;
+
+	static{
+		if (Minecraft.VERSION.newerThan(Minecraft.Version.v1_13_R1)) {
+			MAP_MATERIAL = Material.FILLED_MAP;
+		}else{
+			MAP_MATERIAL = Material.MAP;
+		}
+	}
+
 	protected MapController controller = new MapController() {
 		@Override
 		public void addViewer(Player player) {
@@ -159,7 +169,7 @@ class DefaultMapWrapper implements MapWrapper {
 				Object windowId = ContainerFieldResolver.resolve("windowId").get(defaultContainer);
 
 				//Create the ItemStack with the player's map ID
-				ItemStack itemStack = new ItemStack(Material.MAP, 1, getMapId(player));
+				ItemStack itemStack = new ItemStack(MAP_MATERIAL, 1, getMapId(player));
 				Object craftItemStack = createCraftItemStack(itemStack);
 
 				Object setSlot = PacketPlayOutSlotConstructorResolver.resolve(new Class[] {
@@ -182,7 +192,7 @@ class DefaultMapWrapper implements MapWrapper {
 
 		@Override
 		public void showInHand(Player player, boolean force) {
-			if (player.getItemInHand() == null || player.getItemInHand().getType() != Material.MAP) {
+			if (player.getItemInHand() == null || player.getItemInHand().getType() !=MAP_MATERIAL) {
 				if (!force) {//Player is not holding a map
 					return;
 				}
@@ -197,7 +207,7 @@ class DefaultMapWrapper implements MapWrapper {
 
 		@Override
 		public void showInFrame(Player player, ItemFrame frame, boolean force) {
-			if (frame.getItem() == null || frame.getItem().getType() != Material.MAP) {
+			if (frame.getItem() == null || frame.getItem().getType() != MAP_MATERIAL) {
 				if (!force) {//There's no map in the item frame: don't do anything
 					return;
 				}
@@ -211,7 +221,7 @@ class DefaultMapWrapper implements MapWrapper {
 				return;
 			}
 			//Create the ItemStack with the player's map ID
-			ItemStack itemStack = new ItemStack(Material.MAP, 1, getMapId(player));
+			ItemStack itemStack = new ItemStack(MAP_MATERIAL, 1, getMapId(player));
 			if (debugInfo != null) {
 				//Add the debug info to the display
 				ItemMeta itemMeta = itemStack.getItemMeta();
@@ -290,6 +300,7 @@ class DefaultMapWrapper implements MapWrapper {
 			}
 			if (craftItemStack != null) {
 				Object nbtTag = ItemStackMethodResolver.resolve("getTag").invoke(craftItemStack);
+				System.out.println("NBTTag: "+nbtTag);
 				NBTTagMethodResolver.resolve("setShort").invoke(nbtTag, "map", itemStack.getDurability());
 			}
 		}
