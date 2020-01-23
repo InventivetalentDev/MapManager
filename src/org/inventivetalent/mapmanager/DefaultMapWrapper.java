@@ -300,7 +300,6 @@ class DefaultMapWrapper implements MapWrapper {
 			}
 			if (craftItemStack != null) {
 				Object nbtTag = ItemStackMethodResolver.resolve("getTag").invoke(craftItemStack);
-				System.out.println("NBTTag: "+nbtTag);
 				NBTTagMethodResolver.resolve("setShort").invoke(nbtTag, "map", itemStack.getDurability());
 			}
 		}
