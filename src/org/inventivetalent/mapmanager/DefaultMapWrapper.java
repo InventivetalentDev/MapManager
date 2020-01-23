@@ -159,13 +159,26 @@ class DefaultMapWrapper implements MapWrapper {
 				Object windowId = ContainerFieldResolver.resolve("windowId").get(defaultContainer);
 
 				//Create the ItemStack with the player's map ID
-				Object itemStack = CraftItemStackMethodResolver.resolve(new ResolverQuery("asNMSCopy", ItemStack.class)).invoke(null, new ItemStack(Material.MAP, 1, getMapId(player)));
+				ItemStack itemStack = new ItemStack(Material.MAP, 1, getMapId(player));
+				Object craftItemStack = CraftItemStackMethodResolver.resolve(new ResolverQuery("asNMSCopy", ItemStack.class)).invoke(null, itemStack);
+				if (Minecraft.VERSION.newerThan(Minecraft.Version.v1_13_R1)) {
+					if (ItemStackMethodResolver == null) {
+						ItemStackMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("ItemStack"));
+					}
+					if (NBTTagMethodResolver == null) {
+						NBTTagMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("NBTTagCompound"));
+					}
+					if (craftItemStack != null) {
+						Object nbtTag = ItemStackMethodResolver.resolve("getTag").invoke(craftItemStack);
+						NBTTagMethodResolver.resolve("setShort").invoke(nbtTag, "map", itemStack.getDurability());
+					}
+				}
 
 				Object setSlot = PacketPlayOutSlotConstructorResolver.resolve(new Class[] {
 						int.class,
 						int.class,
 						MapManagerPlugin.nmsClassResolver.resolve("ItemStack")
-				}).newInstance(windowId, slot, itemStack);
+				}).newInstance(windowId, slot, craftItemStack);
 
 				//Send the packet
 				sendPacket(player, setSlot);
