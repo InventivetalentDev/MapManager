@@ -28,6 +28,21 @@ class CommandHandler implements CommandExecutor, TabCompleter {
 			sender.sendMessage("§aConfiguration reloaded.");
 			return true;
 		}
+//		if ("test".equalsIgnoreCase(args[0])) {
+//			try {
+//				BufferedImage bufferedImage = ImageIO.read(new URL("https://i.imgur.com/iJU3GUq.png"));
+//				MapManager mapManager = ((MapManagerPlugin) Bukkit.getPluginManager().getPlugin("MapManager")).getMapManager();
+//				MapWrapper wrapper = mapManager.wrapImage(bufferedImage);
+//				MapController controller = wrapper.getController();
+//
+//				controller.addViewer((Player) sender);
+//				controller.sendContent((Player) sender);
+//
+//				controller.showInHand((Player) sender,true);
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//		}
 		return false;
 	}
 
