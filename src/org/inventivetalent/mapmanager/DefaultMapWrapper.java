@@ -160,19 +160,7 @@ class DefaultMapWrapper implements MapWrapper {
 
 				//Create the ItemStack with the player's map ID
 				ItemStack itemStack = new ItemStack(Material.MAP, 1, getMapId(player));
-				Object craftItemStack = CraftItemStackMethodResolver.resolve(new ResolverQuery("asNMSCopy", ItemStack.class)).invoke(null, itemStack);
-				if (Minecraft.VERSION.newerThan(Minecraft.Version.v1_13_R1)) {
-					if (ItemStackMethodResolver == null) {
-						ItemStackMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("ItemStack"));
-					}
-					if (NBTTagMethodResolver == null) {
-						NBTTagMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("NBTTagCompound"));
-					}
-					if (craftItemStack != null) {
-						Object nbtTag = ItemStackMethodResolver.resolve("getTag").invoke(craftItemStack);
-						NBTTagMethodResolver.resolve("setShort").invoke(nbtTag, "map", itemStack.getDurability());
-					}
-				}
+				Object craftItemStack = createCraftItemStack(itemStack);
 
 				Object setSlot = PacketPlayOutSlotConstructorResolver.resolve(new Class[] {
 						int.class,
@@ -289,6 +277,26 @@ class DefaultMapWrapper implements MapWrapper {
 		}
 	}
 
+	Object createCraftItemStack(ItemStack itemStack) throws ReflectiveOperationException {
+		if(itemStack == null)return null;
+
+		Object craftItemStack = CraftItemStackMethodResolver.resolve(new ResolverQuery("asNMSCopy", ItemStack.class)).invoke(null, itemStack);
+		if (Minecraft.VERSION.newerThan(Minecraft.Version.v1_13_R1)) {
+			if (ItemStackMethodResolver == null) {
+				ItemStackMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("ItemStack"));
+			}
+			if (NBTTagMethodResolver == null) {
+				NBTTagMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("NBTTagCompound"));
+			}
+			if (craftItemStack != null) {
+				Object nbtTag = ItemStackMethodResolver.resolve("getTag").invoke(craftItemStack);
+				NBTTagMethodResolver.resolve("setShort").invoke(nbtTag, "map", itemStack.getDurability());
+			}
+		}
+
+		return craftItemStack;
+	}
+
 	public void sendItemFramePacket(Player player, int entityId, ItemStack itemStack) {
 		try {
 			if (PacketEntityMetadataFieldResolver == null) {
@@ -331,7 +339,7 @@ class DefaultMapWrapper implements MapWrapper {
 			//Set the Entity ID of the frame
 			PacketEntityMetadataFieldResolver.resolve("a").set(meta, entityId);
 
-			Object craftItemStack = CraftItemStackMethodResolver.resolve(new ResolverQuery("asNMSCopy", ItemStack.class)).invoke(null, itemStack);
+			Object craftItemStack = createCraftItemStack(itemStack);
 
 			List list = new ArrayList();
 
@@ -363,12 +371,6 @@ class DefaultMapWrapper implements MapWrapper {
 				Object dataWatcherObject;
 				if (Minecraft.VERSION.newerThan(Minecraft.Version.v1_13_R1)) {
 					dataWatcherObject = EntityItemFrameFieldResolver.resolve("ITEM", "e").get(null);
-
-					if (itemStack != null) {
-						// TODO: might be possible now to have IDs larger than short now
-						Object nbtTag = ItemStackMethodResolver.resolve("getTag").invoke(craftItemStack);
-						NBTTagMethodResolver.resolve("setShort").invoke(nbtTag, "map", itemStack.getDurability());
-					}
 				} else {
 					dataWatcherObject = EntityItemFrameFieldResolver.resolve("c").get(null);
 				}
