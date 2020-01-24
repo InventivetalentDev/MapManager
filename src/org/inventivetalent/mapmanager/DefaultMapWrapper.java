@@ -288,8 +288,6 @@ class DefaultMapWrapper implements MapWrapper {
 	}
 
 	Object createCraftItemStack(ItemStack itemStack) throws ReflectiveOperationException {
-		if(itemStack == null)return null;
-
 		Object craftItemStack = CraftItemStackMethodResolver.resolve(new ResolverQuery("asNMSCopy", ItemStack.class)).invoke(null, itemStack);
 		if (Minecraft.VERSION.newerThan(Minecraft.Version.v1_13_R1)) {
 			if (ItemStackMethodResolver == null) {
@@ -298,7 +296,7 @@ class DefaultMapWrapper implements MapWrapper {
 			if (NBTTagMethodResolver == null) {
 				NBTTagMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("NBTTagCompound"));
 			}
-			if (craftItemStack != null) {
+			if (itemStack != null && craftItemStack != null) {
 				Object nbtTag = ItemStackMethodResolver.resolve("getTag").invoke(craftItemStack);
 				NBTTagMethodResolver.resolve("setShort").invoke(nbtTag, "map", itemStack.getDurability());
 			}
