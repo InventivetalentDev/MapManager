@@ -24,6 +24,7 @@ import org.inventivetalent.update.spiget.comparator.VersionComparator;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 import static org.inventivetalent.mapmanager.manager.MapManager.Options.*;
 
@@ -83,9 +84,15 @@ public class MapManagerPlugin extends JavaPlugin {
 
 			Set<Short> occupied = new HashSet<>();
 			for (short s = 0; s < Short.MAX_VALUE; s++) {
-				MapView view = Bukkit.getMap(s);
-				if (view != null) {
-					occupied.add(s);
+				try {
+					MapView view = Bukkit.getMap(s);
+					if (view != null) {
+						occupied.add(s);
+					}
+				} catch (Exception e) {
+					if (!e.getMessage().toLowerCase().contains("invalid map dimension")) {
+						getLogger().log(Level.WARNING, e.getMessage(), e);
+					}
 				}
 			}
 			getLogger().info("Found " + occupied.size() + " occupied IDs.");
