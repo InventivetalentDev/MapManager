@@ -1,0 +1,9 @@
+org.inventivetalent.mapmanager
+org.inventivetalent.mapmanager.controller
+org.inventivetalent.mapmanager.event
+org.inventivetalent.mapmanager.manager
+org.inventivetalent.mapmanager.metrics
+org.inventivetalent.mapmanager.util
+org.inventivetalent.mapmanager.util.bit
+org.inventivetalent.mapmanager.util.mcsd
+org.inventivetalent.mapmanager.wrapper
