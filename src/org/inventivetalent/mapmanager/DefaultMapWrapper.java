@@ -8,7 +8,6 @@ import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.inventivetalent.mapmanager.controller.MapController;
 import org.inventivetalent.mapmanager.event.MapContentUpdateEvent;
@@ -304,13 +303,8 @@ class DefaultMapWrapper implements MapWrapper {
                 NBTTagMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("NBTTagCompound"));
             }
             if (itemStack != null && craftItemStack != null && mapId >= 0) {
-                Object nbtTag = ItemStackMethodResolver.resolve("getTag").invoke(craftItemStack);
-                ItemMeta meta = itemStack.getItemMeta();
-                if (meta instanceof MapMeta && ((MapMeta) meta).hasMapView()) {
-                    NBTTagMethodResolver.resolve("setInt").invoke(nbtTag, "map", mapId);
-                } else {
-                    NBTTagMethodResolver.resolve("setShort").invoke(nbtTag, "map", (short) mapId);
-                }
+                Object nbtTag = ItemStackMethodResolver.resolve("getOrCreateTag", "getTag").invoke(craftItemStack);
+                NBTTagMethodResolver.resolve("setInt").invoke(nbtTag, "map", mapId);
             }
         }
 

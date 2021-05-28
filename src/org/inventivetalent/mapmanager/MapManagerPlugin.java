@@ -84,7 +84,7 @@ public class MapManagerPlugin extends JavaPlugin {
 			getLogger().info("Vanilla Maps are allowed. Trying to discover occupied Map IDs...");
 
 			Set<Integer> occupied = new HashSet<>();
-			for (int s = 0; s < Integer.MAX_VALUE; s++) {
+			for (int s = 0; s < Short.MAX_VALUE; s++) { // Integer.max is just too much
 				try {
 					MapView view = Bukkit.getMap(s);
 					if (view != null) {
