@@ -78,22 +78,22 @@ public interface MapManager {
 	 * @param id     ID of the map
 	 * @return the {@link MapWrapper} or <code>null</code>
 	 */
-	MapWrapper getWrapperForId(OfflinePlayer player, short id);
+	MapWrapper getWrapperForId(OfflinePlayer player, int id);
 
 	/**
 	 * Registers an occupied ID (which will not be used as a map ID)
 	 *
 	 * @param id the ID to register
 	 */
-	void registerOccupiedID(short id);
+	void registerOccupiedID(int id);
 
 	/**
 	 * Unregisters an occupied ID
 	 *
 	 * @param id the ID to unregister
-	 * @see #registerOccupiedID(short)
+	 * @see #registerOccupiedID(int)
 	 */
-	void unregisterOccupiedID(short id);
+	void unregisterOccupiedID(int id);
 
 	/**
 	 * Get the IDs which are used for a player
@@ -101,7 +101,7 @@ public interface MapManager {
 	 * @param player the {@link OfflinePlayer} to get the IDs for
 	 * @return Set of IDs
 	 */
-	Set<Short> getOccupiedIdsFor(OfflinePlayer player);
+	Set<Integer> getOccupiedIdsFor(OfflinePlayer player);
 
 	/**
 	 * Check if an map ID is used by a player
@@ -110,7 +110,7 @@ public interface MapManager {
 	 * @param id     Map ID to check
 	 * @return <code>true</code> if the ID is used
 	 */
-	boolean isIdUsedBy(OfflinePlayer player, short id);
+	boolean isIdUsedBy(OfflinePlayer player, int id);
 
 	/**
 	 * Get the next available (non-occupied) map ID for a player
@@ -119,7 +119,7 @@ public interface MapManager {
 	 * @return the next available ID
 	 * @throws MapLimitExceededException if there are no more IDs available (i.e. all IDs up to {@link Short#MAX_VALUE} are occupied by the player)
 	 */
-	short getNextFreeIdFor(Player player) throws MapLimitExceededException;
+	int getNextFreeIdFor(Player player) throws MapLimitExceededException;
 
 	/**
 	 * Removes all {@link MapWrapper}s for a player

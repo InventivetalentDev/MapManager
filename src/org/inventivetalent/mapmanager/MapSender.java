@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.inventivetalent.mapmanager.manager.MapManager;
 import org.inventivetalent.reflection.minecraft.Minecraft;
+import org.inventivetalent.reflection.minecraft.MinecraftVersion;
 import org.inventivetalent.reflection.resolver.FieldResolver;
 import org.inventivetalent.reflection.resolver.MethodResolver;
 
@@ -21,7 +22,7 @@ class MapSender {
 	private static FieldResolver  EntityPlayerFieldResolver;
 	private static MethodResolver PlayerConnectionMethodResolver;
 
-	public static void cancelIDs(short[] ids) {
+	public static void cancelIDs(int[] ids) {
 		Iterator<QueuedMap> iterator = sendQueue.iterator();
 		while (iterator.hasNext()) {
 			QueuedMap next = iterator.next();
@@ -106,19 +107,19 @@ class MapSender {
 	private static Object constructPacket(int id, ArrayImage data) {
 		Object packet = null;
 
-		if (Minecraft.VERSION.newerThan(Minecraft.Version.v1_14_R1)) {
+		if (MinecraftVersion.VERSION.newerThan(Minecraft.Version.v1_14_R1)) {
 			try {
 				packet = constructPacket_1_14(id, data);
 			} catch (ReflectiveOperationException e) {
 				e.printStackTrace();
 			}
-		} else if (Minecraft.VERSION.newerThan(Minecraft.Version.v1_9_R1)) {
+		} else if (MinecraftVersion.VERSION.newerThan(Minecraft.Version.v1_9_R1)) {
 			try {
 				packet = constructPacket_1_9(id, data);
 			} catch (ReflectiveOperationException e) {
 				e.printStackTrace();
 			}
-		} else if (Minecraft.VERSION.newerThan(Minecraft.Version.v1_8_R1)) {
+		} else if (MinecraftVersion.VERSION.newerThan(Minecraft.Version.v1_8_R1)) {
 			try {
 				packet = constructPacket_1_8(id, data);
 			} catch (ReflectiveOperationException e) {
@@ -187,7 +188,7 @@ class MapSender {
 
 		try {
 			Object handle = Minecraft.getHandle(p);
-			final Object connection = EntityPlayerFieldResolver.resolve("playerConnection").get(handle);
+			final Object connection = EntityPlayerFieldResolver.resolveAccessor("playerConnection").get(handle);
 			PlayerConnectionMethodResolver.resolve("sendPacket").invoke(connection, packet);
 		} catch (ReflectiveOperationException e) {
 			throw new RuntimeException(e);

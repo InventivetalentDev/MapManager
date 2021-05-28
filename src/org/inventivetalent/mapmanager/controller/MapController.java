@@ -43,7 +43,7 @@ public interface MapController {
 	 * @param player {@link OfflinePlayer} to get the ID for
 	 * @return the ID, or <code>-1</code> if no ID exists (i.e. the player is not viewing)
 	 */
-	short getMapId(OfflinePlayer player);
+	int getMapId(OfflinePlayer player);
 
 	/**
 	 * Update the image in this {@link org.inventivetalent.mapmanager.wrapper.MapWrapper}

@@ -13,7 +13,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 class DefaultMapManager implements MapManager {
 
-	protected final Set<Short>       OCCUPIED_IDS = new HashSet<>();
+	protected final Set<Integer>       OCCUPIED_IDS = new HashSet<>();
 	private final   List<MapWrapper> MANAGED_MAPS = new CopyOnWriteArrayList<>();
 
 	@Override
@@ -58,8 +58,8 @@ class DefaultMapManager implements MapManager {
 	@Override
 	public void unwrapImage(MapWrapper wrapper) {
 		if (wrapper instanceof DefaultMapWrapper) {
-			for (short s : ((DefaultMapWrapper) wrapper).viewers.values()) {
-				MapSender.cancelIDs(new short[] { s });
+			for (int s : ((DefaultMapWrapper) wrapper).viewers.values()) {
+				MapSender.cancelIDs(new int[] { s });
 			}
 		}
 		wrapper.getController().clearViewers();
@@ -81,7 +81,7 @@ class DefaultMapManager implements MapManager {
 	}
 
 	@Override
-	public MapWrapper getWrapperForId(OfflinePlayer player, short id) {
+	public MapWrapper getWrapperForId(OfflinePlayer player, int id) {
 		for (MapWrapper wrapper : getMapsVisibleTo(player)) {
 			if (wrapper.getController().getMapId(player) == id) { return wrapper; }
 		}
@@ -89,20 +89,20 @@ class DefaultMapManager implements MapManager {
 	}
 
 	@Override
-	public void registerOccupiedID(short id) {
+	public void registerOccupiedID(int id) {
 		if (!OCCUPIED_IDS.contains(id)) { OCCUPIED_IDS.add(id); }
 	}
 
 	@Override
-	public void unregisterOccupiedID(short id) {
+	public void unregisterOccupiedID(int id) {
 		OCCUPIED_IDS.remove(id);
 	}
 
 	@Override
-	public Set<Short> getOccupiedIdsFor(OfflinePlayer player) {
-		Set<Short> ids = new HashSet<>();
+	public Set<Integer> getOccupiedIdsFor(OfflinePlayer player) {
+		Set<Integer> ids = new HashSet<>();
 		for (MapWrapper wrapper : MANAGED_MAPS) {
-			short s;
+			int s;
 			if ((s = wrapper.getController().getMapId(player)) >= 0) {
 				ids.add(s);
 			}
@@ -111,26 +111,26 @@ class DefaultMapManager implements MapManager {
 	}
 
 	@Override
-	public boolean isIdUsedBy(OfflinePlayer player, short id) {
+	public boolean isIdUsedBy(OfflinePlayer player, int id) {
 		return id > Options.FORCED_OFFSET && getOccupiedIdsFor(player).contains(id);
 	}
 
 	@Override
-	public short getNextFreeIdFor(Player player) throws MapLimitExceededException {
-		Set<Short> occupied = getOccupiedIdsFor(player);
+	public int getNextFreeIdFor(Player player) throws MapLimitExceededException {
+		Set<Integer> occupied = getOccupiedIdsFor(player);
 		//Add the 'default' occupied IDs
 		occupied.addAll(OCCUPIED_IDS);
 
 		int largest = Options.FORCED_OFFSET;
-		for (Short s : occupied) {
+		for (Integer s : occupied) {
 			if (s > largest) { largest = s; }
 		}
 
 		//Simply increase the maximum id if it's still small enough
-		if (largest + 1 < Short.MAX_VALUE) { return (short) (largest + 1); }
+		if (largest + 1 < Integer.MAX_VALUE) { return (int) (largest + 1); }
 
 		//Otherwise iterate through all options until there is an unused id
-		for (short s = 0; s < Short.MAX_VALUE; s++) {
+		for (int s = 0; s < Integer.MAX_VALUE; s++) {
 			if (!occupied.contains(s)) {
 				return s;
 			}

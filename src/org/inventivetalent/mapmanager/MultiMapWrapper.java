@@ -67,7 +67,7 @@ class MultiMapWrapper extends DefaultMapWrapper implements MapWrapper, MultiWrap
 		}
 
 		@Override
-		public short getMapId(OfflinePlayer player) {
+		public int getMapId(OfflinePlayer player) {
 			//We don't have a unique ID
 			return -1;
 		}

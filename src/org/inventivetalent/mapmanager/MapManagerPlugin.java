@@ -12,6 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.inventivetalent.mapmanager.manager.MapManager;
 import org.inventivetalent.mapmanager.metrics.Metrics;
 import org.inventivetalent.reflection.minecraft.Minecraft;
+import org.inventivetalent.reflection.minecraft.MinecraftVersion;
 import org.inventivetalent.reflection.resolver.FieldResolver;
 import org.inventivetalent.reflection.resolver.MethodResolver;
 import org.inventivetalent.reflection.resolver.ResolverQuery;
@@ -82,8 +83,8 @@ public class MapManagerPlugin extends JavaPlugin {
 		if (MapManager.Options.ALLOW_VANILLA) {
 			getLogger().info("Vanilla Maps are allowed. Trying to discover occupied Map IDs...");
 
-			Set<Short> occupied = new HashSet<>();
-			for (short s = 0; s < Short.MAX_VALUE; s++) {
+			Set<Integer> occupied = new HashSet<>();
+			for (int s = 0; s < Integer.MAX_VALUE; s++) {
 				try {
 					MapView view = Bukkit.getMap(s);
 					if (view != null) {
@@ -97,7 +98,7 @@ public class MapManagerPlugin extends JavaPlugin {
 			}
 			getLogger().info("Found " + occupied.size() + " occupied IDs.");
 
-			for (short s : occupied) {
+			for (int s : occupied) {
 				getMapManager().registerOccupiedID(s);
 			}
 			getLogger().fine("These IDs will not be used: " + occupied);
@@ -167,18 +168,18 @@ public class MapManagerPlugin extends JavaPlugin {
 				EntityMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("Entity"));
 			}
 
-			Object nmsWorld = CraftWorldFieldResolver.resolve("world").get(world);
+			Object nmsWorld = CraftWorldFieldResolver.resolveAccessor("world").get(world);
 			Object entitiesById;
 			// NOTE: this check can be false, if the v1_14_R1 doesn't exist (stupid java), i.e. in old ReflectionHelper versions
-			if (Minecraft.VERSION.newerThan(Minecraft.Version.v1_8_R1)
-					&& Minecraft.VERSION.olderThan(Minecraft.Version.v1_14_R1)) { /* seriously?! between 1.8 and 1.14 entitiesyId was moved to World */
-				entitiesById = WorldFieldResolver.resolve("entitiesById").get(nmsWorld);
+			if (MinecraftVersion.VERSION.newerThan(Minecraft.Version.v1_8_R1)
+					&& MinecraftVersion.VERSION.olderThan(Minecraft.Version.v1_14_R1)) { /* seriously?! between 1.8 and 1.14 entitiesyId was moved to World */
+				entitiesById = WorldFieldResolver.resolveAccessor("entitiesById").get(nmsWorld);
 			} else {
-				entitiesById = WorldServerFieldResolver.resolve("entitiesById").get(nmsWorld);
+				entitiesById = WorldServerFieldResolver.resolveAccessor("entitiesById").get(nmsWorld);
 			}
 
 			Object entity;
-			if (Minecraft.VERSION.olderThan(Minecraft.Version.v1_14_R1)) {// < 1.14 uses IntHashMap
+			if (MinecraftVersion.VERSION.olderThan(Minecraft.Version.v1_14_R1)) {// < 1.14 uses IntHashMap
 				if (IntHashMapMethodResolver == null) {
 					IntHashMapMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("IntHashMap"));
 				}
