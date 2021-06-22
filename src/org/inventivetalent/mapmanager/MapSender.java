@@ -180,10 +180,10 @@ class MapSender {
 
 	protected static void sendPacket(Object packet, Player p) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchFieldException, NoSuchMethodException {
 		if (EntityPlayerFieldResolver == null) {
-			EntityPlayerFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("EntityPlayer"));
+			EntityPlayerFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("EntityPlayer", "server.level.EntityPlayer"));
 		}
 		if (PlayerConnectionMethodResolver == null) {
-			PlayerConnectionMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("PlayerConnection"));
+			PlayerConnectionMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("PlayerConnection", "server.network.EntityPlayer"));
 		}
 
 		try {
