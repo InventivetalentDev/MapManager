@@ -101,7 +101,7 @@ class MapSender {
 	private static Class<?> nmsPacketPlayOutMap;
 
 	static {
-		nmsPacketPlayOutMap = MapManagerPlugin.nmsClassResolver.resolveSilent("PacketPlayOutMap");
+		nmsPacketPlayOutMap = MapManagerPlugin.nmsClassResolver.resolveSilent("PacketPlayOutMap", "network.protocol.game.PacketPlayOutMap");
 	}
 
 	private static Object constructPacket(int id, ArrayImage data) {

@@ -21,9 +21,9 @@ class PacketListener {
 
 	private final PacketHandler packetHandler;
 
-	private static FieldResolver Vec3DFieldResolver              = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolveSilent("Vec3D"));
-	private static FieldResolver PacketUseEntityFieldResolver    = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolveSilent("PacketPlayInUseEntity"));
-	private static FieldResolver PacketCreativeSlotFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolveSilent("PacketPlayInSetCreativeSlot"));
+	private static FieldResolver Vec3DFieldResolver              = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolveSilent("Vec3D", "world.phys.Vec3D"));
+	private static FieldResolver PacketUseEntityFieldResolver    = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolveSilent("PacketPlayInUseEntity", "network.protocol.game.PacketPlayInUseEntity"));
+	private static FieldResolver PacketCreativeSlotFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolveSilent("PacketPlayInSetCreativeSlot", "network.protocol.game.PacketPlayInSetCreativeSlot"));
 
 	private static MethodResolver CraftItemStackMethodResolver = new MethodResolver(MapManagerPlugin.obcClassResolver.resolveSilent("inventory.CraftItemStack"));
 
