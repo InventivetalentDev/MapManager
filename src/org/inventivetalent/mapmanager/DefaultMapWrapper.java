@@ -31,6 +31,10 @@ class DefaultMapWrapper implements MapWrapper {
     protected ArrayImage content;
     protected final Map<UUID, Integer> viewers = new HashMap<>();
 
+    private static Class<?> Entity;
+    private static Class<?> DataWatcher ;
+    private static Class<?> PacketPlayOutEntityMetadata;
+
     private static FieldResolver PacketEntityMetadataFieldResolver;
     private static FieldResolver EntityHumanFieldResolver;
     private static FieldResolver ContainerFieldResolver;
@@ -153,13 +157,13 @@ class DefaultMapWrapper implements MapWrapper {
 
             try {
                 if (PacketPlayOutSlotConstructorResolver == null) {
-                    PacketPlayOutSlotConstructorResolver = new ConstructorResolver(MapManagerPlugin.nmsClassResolver.resolve("PacketPlayOutSetSlot"));
+                    PacketPlayOutSlotConstructorResolver = new ConstructorResolver(MapManagerPlugin.nmsClassResolver.resolve("PacketPlayOutSetSlot", "network.protocol.game.PacketPlayOutSetSlot"));
                 }
                 if (EntityHumanFieldResolver == null) {
-                    EntityHumanFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("EntityHuman"));
+                    EntityHumanFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("EntityHuman", "world.entity.player.EntityHuman"));
                 }
                 if (ContainerFieldResolver == null) {
-                    ContainerFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("Container"));
+                    ContainerFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("Container", "world.inventory.Container"));
                 }
                 if (CraftItemStackMethodResolver == null) {
                     CraftItemStackMethodResolver = new MethodResolver(MapManagerPlugin.obcClassResolver.resolve("inventory.CraftItemStack"));
@@ -297,10 +301,10 @@ class DefaultMapWrapper implements MapWrapper {
         Object craftItemStack = CraftItemStackMethodResolver.resolve(new ResolverQuery("asNMSCopy", ItemStack.class)).invoke(null, itemStack);
         if (MinecraftVersion.VERSION.newerThan(Minecraft.Version.v1_13_R1)) {
             if (ItemStackMethodResolver == null) {
-                ItemStackMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("ItemStack"));
+                ItemStackMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("ItemStack", "world.item.ItemStack"));
             }
             if (NBTTagMethodResolver == null) {
-                NBTTagMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("NBTTagCompound"));
+                NBTTagMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("NBTTagCompound", "nbt.NBTTagCompound"));
             }
             if (itemStack != null && craftItemStack != null && mapId >= 0) {
                 Object nbtTag = ItemStackMethodResolver.resolve("getOrCreateTag", "getTag").invoke(craftItemStack);
@@ -313,11 +317,21 @@ class DefaultMapWrapper implements MapWrapper {
 
     public void sendItemFramePacket(Player player, int entityId, ItemStack itemStack, int mapId) {
         try {
+            if (Entity == null) {
+                Entity = MapManagerPlugin.nmsClassResolver.resolve("Entity", "world.entity.Entity");
+            }
+            if (DataWatcher == null) {
+                DataWatcher = MapManagerPlugin.nmsClassResolver.resolve("DataWatcher", "network.syncer.DataWatcher");
+            }
+            if (PacketPlayOutEntityMetadata == null) {
+                PacketPlayOutEntityMetadata = MapManagerPlugin.nmsClassResolver
+                        .resolve("PacketPlayOutEntityMetadata", "network.protocol.game.PacketPlayOutEntityMetadata");
+            }
             if (PacketEntityMetadataFieldResolver == null) {
-                PacketEntityMetadataFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("PacketPlayOutEntityMetadata"));
+                PacketEntityMetadataFieldResolver = new FieldResolver(PacketPlayOutEntityMetadata);
             }
             if (WatchableObjectConstructorResolver == null) {
-                WatchableObjectConstructorResolver = new ConstructorResolver(MapManagerPlugin.nmsClassResolver.resolve("WatchableObject", "DataWatcher$WatchableObject", "DataWatcher$Item"/*1.9*/));
+                WatchableObjectConstructorResolver = new ConstructorResolver(MapManagerPlugin.nmsClassResolver.resolve("WatchableObject", "DataWatcher$WatchableObject", "DataWatcher$Item"/*1.9*/, "network.syncer.DataWatcher$Item"));
             }
             if (CraftItemStackMethodResolver == null) {
                 CraftItemStackMethodResolver = new MethodResolver(MapManagerPlugin.obcClassResolver.resolve("inventory.CraftItemStack"));
@@ -326,29 +340,38 @@ class DefaultMapWrapper implements MapWrapper {
             //1.9
             if (MinecraftVersion.VERSION.newerThan(Minecraft.Version.v1_9_R1)) {
                 if (DataWatcherRegistryFieldResolver == null) {
-                    DataWatcherRegistryFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("DataWatcherRegistry"));
+                    DataWatcherRegistryFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("DataWatcherRegistry", "network.syncer.DataWatcherRegistry"));
                 }
                 if (DataWatcherItemConstructorResolver == null) {
-                    DataWatcherItemConstructorResolver = new ConstructorResolver(MapManagerPlugin.nmsClassResolver.resolve("DataWatcher$Item"));
+                    DataWatcherItemConstructorResolver = new ConstructorResolver(MapManagerPlugin.nmsClassResolver.resolve("DataWatcher$Item", "network.syncer.DataWatcher$Item"));
                 }
                 if (DataWatcherObjectConstructorResolver == null) {
-                    DataWatcherObjectConstructorResolver = new ConstructorResolver(MapManagerPlugin.nmsClassResolver.resolve("DataWatcherObject"));
+                    DataWatcherObjectConstructorResolver = new ConstructorResolver(MapManagerPlugin.nmsClassResolver.resolve("DataWatcherObject", "network.syncer.DataWatcherObject"));
                 }
                 if (EntityItemFrameFieldResolver == null) {
-                    EntityItemFrameFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("EntityItemFrame"));
+                    EntityItemFrameFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("EntityItemFrame", "world.entity.decoration.EntityItemFrame"));
                 }
             }
 
             if (MinecraftVersion.VERSION.newerThan(Minecraft.Version.v1_13_R1)) {
                 if (ItemStackMethodResolver == null) {
-                    ItemStackMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("ItemStack"));
+                    ItemStackMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("ItemStack", "world.item.ItemStack"));
                 }
                 if (NBTTagMethodResolver == null) {
-                    NBTTagMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("NBTTagCompound"));
+                    NBTTagMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("NBTTagCompound", "nbt.NBTTagCompound"));
                 }
             }
 
-            Object meta = MapManagerPlugin.nmsClassResolver.resolve("PacketPlayOutEntityMetadata").newInstance();
+
+            Object meta;
+            try {
+                Constructor<?> noArgConstructor = PacketPlayOutEntityMetadata.getConstructor();
+                meta = noArgConstructor.newInstance();
+            } catch (ReflectiveOperationException e) {
+                Object dummyDataWatcher = DataWatcher.getConstructor(Entity).newInstance((Object) null);
+                meta = DataWatcher.getConstructor(int.class, DataWatcher, boolean.class)
+                        .newInstance(entityId, dummyDataWatcher, true);
+            }
 
             //Set the Entity ID of the frame
             PacketEntityMetadataFieldResolver.resolveAccessor("a").set(meta, entityId);
@@ -402,6 +425,7 @@ class DefaultMapWrapper implements MapWrapper {
             }
 
             PacketEntityMetadataFieldResolver.resolveAccessor("b").set(meta, list);
+
 
             //Send the completed packet
             sendPacket(player, meta);
