@@ -185,7 +185,7 @@ class DefaultMapWrapper implements MapWrapper {
                 Object setSlot = PacketPlayOutSlotConstructorResolver.resolve(new Class[]{
                         int.class,
                         int.class,
-                        MapManagerPlugin.nmsClassResolver.resolve("ItemStack")
+                        MapManagerPlugin.nmsClassResolver.resolve("world.item.ItemStack")
                 }).newInstance(windowId, slot, craftItemStack);
 
                 //Send the packet

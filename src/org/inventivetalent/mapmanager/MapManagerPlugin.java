@@ -159,13 +159,13 @@ public class MapManagerPlugin extends JavaPlugin {
 				CraftWorldFieldResolver = new FieldResolver(MapManagerPlugin.obcClassResolver.resolve("CraftWorld"));
 			}
 			if (WorldFieldResolver == null) {
-				WorldFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("World"));
+				WorldFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("world.level.World"));
 			}
 			if (WorldServerFieldResolver == null) {
-				WorldServerFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("WorldServer"));
+				WorldServerFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("server.level.WorldServer"));
 			}
 			if (EntityMethodResolver == null) {
-				EntityMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("Entity"));
+				EntityMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("world.entity.Entity"));
 			}
 
 			Object nmsWorld = CraftWorldFieldResolver.resolveAccessor("world").get(world);
