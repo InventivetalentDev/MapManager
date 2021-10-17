@@ -17,6 +17,8 @@ import org.inventivetalent.reflection.resolver.FieldResolver;
 import org.inventivetalent.reflection.resolver.MethodResolver;
 import org.inventivetalent.reflection.resolver.ResolverQuery;
 
+import java.util.concurrent.TimeUnit;
+
 class PacketListener {
 
     private final PacketHandler packetHandler;
@@ -101,20 +103,21 @@ class PacketListener {
                                 hand = d;
                             }
 
-//                            System.out.println("entityUseAction: " + entityUseAction);
-//                            System.out.println("pos: " + pos);
-//                            System.out.println("hand: " + hand);
-
-                            boolean async = !plugin.getServer().isPrimaryThread();
-                            MapInteractEvent event = new MapInteractEvent(receivedPacket.getPlayer(), a, ((Enum) entityUseAction).ordinal(), pos == null ? null : vec3DtoVector(pos), hand == null ? 0 : ((Enum) hand).ordinal(), async);
-                            if (event.getItemFrame() != null) {
-                                if (event.getMapWrapper() != null) {
-                                    Bukkit.getPluginManager().callEvent(event);
-                                    if (event.isCancelled()) {
-                                        receivedPacket.setCancelled(true);
+                            Object finalEntityUseAction = entityUseAction;
+                            Object finalPos = pos;
+                            Object finalHand = hand;
+                            boolean cancel = Bukkit.getScheduler().callSyncMethod(getPlugin(), () -> {
+                                boolean async = !plugin.getServer().isPrimaryThread();
+                                MapInteractEvent event = new MapInteractEvent(receivedPacket.getPlayer(), a, ((Enum) finalEntityUseAction).ordinal(), finalPos == null ? null : vec3DtoVector(finalPos), finalHand == null ? 0 : ((Enum) finalHand).ordinal(), async);
+                                if (event.getItemFrame() != null) {
+                                    if (event.getMapWrapper() != null) {
+                                        Bukkit.getPluginManager().callEvent(event);
+                                        return event.isCancelled();
                                     }
                                 }
-                            }
+                                return false;
+                            }).get(1, TimeUnit.SECONDS);
+                            receivedPacket.setCancelled(cancel);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
