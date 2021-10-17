@@ -373,7 +373,7 @@ class DefaultMapWrapper implements MapWrapper {
                 meta = noArgConstructor.newInstance();
             } catch (ReflectiveOperationException e) {
                 Object dummyDataWatcher = DataWatcher.getConstructor(Entity).newInstance((Object) null);
-                meta = DataWatcher.getConstructor(int.class, DataWatcher, boolean.class)
+                meta = PacketPlayOutEntityMetadata.getConstructor(int.class, DataWatcher, boolean.class)
                         .newInstance(entityId, dummyDataWatcher, true);
             }
 
@@ -410,7 +410,9 @@ class DefaultMapWrapper implements MapWrapper {
                 }
             } else {
                 Object dataWatcherObject;
-                if (MinecraftVersion.VERSION.newerThan(Minecraft.Version.v1_13_R1)) {
+                if (MinecraftVersion.VERSION.newerThan(Minecraft.Version.v1_17_R1)) {
+                    dataWatcherObject = EntityItemFrameFieldResolver.resolveAccessor("ITEM", "ao").get(null);
+                } else if (MinecraftVersion.VERSION.newerThan(Minecraft.Version.v1_13_R1)) {
                     dataWatcherObject = EntityItemFrameFieldResolver.resolveAccessor("ITEM", "e").get(null);
                 } else {
                     dataWatcherObject = EntityItemFrameFieldResolver.resolveAccessor("c").get(null);
