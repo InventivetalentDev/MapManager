@@ -16,223 +16,266 @@ import java.util.List;
 
 class MapSender {
 
-	private static final List<QueuedMap> sendQueue = new ArrayList<>();
-	private static       int             senderID  = -1;
+    private static final List<QueuedMap> sendQueue = new ArrayList<>();
+    private static int senderID = -1;
 
-	private static FieldResolver  EntityPlayerFieldResolver;
-	private static MethodResolver PlayerConnectionMethodResolver;
+    private static Class EntityPlayer;
+    private static Class PlayerConnection;
 
-	public static void cancelIDs(int[] ids) {
-		Iterator<QueuedMap> iterator = sendQueue.iterator();
-		while (iterator.hasNext()) {
-			QueuedMap next = iterator.next();
-			id:
-			for (int i : ids) {
-				if (next.id == -i) {
-					iterator.remove();
-					break id;
-				}
-			}
-		}
-	}
+    private static FieldResolver EntityPlayerFieldResolver;
+    private static MethodResolver PlayerConnectionMethodResolver;
 
-	public static void addToQueue(final int id, final ArrayImage image, final Player receiver) {
-		QueuedMap toSend = new QueuedMap(id, image, receiver);
-		if (sendQueue.contains(toSend)) { return; }
-		sendQueue.add(toSend);
+    public static void cancelIDs(int[] ids) {
+        Iterator<QueuedMap> iterator = sendQueue.iterator();
+        while (iterator.hasNext()) {
+            QueuedMap next = iterator.next();
+            id:
+            for (int i : ids) {
+                if (next.id == -i) {
+                    iterator.remove();
+                    break id;
+                }
+            }
+        }
+    }
 
-		runSender();
-	}
+    public static void addToQueue(final int id, final ArrayImage image, final Player receiver) {
+        QueuedMap toSend = new QueuedMap(id, image, receiver);
+        if (sendQueue.contains(toSend)) {return;}
+        sendQueue.add(toSend);
 
-	protected static void runSender() {
-		if (Bukkit.getScheduler().isQueued(senderID) || Bukkit.getScheduler().isCurrentlyRunning(senderID) || sendQueue.size() == 0) { return; }
+        runSender();
+    }
 
-		senderID = Bukkit.getScheduler().scheduleSyncRepeatingTask(MapManagerPlugin.instance, new Runnable() {
+    protected static void runSender() {
+        if (Bukkit.getScheduler().isQueued(senderID) || Bukkit.getScheduler().isCurrentlyRunning(senderID) || sendQueue.size() == 0) {
+            return;
+        }
 
-			@Override
-			public void run() {
-				if (sendQueue.isEmpty()) { return; }
-				for (int i = 0; i < Math.min(sendQueue.size(), MapManager.Options.Sender.AMOUNT + 1); i++) {
-					QueuedMap current = sendQueue.get(0);
-					if (current == null) { return; }
-					sendMap(current.id, current.image, current.player);
-					if (!sendQueue.isEmpty()) {
-						sendQueue.remove(0);
-					}
-				}
-			}
-		}, 0, MapManager.Options.Sender.DELAY);
-	}
+        senderID = Bukkit.getScheduler().scheduleSyncRepeatingTask(MapManagerPlugin.instance, new Runnable() {
 
-	protected static void sendMap(final int id0, final ArrayImage image, final Player receiver) {
-		if (MapManager.Options.Sender.TIMINGS) { TimingsHelper.startTiming("MapManager:sender:sendMap"); }
-		if (receiver == null || !receiver.isOnline()) {
+            @Override
+            public void run() {
+                if (sendQueue.isEmpty()) {return;}
+                for (int i = 0; i < Math.min(sendQueue.size(), MapManager.Options.Sender.AMOUNT + 1); i++) {
+                    QueuedMap current = sendQueue.get(0);
+                    if (current == null) {return;}
+                    sendMap(current.id, current.image, current.player);
+                    if (!sendQueue.isEmpty()) {
+                        sendQueue.remove(0);
+                    }
+                }
+            }
+        }, 0, MapManager.Options.Sender.DELAY);
+    }
 
-			List<QueuedMap> toRemove = new ArrayList<>();
-			for (QueuedMap qMap : sendQueue) {
-				if (qMap == null) { continue; }
-				if (qMap.player == null || !qMap.player.isOnline()) {
-					toRemove.add(qMap);
-				}
-			}
-			Bukkit.getScheduler().cancelTask(senderID);
-			sendQueue.removeAll(toRemove);
+    protected static void sendMap(final int id0, final ArrayImage image, final Player receiver) {
+        if (MapManager.Options.Sender.TIMINGS) {TimingsHelper.startTiming("MapManager:sender:sendMap");}
+        if (receiver == null || !receiver.isOnline()) {
 
-			if (MapManager.Options.Sender.TIMINGS) { TimingsHelper.stopTiming("MapManager:sender:sendMap"); }
-			return;
-		}
+            List<QueuedMap> toRemove = new ArrayList<>();
+            for (QueuedMap qMap : sendQueue) {
+                if (qMap == null) {continue;}
+                if (qMap.player == null || !qMap.player.isOnline()) {
+                    toRemove.add(qMap);
+                }
+            }
+            Bukkit.getScheduler().cancelTask(senderID);
+            sendQueue.removeAll(toRemove);
 
-		final int id = -id0;
+            if (MapManager.Options.Sender.TIMINGS) {TimingsHelper.stopTiming("MapManager:sender:sendMap");}
+            return;
+        }
 
-		Bukkit.getScheduler().runTaskAsynchronously(MapManagerPlugin.instance, new Runnable() {
-			@Override
-			public void run() {
-				try {
-					Object packet = constructPacket(id, image);
-					sendPacket(packet, receiver);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-		TimingsHelper.stopTiming("MapManager:sender:sendMap");
-	}
+        final int id = -id0;
 
-	private static Class<?> nmsPacketPlayOutMap;
+        Bukkit.getScheduler().runTaskAsynchronously(MapManagerPlugin.instance, new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Object packet = constructPacket(id, image);
+                    sendPacket(packet, receiver);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        TimingsHelper.stopTiming("MapManager:sender:sendMap");
+    }
 
-	static {
-		nmsPacketPlayOutMap = MapManagerPlugin.nmsClassResolver.resolveSilent("PacketPlayOutMap", "network.protocol.game.PacketPlayOutMap");
-	}
+    private static Class<?> nmsPacketPlayOutMap;
+    private static Class<?> nmsWorldMap$UpdateData;
 
-	private static Object constructPacket(int id, ArrayImage data) {
-		Object packet = null;
+    static {
+        nmsPacketPlayOutMap = MapManagerPlugin.nmsClassResolver.resolveSilent("PacketPlayOutMap", "network.protocol.game.PacketPlayOutMap");
+        if (MinecraftVersion.VERSION.newerThan(Minecraft.Version.v1_17_R1)) {
+            nmsWorldMap$UpdateData = MapManagerPlugin.nmsClassResolver.resolveSilent("world.level.saveddata.maps.WorldMap$b");
+        }
+    }
 
-		if (MinecraftVersion.VERSION.newerThan(Minecraft.Version.v1_14_R1)) {
-			try {
-				packet = constructPacket_1_14(id, data);
-			} catch (ReflectiveOperationException e) {
-				e.printStackTrace();
-			}
-		} else if (MinecraftVersion.VERSION.newerThan(Minecraft.Version.v1_9_R1)) {
-			try {
-				packet = constructPacket_1_9(id, data);
-			} catch (ReflectiveOperationException e) {
-				e.printStackTrace();
-			}
-		} else if (MinecraftVersion.VERSION.newerThan(Minecraft.Version.v1_8_R1)) {
-			try {
-				packet = constructPacket_1_8(id, data);
-			} catch (ReflectiveOperationException e) {
-				e.printStackTrace();
-			}
-		}
+    private static Object constructPacket(int id, ArrayImage data) {
+        Object packet = null;
 
-		return packet;
-	}
+        if (MinecraftVersion.VERSION.newerThan(Minecraft.Version.v1_17_R1)) {
+            try {
+                packet = constructPacket_1_17(id, data);
+            } catch (ReflectiveOperationException e) {
+                e.printStackTrace();
+            }
+        } else if (MinecraftVersion.VERSION.newerThan(Minecraft.Version.v1_14_R1)) {
+            try {
+                packet = constructPacket_1_14(id, data);
+            } catch (ReflectiveOperationException e) {
+                e.printStackTrace();
+            }
+        } else if (MinecraftVersion.VERSION.newerThan(Minecraft.Version.v1_9_R1)) {
+            try {
+                packet = constructPacket_1_9(id, data);
+            } catch (ReflectiveOperationException e) {
+                e.printStackTrace();
+            }
+        } else if (MinecraftVersion.VERSION.newerThan(Minecraft.Version.v1_8_R1)) {
+            try {
+                packet = constructPacket_1_8(id, data);
+            } catch (ReflectiveOperationException e) {
+                e.printStackTrace();
+            }
+        }
 
-	private static Object constructPacket_1_8(int id, ArrayImage data) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, NoSuchFieldException {
-		Object packet = nmsPacketPlayOutMap//
-				.getConstructor(int.class, byte.class, Collection.class, byte[].class, int.class, int.class, int.class, int.class)//
-				.newInstance(id,// ID
-						(byte) 0,// Scale
-						new ArrayList<>(),// Icons
-						data.array,// Data
-						data.minX,// X-position
-						data.minY,// Y-position
-						data.maxX,// X-Size (or 2nd X-position)
-						data.maxY// Y-Size (or 2nd Y-position)
-				);
-		return packet;
-	}
+        return packet;
+    }
 
-	private static Object constructPacket_1_9(int id, ArrayImage data) throws ReflectiveOperationException {
-		Object packet = nmsPacketPlayOutMap//
-				.getConstructor(int.class, byte.class, boolean.class, Collection.class, byte[].class, int.class, int.class, int.class, int.class)//
-				.newInstance(id,//ID
-						(byte) 0,//Scale
-						false,//????
-						new ArrayList<>(),//Icons
-						data.array,//Data
-						data.minX,// X-position
-						data.minY,// Y-position
-						data.maxX,// X-Size (or 2nd X-position)
-						data.maxY// Y-Size (or 2nd Y-position)
-				);
-		return packet;
-	}
+    private static Object constructPacket_1_8(int id, ArrayImage data) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, NoSuchFieldException {
+        Object packet = nmsPacketPlayOutMap//
+                .getConstructor(int.class, byte.class, Collection.class, byte[].class, int.class, int.class, int.class, int.class)//
+                .newInstance(id,// ID
+                        (byte) 0,// Scale
+                        new ArrayList<>(),// Icons
+                        data.array,// Data
+                        data.minX,// X-position
+                        data.minY,// Y-position
+                        data.maxX,// X-Size (or 2nd X-position)
+                        data.maxY// Y-Size (or 2nd Y-position)
+                );
+        return packet;
+    }
 
-	private static Object constructPacket_1_14(int id, ArrayImage data) throws ReflectiveOperationException {
-		Object packet = nmsPacketPlayOutMap//
-				.getConstructor(int.class, byte.class, boolean.class, boolean.class, Collection.class, byte[].class, int.class, int.class, int.class, int.class)//
-				.newInstance(id,//ID
-						(byte) 0,//Scale
-						false,// tracking position
-						false,// locked
-						new ArrayList<>(),//Icons
-						data.array,//Data
-						data.minX,// X-position
-						data.minY,// Y-position
-						data.maxX,// X-Size (or 2nd X-position)
-						data.maxY// Y-Size (or 2nd Y-position)
-				);
-		return packet;
-	}
+    private static Object constructPacket_1_9(int id, ArrayImage data) throws ReflectiveOperationException {
+        Object packet = nmsPacketPlayOutMap//
+                .getConstructor(int.class, byte.class, boolean.class, Collection.class, byte[].class, int.class, int.class, int.class, int.class)//
+                .newInstance(id,//ID
+                        (byte) 0,//Scale
+                        false,//????
+                        new ArrayList<>(),//Icons
+                        data.array,//Data
+                        data.minX,// X-position
+                        data.minY,// Y-position
+                        data.maxX,// X-Size (or 2nd X-position)
+                        data.maxY// Y-Size (or 2nd Y-position)
+                );
+        return packet;
+    }
 
-	protected static void sendPacket(Object packet, Player p) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchFieldException, NoSuchMethodException {
-		if (EntityPlayerFieldResolver == null) {
-			EntityPlayerFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("EntityPlayer", "server.level.EntityPlayer"));
-		}
-		if (PlayerConnectionMethodResolver == null) {
-			PlayerConnectionMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("PlayerConnection", "server.network.EntityPlayer"));
-		}
+    private static Object constructPacket_1_14(int id, ArrayImage data) throws ReflectiveOperationException {
+        Object packet = nmsPacketPlayOutMap//
+                .getConstructor(int.class, byte.class, boolean.class, boolean.class, Collection.class, byte[].class, int.class, int.class, int.class, int.class)//
+                .newInstance(id,//ID
+                        (byte) 0,//Scale
+                        false,// tracking position
+                        false,// locked
+                        new ArrayList<>(),//Icons
+                        data.array,//Data
+                        data.minX,// X-position
+                        data.minY,// Y-position
+                        data.maxX,// X-Size (or 2nd X-position)
+                        data.maxY// Y-Size (or 2nd Y-position)
+                );
+        return packet;
+    }
 
-		try {
-			Object handle = Minecraft.getHandle(p);
-			final Object connection = EntityPlayerFieldResolver.resolveAccessor("playerConnection").get(handle);
-			PlayerConnectionMethodResolver.resolve("sendPacket").invoke(connection, packet);
-		} catch (ReflectiveOperationException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    private static Object constructPacket_1_17(int id, ArrayImage data) throws ReflectiveOperationException {
+        Object updateData = nmsWorldMap$UpdateData
+                .getConstructor(int.class, int.class, int.class, int.class, byte[].class)
+                .newInstance(
+                        data.minX,// X-position
+                        data.minY,// Y-position
+                        data.maxX,// X-Size (or 2nd X-position)
+                        data.maxY,// Y-Size (or 2nd Y-position)
+                        data.array//Data
+                );
+        Object packet = nmsPacketPlayOutMap//
+                .getConstructor(int.class, byte.class, boolean.class, Collection.class, nmsWorldMap$UpdateData)//
+                .newInstance(
+                        id,//ID
+                        (byte) 0,//Scale
+                        false,// Show Icons
+                        new ArrayList<>(),//Icons
+                        updateData
+                );
+        return packet;
+    }
 
-	static class QueuedMap {
+    protected static void sendPacket(Object packet, Player p) throws IllegalArgumentException, ClassNotFoundException {
+        if (EntityPlayer == null) {
+            EntityPlayer = MapManagerPlugin.nmsClassResolver.resolve("EntityPlayer", "server.level.EntityPlayer");
+        }
+        if (PlayerConnection == null) {
+            PlayerConnection = MapManagerPlugin.nmsClassResolver.resolve("PlayerConnection", "server.network.PlayerConnection");
+        }
+        if (EntityPlayerFieldResolver == null) {
+            EntityPlayerFieldResolver = new FieldResolver(EntityPlayer);
+        }
+        if (PlayerConnectionMethodResolver == null) {
+            PlayerConnectionMethodResolver = new MethodResolver(PlayerConnection);
+        }
 
-		final int        id;
-		final ArrayImage image;
-		final Player     player;
+        try {
+            Object handle = Minecraft.getHandle(p);
+            final Object connection = EntityPlayerFieldResolver.resolveByFirstTypeAccessor(PlayerConnection).get(handle);
+            PlayerConnectionMethodResolver.resolve("sendPacket").invoke(connection, packet);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-		QueuedMap(int id, ArrayImage image, Player player) {
-			this.id = id;
-			this.image = image;
-			this.player = player;
-		}
+    static class QueuedMap {
 
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + this.id;
-			result = prime * result + (this.image == null ? 0 : this.image.hashCode());
-			result = prime * result + (this.player == null ? 0 : this.player.hashCode());
-			return result;
-		}
+        final int id;
+        final ArrayImage image;
+        final Player player;
 
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) { return true; }
-			if (obj == null) { return false; }
-			if (this.getClass() != obj.getClass()) { return false; }
-			QueuedMap other = (QueuedMap) obj;
-			if (this.id != other.id) { return false; }
-			if (this.image == null) {
-				if (other.image != null) { return false; }
-			} else if (!this.image.equals(other.image)) { return false; }
-			if (this.player == null) {
-				if (other.player != null) { return false; }
-			} else if (!this.player.equals(other.player)) { return false; }
-			return true;
-		}
+        QueuedMap(int id, ArrayImage image, Player player) {
+            this.id = id;
+            this.image = image;
+            this.player = player;
+        }
 
-	}
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + this.id;
+            result = prime * result + (this.image == null ? 0 : this.image.hashCode());
+            result = prime * result + (this.player == null ? 0 : this.player.hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {return true;}
+            if (obj == null) {return false;}
+            if (this.getClass() != obj.getClass()) {return false;}
+            QueuedMap other = (QueuedMap) obj;
+            if (this.id != other.id) {return false;}
+            if (this.image == null) {
+                if (other.image != null) {return false;}
+            } else if (!this.image.equals(other.image)) {return false;}
+            if (this.player == null) {
+                if (other.player != null) {return false;}
+            } else if (!this.player.equals(other.player)) {return false;}
+            return true;
+        }
+
+    }
 
 }
