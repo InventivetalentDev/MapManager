@@ -322,10 +322,10 @@ class DefaultMapWrapper implements MapWrapper {
     public void sendItemFramePacket(Player player, int entityId, ItemStack itemStack, int mapId) {
         try {
             if (Entity == null) {
-                Entity = MapManagerPlugin.nmsClassResolver.resolve("Entity", "world.entity.Entity");
+                Entity = MapManagerPlugin.nmsClassResolver.resolve("world.entity.Entity", "Entity");
             }
             if (DataWatcher == null) {
-                DataWatcher = MapManagerPlugin.nmsClassResolver.resolve("DataWatcher", "network.syncer.DataWatcher");
+                DataWatcher = MapManagerPlugin.nmsClassResolver.resolve("network.syncher.DataWatcher", "network.syncer.DataWatcher", "DataWatcher");
             }
             if (PacketPlayOutEntityMetadata == null) {
                 PacketPlayOutEntityMetadata = MapManagerPlugin.nmsClassResolver
@@ -335,7 +335,7 @@ class DefaultMapWrapper implements MapWrapper {
                 PacketEntityMetadataFieldResolver = new FieldResolver(PacketPlayOutEntityMetadata);
             }
             if (WatchableObjectConstructorResolver == null) {
-                WatchableObjectConstructorResolver = new ConstructorResolver(MapManagerPlugin.nmsClassResolver.resolve("WatchableObject", "DataWatcher$WatchableObject", "DataWatcher$Item"/*1.9*/, "network.syncer.DataWatcher$Item"));
+                WatchableObjectConstructorResolver = new ConstructorResolver(MapManagerPlugin.nmsClassResolver.resolve("network.syncher.DataWatcher$Item", "network.syncer.DataWatcher$Item", "WatchableObject", "DataWatcher$WatchableObject", "DataWatcher$Item"/*1.9*/));
             }
             if (CraftItemStackMethodResolver == null) {
                 CraftItemStackMethodResolver = new MethodResolver(MapManagerPlugin.obcClassResolver.resolve("inventory.CraftItemStack"));
@@ -344,13 +344,13 @@ class DefaultMapWrapper implements MapWrapper {
             //1.9
             if (MinecraftVersion.VERSION.newerThan(Minecraft.Version.v1_9_R1)) {
                 if (DataWatcherRegistryFieldResolver == null) {
-                    DataWatcherRegistryFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("DataWatcherRegistry", "network.syncer.DataWatcherRegistry"));
+                    DataWatcherRegistryFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("network.syncher.DataWatcherRegistry", "network.syncer.DataWatcherRegistry", "DataWatcherRegistry"));
                 }
                 if (DataWatcherItemConstructorResolver == null) {
-                    DataWatcherItemConstructorResolver = new ConstructorResolver(MapManagerPlugin.nmsClassResolver.resolve("DataWatcher$Item", "network.syncer.DataWatcher$Item"));
+                    DataWatcherItemConstructorResolver = new ConstructorResolver(MapManagerPlugin.nmsClassResolver.resolve("network.syncher.DataWatcher$Item", "network.syncer.DataWatcher$Item", "DataWatcher$Item"));
                 }
                 if (DataWatcherObjectConstructorResolver == null) {
-                    DataWatcherObjectConstructorResolver = new ConstructorResolver(MapManagerPlugin.nmsClassResolver.resolve("DataWatcherObject", "network.syncer.DataWatcherObject"));
+                    DataWatcherObjectConstructorResolver = new ConstructorResolver(MapManagerPlugin.nmsClassResolver.resolve("network.syncher.DataWatcherObject", "network.syncer.DataWatcherObject", "DataWatcherObject"));
                 }
                 if (EntityItemFrameFieldResolver == null) {
                     EntityItemFrameFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("EntityItemFrame", "world.entity.decoration.EntityItemFrame"));

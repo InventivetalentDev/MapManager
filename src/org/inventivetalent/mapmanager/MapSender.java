@@ -19,6 +19,9 @@ class MapSender {
     private static final List<QueuedMap> sendQueue = new ArrayList<>();
     private static int senderID = -1;
 
+    private static Class EntityPlayer;
+    private static Class PlayerConnection;
+
     private static FieldResolver EntityPlayerFieldResolver;
     private static MethodResolver PlayerConnectionMethodResolver;
 
@@ -212,17 +215,23 @@ class MapSender {
         return packet;
     }
 
-    protected static void sendPacket(Object packet, Player p) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, ClassNotFoundException, NoSuchFieldException, NoSuchMethodException {
+    protected static void sendPacket(Object packet, Player p) throws IllegalArgumentException, ClassNotFoundException {
+        if (EntityPlayer == null) {
+            EntityPlayer = MapManagerPlugin.nmsClassResolver.resolve("EntityPlayer", "server.level.EntityPlayer");
+        }
+        if (PlayerConnection == null) {
+            PlayerConnection = MapManagerPlugin.nmsClassResolver.resolve("PlayerConnection", "server.network.PlayerConnection");
+        }
         if (EntityPlayerFieldResolver == null) {
-            EntityPlayerFieldResolver = new FieldResolver(MapManagerPlugin.nmsClassResolver.resolve("EntityPlayer", "server.level.EntityPlayer"));
+            EntityPlayerFieldResolver = new FieldResolver(EntityPlayer);
         }
         if (PlayerConnectionMethodResolver == null) {
-            PlayerConnectionMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("PlayerConnection", "server.network.EntityPlayer"));
+            PlayerConnectionMethodResolver = new MethodResolver(PlayerConnection);
         }
 
         try {
             Object handle = Minecraft.getHandle(p);
-            final Object connection = EntityPlayerFieldResolver.resolveAccessor("playerConnection").get(handle);
+            final Object connection = EntityPlayerFieldResolver.resolveByFirstTypeAccessor(PlayerConnection).get(handle);
             PlayerConnectionMethodResolver.resolve("sendPacket").invoke(connection, packet);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
