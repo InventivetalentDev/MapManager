@@ -6,7 +6,7 @@
 
     <groupId>org.inventivetalent</groupId>
     <artifactId>mapmanager</artifactId>
-    <version>1.8.5-SNAPSHOT</version>
+    <version>1.8.6-SNAPSHOT</version>
     <name>MapManager</name>
 
     <properties>
@@ -71,11 +71,11 @@
     <distributionManagement>
         <repository>
             <id>sonatype-nexus-releases</id>
-            <url>https://repo.inventivetalent.org/content/repositories/releases/</url>
+            <url>https://repo.inventivetalent.org/repository/maven-releases/</url>
         </repository>
         <snapshotRepository>
             <id>sonatype-nexus-snapshots</id>
-            <url>https://repo.inventivetalent.org/content/repositories/snapshots/</url>
+            <url>https://repo.inventivetalent.org/repository/maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
     <dependencies>
