@@ -306,7 +306,10 @@ class DefaultMapWrapper implements MapWrapper {
     Object createCraftItemStack(ItemStack itemStack, int mapId) throws ReflectiveOperationException {
         Object craftItemStack = CraftItemStackMethodResolver.resolve(new ResolverQuery("asNMSCopy", ItemStack.class)).invoke(null, itemStack);
         if (MinecraftVersion.VERSION.newerThan(Minecraft.Version.v1_16_R1)) {
-            ((MapMeta) itemStack.getItemMeta()).setMapId(mapId);
+            MapMeta meta = (MapMeta) itemStack.getItemMeta();
+            meta.setMapId(mapId); //TODO
+            itemStack.setItemMeta(meta);
+            craftItemStack = CraftItemStackMethodResolver.resolve(new ResolverQuery("asNMSCopy", ItemStack.class)).invoke(null, itemStack);
         } else if (MinecraftVersion.VERSION.newerThan(Minecraft.Version.v1_13_R1)) {
             if (ItemStackMethodResolver == null) {
                 ItemStackMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("ItemStack", "world.item.ItemStack"));
