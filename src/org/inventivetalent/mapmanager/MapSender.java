@@ -9,6 +9,7 @@ import org.inventivetalent.reflection.resolver.FieldResolver;
 import org.inventivetalent.reflection.resolver.MethodResolver;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -232,7 +233,8 @@ class MapSender {
         try {
             Object handle = Minecraft.getHandle(p);
             final Object connection = EntityPlayerFieldResolver.resolveByFirstTypeAccessor(PlayerConnection).get(handle);
-            PlayerConnectionMethodResolver.resolve("sendPacket").invoke(connection, packet);
+            Method sendPacket = PlayerConnectionMethodResolver.resolveSignature("void sendPacket(Packet)", "void a(Packet)");
+            sendPacket.invoke(connection, packet);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }

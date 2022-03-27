@@ -8,6 +8,7 @@ import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.inventivetalent.mapmanager.controller.MapController;
 import org.inventivetalent.mapmanager.event.MapContentUpdateEvent;
@@ -21,6 +22,7 @@ import org.inventivetalent.reflection.resolver.MethodResolver;
 import org.inventivetalent.reflection.resolver.ResolverQuery;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.*;
 
 class DefaultMapWrapper implements MapWrapper {
@@ -303,7 +305,9 @@ class DefaultMapWrapper implements MapWrapper {
 
     Object createCraftItemStack(ItemStack itemStack, int mapId) throws ReflectiveOperationException {
         Object craftItemStack = CraftItemStackMethodResolver.resolve(new ResolverQuery("asNMSCopy", ItemStack.class)).invoke(null, itemStack);
-        if (MinecraftVersion.VERSION.newerThan(Minecraft.Version.v1_13_R1)) {
+        if (MinecraftVersion.VERSION.newerThan(Minecraft.Version.v1_16_R1)) {
+            ((MapMeta) itemStack.getItemMeta()).setMapId(mapId);
+        } else if (MinecraftVersion.VERSION.newerThan(Minecraft.Version.v1_13_R1)) {
             if (ItemStackMethodResolver == null) {
                 ItemStackMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("ItemStack", "world.item.ItemStack"));
             }
@@ -311,8 +315,9 @@ class DefaultMapWrapper implements MapWrapper {
                 NBTTagMethodResolver = new MethodResolver(MapManagerPlugin.nmsClassResolver.resolve("NBTTagCompound", "nbt.NBTTagCompound"));
             }
             if (itemStack != null && craftItemStack != null && mapId >= 0) {
-                Object nbtTag = ItemStackMethodResolver.resolve("getOrCreateTag", "getTag").invoke(craftItemStack);
-                NBTTagMethodResolver.resolve("setInt").invoke(nbtTag, "map", mapId);
+                Object nbtTag = ItemStackMethodResolver.resolveSignature("NBTTagCompound getOrCreateTag()", "NBTTagCompound u()", "NBTTagCompound getTag()").invoke(craftItemStack);
+                Method setInt = NBTTagMethodResolver.resolveSignature("void setInt(String, int)", "void a(String, int)");
+                setInt.invoke(nbtTag, "map", mapId);
             }
         }
 
