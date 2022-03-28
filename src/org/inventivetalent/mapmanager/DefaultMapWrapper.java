@@ -419,7 +419,11 @@ class DefaultMapWrapper implements MapWrapper {
             } else {
                 Object dataWatcherObject;
                 if (MinecraftVersion.VERSION.newerThan(Minecraft.Version.v1_17_R1)) {
-                    dataWatcherObject = EntityItemFrameFieldResolver.resolveAccessor("ITEM", "ao").get(null);
+                    if (MinecraftVersion.VERSION.equal(Minecraft.Version.v1_18_R1)) {
+                        dataWatcherObject = EntityItemFrameFieldResolver.resolveAccessor("ITEM", "ap").get(null);
+                    } else {
+                        dataWatcherObject = EntityItemFrameFieldResolver.resolveAccessor("ITEM", "ao").get(null);
+                    }
                 } else if (MinecraftVersion.VERSION.newerThan(Minecraft.Version.v1_13_R1)) {
                     dataWatcherObject = EntityItemFrameFieldResolver.resolveAccessor("ITEM", "e").get(null);
                 } else {
