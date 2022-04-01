@@ -6,7 +6,7 @@
 
     <groupId>org.inventivetalent</groupId>
     <artifactId>mapmanager</artifactId>
-    <version>1.8.7-SNAPSHOT</version>
+    <version>1.8.8-SNAPSHOT</version>
     <name>MapManager</name>
 
     <properties>
@@ -93,7 +93,7 @@
         <dependency>
             <groupId>org.inventivetalent</groupId>
             <artifactId>reflectionhelper</artifactId>
-            <version>1.18.9-SNAPSHOT</version>
+            <version>1.18.10-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.inventivetalent.spiget-update</groupId>
